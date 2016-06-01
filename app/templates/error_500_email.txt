@@ -1,0 +1,7 @@
+Administrador,
+
+El usuario {{ user.nickname }} ha generado un error inesperado.
+
+Se adjunta el archivo de log del servidor.
+
+Biblioteca Espectral CONAE

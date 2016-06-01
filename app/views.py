@@ -4,7 +4,7 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
-from .emails import follower_notification
+from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, CargarForm, ConsultarForm, ArchivoForm, LoginConaeForm
 from .models import User, Post
 from .translate import microsoft_translate
@@ -208,6 +208,7 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()       # Deshacer cambios en la BD
+    error_notification(g.user)  # Enviar mail al admin
     return render_template('500.html'), 500
 
 

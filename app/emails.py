@@ -17,10 +17,16 @@ def send_async_email(app, msg):
 
 
 # Esquema de mail
-def send_email(subj, sender, recip, text_body, html_body):
+def send_email(subj, sender, recip, text_body, html_body, attachment):
     msg = Message(subj, sender=sender, recipients=recip)
-    msg.body = text_body
-    msg.html = html_body
+    if text_body:
+        msg.body = text_body
+    if html_body:
+        msg.html = html_body
+    if attachment:
+        # attachment es un path a un archivo
+        with open(attachment) as f:
+            msg.attach(attachment, None, f.read())
     # Enviamos en segundo plano
     send_async_email(app, msg)
 
@@ -35,3 +41,13 @@ def follower_notification(followed, follower):
                render_template('follower_email.hmtl',                       # Cuerpo del mensaje en HTML.
                                user=followed, follower=follower))
 
+
+def error_notification(user):
+    log = '/var/log/apache2/error.log'
+    send_email('[BibliotecaEspectral] ERROR 500',       # Asunto
+               ADMINS[0],                               # Remitente
+               ADMINS[0],                               # Destinatario
+               render_template('error_500_email.txt',   # Cuerpo del mail
+                               user=user),
+               None,                                    # Cuerpo html
+               log)                                     # Path archivo adjunto
