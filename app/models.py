@@ -7,7 +7,7 @@ __author__ = 'Juanjo'
 from hashlib import md5
 from app import db, app
 from geoalchemy2 import Geometry
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 import sys, re
 
 if sys.version_info >= (3, 0):

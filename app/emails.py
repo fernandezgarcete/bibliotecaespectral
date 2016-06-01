@@ -2,7 +2,7 @@
 
 __author__ = 'Juanjo'
 
-from flask.ext.mail import Message
+from flask_mail import Message
 from flask import render_template
 from config import ADMINS
 from app import mail, app

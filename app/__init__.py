@@ -2,12 +2,12 @@
 
 import os
 from flask import Flask, current_app, session
-from flask.ext.babel import Babel, gettext
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager
-from flask.ext.openid import OpenID
-from flask.ext.oidc import OpenIDConnect
-from flask.ext.mail import Mail
+from flask_babel import Babel, gettext
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_openid import OpenID
+from flask_oidc import OpenIDConnect
+from flask_mail import Mail
 from flask.json import JSONEncoder
 from flask_bootstrap import Bootstrap
 from .momentjs import momentjs
