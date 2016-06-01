@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/ -->
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon"/>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-datepicker.css" rel="stylesheet">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/moment-with-locales.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.js"></script>
+    <script src="/static/locales/bootstrap-datepicker.es.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/js/biblioespectral.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if title %}
+    <title>{{ title }} - Biblioteca Espectral CONAE</title>
+    {% else %}
+    <title>Bienvenido a Biblioteca Espectral</title>
+    {% endif %}
+</head>
+
+<body>
+<div id="fb-root"></div>
+<div class="container">
+    <header>
+        <nav id="menubar" class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">
+                        <img style="max-width:80px; margin-top: -17px;" src="/static/img/CONAE_chico_transp.png">
+                    </a>
+                    <a class="navbar-brand" href="/">
+                        <img style="max-width:200px; margin-top: -10px;" src="/static/img/logo_radiometro_v3.png">
+                    </a>
+                </div>
+
+                <div class="collapse navbar-collapse navbarCollapse">
+                    <ul class="nav navbar-nav">
+                        <li id="inicio" class=""><a href="/index">Inicio</a></li>
+                        <!-- {} #if g.user.is_authenticated %} -->
+                        <li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+                        <li id="foro" class=""><a href="/foro">Foro</a></li>
+                        <li id="docs" class=""><a href="/docs">Documentos</a></li>
+                        <li id="cargar" class=""><a href="/cargar">Cargar</a></li>
+                        <li id="consultar" class=""><a href="/consultar">Consultar</a></li>
+
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <!-- <li><a href="{{ url_for('logout') }}" onclick="signOut()">Cerrar Sesión</a></li>
+                         {} #endif %} -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+</div>
+
+<div data-target="#menubar" class="container">
+    <br>
+    <br>
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for message in errors %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% with infos = get_flashed_messages(category_filter=["info"]) %}
+    {% if infos %}
+    <div class="alert alert-dismissable alert-info">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for message in infos %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% with successes = get_flashed_messages(category_filter=["success"]) %}
+    {% if successes %}
+    <div class="alert alert-dismissable alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for message in successes %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+</body>
+</html>

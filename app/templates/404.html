@@ -1,0 +1,12 @@
+<!-- extiende de base.htmnl -->
+{% extends "base.html" %}
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+{% block content %}
+    <h1>Esta página no se encuentra en el servidor o ha sido cambiada.</h1>
+    <p>Mejor volvamos a empezar...<a href="{{ url_for('index') }}">Inicio</a></p>
+{% endblock %}
+

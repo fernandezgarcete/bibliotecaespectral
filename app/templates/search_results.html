@@ -1,0 +1,15 @@
+<!-- li class=""><form class="form-inline" action="{{ url_for('search') }}" method="post" name="search">
+                            <div class="form-group">
+                                {{ g.search_form.hidden_tag() }}{{ g.search_form.search(size=20) }}
+                            </div>
+                            <input type="submit" value="Buscar" class="btn btn-primary">
+                        </form></li -->
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Resultados de b&uacutesqueda para "{{ query }}":</h1>
+    {% for post in results %}
+        {% include 'post.html' %}
+    {% endfor %}
+{% endblock %}

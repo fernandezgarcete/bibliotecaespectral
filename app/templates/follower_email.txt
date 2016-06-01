@@ -1,0 +1,9 @@
+Estimado {{ user.nickname }},
+
+{{ follower.nickname }} es ahora un seguidor. Clickea en el siguiente link para visitar su perfil:
+
+{{ url_for('user', nickname=follower.nickname, _external=True) }}
+
+Cordialmente,
+
+Administrador de Biblioteca Espectral CONAE

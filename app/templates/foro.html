@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<script>navegador('#foro')</script>
+
+    <h1>Hola, {{ user.nickname }}</h1>
+    <form action="" method="post" name="post">
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>Deci algo:</td>
+                <td>{{ form.post(size=30, maxlength=140) }}</td>
+                <td>
+                {% for error in form.post.errors %}
+                <span style="color:darkred;">{{ error }}</span><br>
+                {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Postea!" class="btn btn-primary"></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+    <hr>
+    {% for post in posts.items %}
+        {% include 'post.html' %}
+    {% endfor%}
+    {% if posts.has_prev %}
+        <a href="{{ url_for('foro', page=posts.prev_num) }}">&lt;&lt; Nuevos posteos </a>
+    {% else %} Nuevos posteos
+    {% endif %} |
+    {% if posts.has_next %}<a href="{{ url_for('foro', page=posts.next_num) }}">Posteos antiguos &gt;&gt;</a>
+    {% else %}Posteos antiguos
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#docs')</script>
+
+<h1>Documentos</h1>
+<hr>
+<div class="container">
+
+    {% for file in list %}
+    <div class="row">
+        <a href="{{ url_for('show_file', filename=file) }}">{{ file }}</a>
+    </div>
+    <hr>
+    {% endfor %}
+</div>
+{% endblock %}

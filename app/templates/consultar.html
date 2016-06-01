@@ -1,0 +1,136 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#consultar')</script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(dibujarGrafico);
+</script>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for error in form.errors %}
+                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h1>Consulta de Datos</h1>
+<hr>
+<form class="form-horizontal" action="" method="post" name="consultar">
+    <div class="form-group">
+        <label class="col-xs-2">Proyecto</label>
+        <div class="col-xs-10">
+            {{ form.proyecto(placeholder="Nombre de Proyecto", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Localidad</label>
+        <div class="col-xs-10">
+            {{ form.localidad(placeholder="Nombre de la Localidad", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Campaña</label>
+        <div class="col-xs-10">
+            {{ form.campania(placeholder="Nombre de Campaña", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Fechas</label>
+        <div class="col-xs-10">
+            <div class="input-group input-daterange">
+                <span class="input-group-addon">Inicio</span>
+                {{ form.fecha_inicio(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <span class="input-group-addon">Fin</span>
+                {{ form.fecha_fin(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Tipo de Cobertura</label>
+        <div class="col-xs-10">
+            {{ form.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Cobertura</label>
+        <div class="col-xs-10">
+            {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Radiancia</label>
+        <div class="col-xs-10">
+            <div class="btn-group" data-toggle="buttons">
+                <label id="rad" class="btn btn-primary active">
+                    {{ form.radiancia() }} Radiancia
+                </label>
+                <label id="rad_avg" class="btn btn-default">
+                    {{ form.radiancia_avg() }} Radiancia Promedio
+                </label>
+                <label id="rad_std" class="btn btn-default">
+                    {{ form.radiancia_std() }} Radiancia Desviación Estándar
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Reflectancia</label>
+        <div class="col-xs-10">
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-default">
+                    {{ form.reflectancia() }} Reflectancia
+                </label>
+                <label class="btn btn-default">
+                    {{ form.reflectancia_avg() }} Reflectancia Promedio
+                </label>
+                <label class="btn btn-default">
+                    {{ form.reflectancia_std() }} Reflectancia Desviación Estándar
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form.hidden_tag() }}
+    </div>
+    <input type="submit" value="Consultar" class="btn btn-primary">
+</form>
+<hr>
+<div id="grafico_linea"></div>
+
+<!-- Scripts al terminar de cargar el documento -->
+<script>
+    validaciones('#fecha_inicio'); validaciones('#fecha_fin');
+
+    $("input[type=checkbox]").change(function(){
+        if($(this).parent().hasClass('active')){
+            $(this).parent().removeClass('btn-primary');
+            $(this).parent().addClass('btn-default');
+        } else {
+            $(this).parent().removeClass('btn-default');
+            $(this).parent().addClass('btn-primary');
+        }
+    });
+
+    $('.input-daterange').datepicker({
+        startDate: '01-01-2005',
+        endDate: 'today',
+        todayBtn: true,
+        orientation: 'bottom auto',
+        format: 'dd-mm-yyyy',
+        language: 'es',
+        todayHighlight: true
+    });
+
+</script>
+{% endblock %}

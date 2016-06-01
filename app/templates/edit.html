@@ -1,0 +1,41 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edici&oacuten de perfil</h1>
+    <table>
+
+    </table>
+    <form action="" method="post" name="edit">
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>Avatar:</td>
+                <td>
+                    <a href="https://es.gravatar.com/" target="_blank">
+                        <img src="{{ g.user.avatar(128) }}">
+                    </a>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Tu nombre:</td>
+                <td>
+                    {{ form.nickname(size=24) }}
+                    {% for error in form.errors.nickname %}
+                    <br><span style="color:darkred;">{{ error}}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Sobre vos:</td>
+                <td>{{ form.about_me(cols=32, rows=4) }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Guardar" class="btn btn-primary"></td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

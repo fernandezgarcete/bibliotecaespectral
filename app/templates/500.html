@@ -1,0 +1,10 @@
+<!-- extiende de base.htmnl -->
+{% extends "base.html" %}
+<head>
+    <meta charset="UTF-8">
+</head>
+{% block content %}
+    <h1>Ooops! Ha ocurrido un error inesperado en el servidor.</h1>
+    <p>El administrador ha sido notificado. Disculpe el inconveniente.</p>
+    <p>Volver al <a href="{{ url_for('index') }}">Inicio</a></p>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+
+{% if archivoform.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for error in archivoform.errors %}
+                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h1>Cargar archivos correspondientes</h1>
+<hr>
+<form class="form-horizontal" action="" method="post" name="paso2" enctype="multipart/form-data">
+    <div class="form-group">
+        <label class="col-xs-2">Radiancias</label>
+        <div class="col-xs-10">
+            <div class="panel-group">
+                <label>Radiancia TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            </div>
+            <div class="panel-group">
+                <label>Radiancia Promedio y Desviación Estándar TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Reflectancias</label>
+        <div class="col-xs-10">
+            <div class="panel-group">
+                <label>Reflectancia TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            </div>
+            <div class="panel-group">
+                <label>Reflectancia Promedio y Desviación Estándar TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Fotos</label>
+        <div class="col-xs-10">
+            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+        </div>
+    </div>
+    <div class="form-group">
+        {{ archivoform.hidden_tag() }}
+    </div>
+
+    <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
+
+{% endblock %}
