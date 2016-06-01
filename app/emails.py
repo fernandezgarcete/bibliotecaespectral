@@ -50,4 +50,4 @@ def error_notification(user):
                render_template('error_500_email.txt',   # Cuerpo del mail
                                user=user),
                None,                                    # Cuerpo html
-               log)                                     # Path archivo adjunto
+               log)                                     # Path de archivo adjunto
