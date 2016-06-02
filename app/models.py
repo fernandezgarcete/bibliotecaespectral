@@ -54,11 +54,13 @@ class Proyecto(db.Model):
 # Tabla Campaña
 class Campania(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(80))
     fecha = db.Column(db.DateTime)
+    responsable = db.Column(db.String(140))
     id_localidad = db.Column(db.Integer, db.ForeignKey('localidad.id'))
     objetivo = db.Column(db.String(140))
     id_proyecto = db.Column(db.Integer, db.ForeignKey('proyecto.id'))
-    tipos_coberturas = db.relationship('TipoCobertura', backref='tipo_cobertura', lazy='dynamic')
+    id_muestra = db.Column(db.Integer, db.ForeignKey('unidad_muestral.id'))
 
     @property
     def is_complete(self):
@@ -69,7 +71,6 @@ class Campania(db.Model):
 class TipoCobertura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
-    id_campania = db.Column(db.Integer, db.ForeignKey('campania.id'))
     coberturas = db.relationship('Cobertura', backref='cobertura', lazy='dynamic')
 
 
@@ -78,15 +79,18 @@ class Cobertura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
     id_tipocobertura = db.Column(db.Integer, db.ForeignKey('tipo_cobertura.id'))
-    muestras = db.relationship('Muestra', backref='muestra', lazy='dynamic')
+    altura = db.Column(db.DECIMAL(precision=2))
+    fenologia = db.Column(db.String(140))
+    observaciones = db.Column(db.String(140))
+    muestras = db.relationship('UnidadMuestral', backref='cobertura_muestra', lazy='dynamic')
 
 
-# Tabla Muestra
-class Muestra(db.Model):
+# Tabla Unidad Muestral
+class UnidadMuestral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
     id_metodologia = db.Column(db.Integer, db.ForeignKey('metodologia.id'))
-    id_instrumento = db.Column(db.Integer, db.ForeignKey('instrumento.id'))
+    id_instrumento = db.Column(db.String(80), db.ForeignKey('instrumento.id'))
     operador = db.Column(db.String(80))
     uuid = db.Column(db.String(80))
     id_cobertura = db.Column(db.Integer, db.ForeignKey('cobertura.id'))
@@ -94,11 +98,27 @@ class Muestra(db.Model):
 
 # Tabla Instrumento
 class Instrumento(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(80), primary_key=True)
+    tipo = db.Column(db.String(140))
+    instrumento = db.Column(db.String(140))
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
-    anio = db.Column(db.Integer)
-    muestras = db.relationship('Muestra', backref='instrumento_muestra', lazy='dynamic')
+    rango_espectral = db.Column(db.String(80))
+    resolucion_espectral = db.Column(db.String(80))
+    ancho_banda = db.Column(db.String(80))
+    tiempo_escaneo = db.Column(db.DECIMAL(precision=2))
+    reproducibilidad_ancho_banda = db.Column(db.DECIMAL(precision=2))
+    exactitud_ancho_banda = db.Column(db.DECIMAL(precision=2))
+    detector_vnir = db.Column(db.String(80))
+    detector_swir1 = db.Column(db.String(80))
+    detector_swir2 = db.Column(db.String(80))
+    noice_equivalence_radiance_vnir = db.Column(db.String(80))
+    noice_equivalence_radiance_swir1 = db.Column(db.String(80))
+    noice_equivalence_radiance_swir2 = db.Column(db.String(80))
+    largo_fibra_optica = db.Column(db.DECIMAL(precision=2))
+    fov = db.Column(db.DECIMAL(precision=3))
+    fov_cosenoidal = db.Column(db.String(80))
+    muestras = db.relationship('UnidadMuestral', backref='instrumento_muestra', lazy='dynamic')
 
 
 # Tabla metodologia
@@ -106,26 +126,33 @@ class Metodologia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
     descripcion = db.Column(db.String(140))
-    muestras = db.relationship('Muestra', backref='metodo_muestra', lazy='dynamic')
+    metodologia_medicion = db.Column(db.String(80))
+    angulo_cenital = db.Column(db.DECIMAL(precision=2))
+    angulo_azimutal = db.Column(db.DECIMAL(precision=2))
+    muestras = db.relationship('UnidadMuestral', backref='metodo_muestra', lazy='dynamic')
 
 
 # Tabla Punto
 class Punto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(80))
     fecha_hora = db.Column(db.DateTime)
     geom = db.Column(Geometry(geometry_type='POINT', srid=4326))
-    altura_media = db.Column(db.DECIMAL(precision=2))
+    altura_medicion = db.Column(db.DECIMAL(precision=2))
     presion = db.Column(db.DECIMAL(precision=2))
     temperatura = db.Column(db.DECIMAL(precision=2))
     nubosidad = db.Column(db.Integer)
+    viento_direccion = db.Column(db.String(40))
+    viento_velocidad = db.Column(db.DECIMAL(precision=2))
     estado = db.Column(db.String(140))
-    tomas = db.Column(db.Integer)
+    cantidad_tomas = db.Column(db.Integer)
+    oleaje = db.Column(db.String(80))
     observaciones = db.Column(db.String(240))
-    nombre_foto = db.Column(db.String(50))
-    id_muestra = db.Column(db.Integer, db.ForeignKey('muestra.id'))
+    foto = db.Column(db.String(50))
+    id_muestra = db.Column(db.Integer, db.ForeignKey('unidad_muestral.id'))
     radiometrias = db.relationship('Radiometria', backref='punto_radiometria', lazy='dynamic')
     fotometrias = db.relationship('Fotometria', backref='Fotometria', lazy='dynamic')
-    firmas_espectrales = db.relationship('FirmaEspectral', backref='firmaespectral', lazy='dynamic')
+    productos_radiancias = db.relationship('ProductoRadiancia', backref='producto_radiancia_punto', lazy='dynamic')
 
 
 # Tabla Fotometria
@@ -150,8 +177,8 @@ class Fotometria(db.Model):
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
 
 
-# Tabla FirmasEspectrales
-class FirmaEspectral(db.Model):
+# Tabla Producto Radiancia
+class ProductoRadiancia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reflectancia = db.Column(db.DECIMAL(precision=20))
     radiancia_avg = db.Column(db.DECIMAL(precision=20))
