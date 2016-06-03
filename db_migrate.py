@@ -1,4 +1,4 @@
-#!flask/bin/python
+#!virtual/bin/python
 __author__ = 'Juanjo'
 
 import imp
