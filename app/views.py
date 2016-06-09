@@ -6,7 +6,7 @@ from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, CargarForm, ConsultarForm, ArchivoForm, LoginConaeForm
-from .models import User, Post
+from .models import User, Post, Localidad
 from .translate import microsoft_translate
 from .utils import cargar_archivo
 from datetime import datetime
@@ -320,6 +320,7 @@ def resp():
 #@login_required
 def cargar():
     form = CargarForm()
+    form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
     archivoform = ArchivoForm()
     if request.method == 'POST':
         if form.validate_on_submit():

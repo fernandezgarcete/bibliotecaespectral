@@ -1,13 +1,15 @@
 #!virtual\Scripts\python
 # -*- coding: utf-8 -*-
+from app.utils import nombre_camp
+
 __author__ = 'Juanjo'
 
 import unittest, os
 
 from app import app, db
-from app.models import User, Post
+from app.models import User, Post, Localidad, Campania
 from app.translate import microsoft_translate
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from coverage import coverage
 from config import basedir
 
@@ -146,6 +148,15 @@ class TestCase(unittest.TestCase):
         assert u.is_anonymous is False
         assert u.id == int(u.get_id())
 
+    def test_get_campania(self):
+        l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
+        c1 = Campania.query.filter_by(id_localidad=l1.id).first()
+
+    def test_nombre_camp(self):
+        f = date(2016,6,9)
+        l1 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
+        nombre = nombre_camp(l1,f)
+        assert nombre.split('-', 1)[1] == '20160609-SALTOGRANDE'
 
 if __name__ == '__main__':
     try:

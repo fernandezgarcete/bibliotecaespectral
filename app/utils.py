@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Juanjo'
+from app.models import Campania
 
+__author__ = 'Juanjo'
+from datetime import datetime
 import os
 
 def cargar_archivo(lugar, name, tipo, archivo):
@@ -62,3 +64,38 @@ def cargar_archivo(lugar, name, tipo, archivo):
         return 7
     else:
         return False
+
+
+def nombre_camp(loc, f):
+    camps = Campania.query.all()
+    ult_id = 0
+    l = ''
+    # id campaña
+    if len(camps) > 0:
+        ult_id = camps[len(camps)-1].id
+    elif len(camps) == 0:
+        ult_id = '001'
+    elif len(camps) < 10:
+        ult_id = '00'+str(camps[len(camps)-1].id)
+    elif len(camps) < 100:
+        ult_id = '0'+str(camps[len(camps)-1].id)
+    # fecha
+    y = str(f.year)
+    m = str(f.month)
+    d = str(f.day)
+    if f.month < 10:
+        m = '0'+str(f.month)
+    if f.day < 10:
+        d = '0'+str(f.day)
+    f = y+m+d
+    # localidad
+    for c in camps:
+        if c.id_localidad == loc.id:
+            l = c.nombre.rsplit('-', 1)[1]
+            break
+    if l is '':
+        locs = loc.nombre.split(' ')
+        for ls in locs:
+            l += ls
+
+    return str(ult_id)+'-'+f+'-'+l

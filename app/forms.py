@@ -63,7 +63,7 @@ class SearchForm(Form):
 # Formulario carga de archivos
 class CargarForm(Form):
     proyecto = StringField('proyecto', validators=[DataRequired(message=u'Proyecto requerido')])
-    localidad = StringField('localidad', validators=[DataRequired(message=u'Localidad requerida')])
+    localidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
     campania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
     fecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
                       format='%d-%m-%Y')
