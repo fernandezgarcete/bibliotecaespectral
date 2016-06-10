@@ -148,10 +148,6 @@ class TestCase(unittest.TestCase):
         assert u.is_anonymous is False
         assert u.id == int(u.get_id())
 
-    def test_get_campania(self):
-        l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
-        c1 = Campania.query.filter_by(id_localidad=l1.id).first()
-
     def test_nombre_camp(self):
         f = date(2016,6,9)
         l1 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()

@@ -71,14 +71,14 @@ def nombre_camp(loc, f):
     ult_id = 0
     l = ''
     # id campaña
-    if len(camps) > 0:
-        ult_id = camps[len(camps)-1].id
-    elif len(camps) == 0:
+    if len(camps) == 0:
         ult_id = '001'
     elif len(camps) < 10:
-        ult_id = '00'+str(camps[len(camps)-1].id)
+        ult_id = camps[len(camps)-1].id + 1
+        ult_id = '00'+str(ult_id)
     elif len(camps) < 100:
-        ult_id = '0'+str(camps[len(camps)-1].id)
+        ult_id = camps[len(camps)-1].id + 1
+        ult_id = '0'+str(ult_id)
     # fecha
     y = str(f.year)
     m = str(f.month)
