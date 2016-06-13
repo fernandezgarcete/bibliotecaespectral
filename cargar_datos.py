@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 from app import db
-from app.models import Localidad, Campania, TipoCobertura, Cobertura
+from app.models import Localidad, Campania, TipoCobertura, Cobertura, Instrumento
 from app.utils import nombre_camp
 
 __author__ = 'Juanjo'
@@ -54,7 +54,7 @@ db.session.add(cob16)
 db.session.commit()
 
 # Carga de Instrumento
-i1 = Instrumento(tipo='Espectroradiómetro')
+i1 = Instrumento(codigo='ASDFSPRO',tipo='Espectroradiómetro',instrumento='ASD FieldSpec4-HR',marca='ASD',modelo='FieldSpec 4 Hi-Res',)
 
 l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2011, 2, 10)

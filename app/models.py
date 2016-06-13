@@ -202,6 +202,7 @@ class Instrumento(db.Model):
     instrumento = db.Column(db.String(140))
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
+    nro_serie = db.Column(db.String(40))
     rango_espectral = db.Column(db.String(80))
     resolucion_espectral = db.Column(db.String(80))
     ancho_banda = db.Column(db.String(80))
