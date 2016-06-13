@@ -196,7 +196,8 @@ class UnidadMuestral(db.Model):
 
 # Tabla Instrumento
 class Instrumento(db.Model):
-    id = db.Column(db.String(80), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(80))
     tipo = db.Column(db.String(140))
     instrumento = db.Column(db.String(140))
     marca = db.Column(db.String(80))
