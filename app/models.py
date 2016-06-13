@@ -172,7 +172,7 @@ class UnidadMuestral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
     id_metodologia = db.Column(db.Integer, db.ForeignKey('metodologia.id'))
-    id_instrumento = db.Column(db.String(80), db.ForeignKey('instrumento.id'))
+    id_instrumento = db.Column(db.Integer, db.ForeignKey('instrumento.id'))
     operador = db.Column(db.String(80))
     uuid = db.Column(db.String(80))
     id_cobertura = db.Column(db.Integer, db.ForeignKey('cobertura.id'))
