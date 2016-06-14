@@ -239,7 +239,7 @@ class Instrumento(db.Model):
 class Metodologia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
-    descripcion = db.Column(db.String(140))
+    descripcion = db.Column(db.String(600))
     metodologia_medicion = db.Column(db.String(80))
     angulo_cenital = db.Column(db.DECIMAL(precision=2))
     angulo_azimutal = db.Column(db.DECIMAL(precision=2))

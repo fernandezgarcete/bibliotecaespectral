@@ -2,10 +2,27 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 from app import db
-from app.models import Localidad, Campania, TipoCobertura, Cobertura, Instrumento
+from app.models import Localidad, Campania, TipoCobertura, Cobertura, Instrumento, Metodologia, Proyecto
 from app.utils import nombre_camp
 
 __author__ = 'Juanjo'
+
+# Carga de Proyectos
+pro1 = Proyecto(nombre='CARU-CONAE')
+pro2 = Proyecto(nombre='AYSA-CONAE')
+pro3 = Proyecto(nombre='IAFE-CONAE')
+pro4 = Proyecto(nombre='INTA-CONAE')
+pro5 = Proyecto(nombre='CETT-CONAE')
+pro6 = Proyecto(nombre='INVAP-CONAE')
+pro7 = Proyecto(nombre='INIDEP-CONAE')
+db.session.add(pro1)
+db.session.add(pro2)
+db.session.add(pro3)
+db.session.add(pro4)
+db.session.add(pro5)
+db.session.add(pro6)
+db.session.add(pro7)
+db.session.commit()
 
 # Carga de Tipos de Coberturas
 tc1 = TipoCobertura(nombre='HIDROLOGIA')
@@ -54,8 +71,62 @@ db.session.add(cob16)
 db.session.commit()
 
 # Carga de Instrumento
-i1 = Instrumento(codigo='ASDFSPRO',tipo='Espectroradiómetro',instrumento='ASD FieldSpec4-HR',marca='ASD',modelo='FieldSpec 4 Hi-Res',)
+i1 = Instrumento(codigo='ASDFS4', tipo='Espectroradiómetro', instrumento='ASD FieldSpec4-HR', marca='ASD',
+                 modelo='FieldSpec 4 Hi-Res', nro_serie='18285', rango_espectral='350-2500 nm',
+                 resolucion_espectral='3 nm @ 700 nm - 8nm @ 1400/2100 nm',
+                 ancho_banda='1.4 nm @ 350-1000 nm - 1.1 nm @ 1001-2500 nm',
+                 tiempo_escaneo=0.00100, reproducibilidad_ancho_banda=0.1, exactitud_ancho_banda=0.5,
+                 detector_vnir='VNIR detector (350-1000 nm): 512 element silicon array',
+                 detector_swir1='SWIR 1 detector (1001-1800 nm): Graded Index InGaAs Photodiode, Two Stage TE Cooled',
+                 detector_swir2='SWIR 2 detector (1801-2500 nm): Graded Index InGaAs Photodiode, Two Stage TE Cooled',
+                 noice_equivalence_radiance_vnir='VNIR  1.0 X10-9  W/cm2/nm/sr @700 nm',
+                 noice_equivalence_radiance_swir1='SWIR 1  1.4 X10-9  W/cm2/nm/sr @ 1400 nm',
+                 noice_equivalence_radiance_swir2='SWIR 2  2.2 X10-9  W/cm2/nm/sr @ 2100 nm',
+                 largo_fibra_optica=1.5, fov=25, fov_cosenoidal='')
+i2 = Instrumento(codigo='ASDFSPRO', tipo='Espectroradiómetro', instrumento='ASD FieldSpec FR', marca='ASD',
+                 modelo='FieldSpec Pro FR', nro_serie='6250', rango_espectral='350-2500 nm',
+                 resolucion_espectral='3 nm @ 700 nm - 10nm @ 1400/2100 nm',
+                 ancho_banda='1.4 nm @ 350-1000 nm - 2 nm @ 1001-2500 nm',
+                 tiempo_escaneo=0.1, reproducibilidad_ancho_banda=0.3, exactitud_ancho_banda=1,
+                 detector_vnir='VNIR detector (350-1000 nm): 512 element silicon array',
+                 detector_swir1='SWIR 1 detector (1001-1800 nm): Graded Index InGaAs Photodiode, Two Stage TE Cooled',
+                 detector_swir2='SWIR 2 detector (1801-2500 nm): Graded Index InGaAs Photodiode, Two Stage TE Cooled',
+                 noice_equivalence_radiance_vnir='VNIR  1.0 X10-9  W/cm2/nm/sr @700 nm',
+                 noice_equivalence_radiance_swir1='SWIR 1  1.4 X10-9  W/cm2/nm/sr @ 1400 nm',
+                 noice_equivalence_radiance_swir2='SWIR 2  2.2 X10-9  W/cm2/nm/sr @ 2100 nm',
+                 largo_fibra_optica=1.5, fov=25, fov_cosenoidal='Receptor cosenoidal (RCR) 180 º FOV')
+i3 = Instrumento(codigo='LICOR', tipo='Espectroradiómetro', instrumento='Li-Cor 1800', marca='LICOR',
+                 modelo='Li-1800', nro_serie='PRS-199', rango_espectral='300-1100 nm',
+                 resolucion_espectral='1 nm', ancho_banda='2 nm', tiempo_escaneo=27, reproducibilidad_ancho_banda=1,
+                 exactitud_ancho_banda=1, detector_vnir='300-1100 nm silicon photovoltaic detector',
+                 detector_swir1='', detector_swir2='',
+                 noice_equivalence_radiance_vnir='350 nm 2x10-7, 400 nm 7x10-8, 500-800 nm 3,5 x10-8, 800-1040 nm 3x10-8',
+                 noice_equivalence_radiance_swir1='1100 nm  6x10-8', noice_equivalence_radiance_swir2='',
+                 largo_fibra_optica=1.7, fov=3.15, fov_cosenoidal='Receptor cosenoidal  180 º FOV')
+i4 = Instrumento(codigo='20788', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 20788',
+                 marca='Solar Light', modelo='Microtops II Sunphotometer model 540 ', nro_serie='20788')
+i5 = Instrumento(codigo='17884', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 17884',
+                 marca='Solar Light', modelo='Microtops II Sunphotometer model 540 ', nro_serie='17884')
+i6 = Instrumento(codigo='GPS', tipo='GPS', instrumento='GPS Garmin', marca='Garmin')
+i7 = Instrumento(codigo='Espectralon', tipo='Patron', instrumento='Patron Espectralon', marca='Spectralon',
+                 modelo='Labsphere', nro_serie='2503')
+i8 = Instrumento(codigo='Camara', tipo='Camara', instrumento='Canon PowerShot SX700 HS', marca='Canon')
+db.session.add(i1)
+db.session.add(i2)
+db.session.add(i3)
+db.session.add(i4)
+db.session.add(i5)
+db.session.add(i6)
+db.session.add(i7)
+db.session.commit()
 
+# Carga de Metodologías
+m1 = Metodologia(nombre='IAFE-Muelle',
+                 descripcion='Todas las mediciones se hicieron en el mismo sitio. Las diferencias entre las puntos son '
+                             'temporales, se toma una medicion de esepctralon, luego tres mediciones de agua y cielo '
+                             '(intercaladas). Esto se repite tres veces por cada toma o "sitio"')
+
+# Carga de Campañas
 l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2011, 2, 10)
 n = nombre_camp(l1, f)
@@ -224,7 +295,23 @@ db.session.commit()
 l23 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 14)
 n = nombre_camp(l23, f)
-c23 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Anabel Lamaro',
+c23 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
                                                                     'Investigadores belgas'], id_localidad=l23.id)
 db.session.add(c23)
+db.session.commit()
+
+l24 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2012, 11, 15)
+n = nombre_camp(l24, f)
+c24 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
+                                                                    'Investigadores belgas'], id_localidad=l24.id)
+db.session.add(c24)
+db.session.commit()
+
+l25 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2012, 11, 15)
+n = nombre_camp(l24, f)
+c24 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
+                                                                    'Investigadores belgas'], id_localidad=l24.id)
+db.session.add(c24)
 db.session.commit()
