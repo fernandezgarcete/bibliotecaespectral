@@ -124,7 +124,8 @@ db.session.commit()
 m1 = Metodologia(nombre='IAFE-Muelle',
                  descripcion='Todas las mediciones se hicieron en el mismo sitio. Las diferencias entre las puntos son '
                              'temporales, se toma una medicion de esepctralon, luego tres mediciones de agua y cielo '
-                             '(intercaladas). Esto se repite tres veces por cada toma o "sitio"')
+                             '(intercaladas). Esto se repite tres veces por cada toma o "sitio"',
+                 )
 
 # Carga de Campañas
 l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
