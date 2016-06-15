@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 from app import db
-from app.models import Localidad, Campania, TipoCobertura, Cobertura, Instrumento, Metodologia, Proyecto
+from app.models import Localidad, Campania, TipoCobertura, Cobertura, Instrumento, Metodologia, Proyecto, UnidadMuestral
 from app.utils import nombre_camp
 
 __author__ = 'Juanjo'
@@ -36,22 +36,22 @@ db.session.add(tc4)
 db.session.commit()
 
 # Carga de Coberturas
-cob1 = Cobertura(nombre='Mar', id_tipocobertura='1', altura=0)
-cob2 = Cobertura(nombre='Río', id_tipocobertura='1', altura=0)
-cob3 = Cobertura(nombre='Lago', id_tipocobertura='1', altura=0)
-cob4 = Cobertura(nombre='Maíz', id_tipocobertura='2', altura=0)
-cob5 = Cobertura(nombre='Soja', id_tipocobertura='2', altura=0)
-cob6 = Cobertura(nombre='Girasol', id_tipocobertura='2', altura=0)
-cob7 = Cobertura(nombre='Agropiro', id_tipocobertura='2', altura=0)
-cob8 = Cobertura(nombre='Alfalfa', id_tipocobertura='2', altura=0)
-cob9 = Cobertura(nombre='Cebolla', id_tipocobertura='2', altura=0)
-cob10 = Cobertura(nombre='Trigo', id_tipocobertura='2', altura=0)
-cob11 = Cobertura(nombre='Zanahoria', id_tipocobertura='2', altura=0)
-cob12 = Cobertura(nombre='Barbecho', id_tipocobertura='2', altura=0)
-cob13 = Cobertura(nombre='Cebada', id_tipocobertura='2', altura=0)
-cob14 = Cobertura(nombre='Rastrojo', id_tipocobertura='2', altura=0)
-cob15 = Cobertura(nombre='Suelo', id_tipocobertura='2', altura=0)
-cob16 = Cobertura(nombre='Sorgo', id_tipocobertura='2', altura=0)
+cob1 = Cobertura(nombre='MAR', id_tipocobertura='1', altura=0)
+cob2 = Cobertura(nombre='RIO', id_tipocobertura='1', altura=0)
+cob3 = Cobertura(nombre='LAGO', id_tipocobertura='1', altura=0)
+cob4 = Cobertura(nombre='MAIZ', id_tipocobertura='2', altura=0)
+cob5 = Cobertura(nombre='SOJA', id_tipocobertura='2', altura=0)
+cob6 = Cobertura(nombre='GIRASOL', id_tipocobertura='2', altura=0)
+cob7 = Cobertura(nombre='AGROPIRO', id_tipocobertura='2', altura=0)
+cob8 = Cobertura(nombre='ALFALFA', id_tipocobertura='2', altura=0)
+cob9 = Cobertura(nombre='CEBOLLA', id_tipocobertura='2', altura=0)
+cob10 = Cobertura(nombre='TRIGO', id_tipocobertura='2', altura=0)
+cob11 = Cobertura(nombre='ZANAHORIA', id_tipocobertura='2', altura=0)
+cob12 = Cobertura(nombre='BARBECHO', id_tipocobertura='2', altura=0)
+cob13 = Cobertura(nombre='CEBADA', id_tipocobertura='2', altura=0)
+cob14 = Cobertura(nombre='RASTROJO', id_tipocobertura='2', altura=0)
+cob15 = Cobertura(nombre='SUELO', id_tipocobertura='2', altura=0)
+cob16 = Cobertura(nombre='SORGO', id_tipocobertura='2', altura=0)
 db.session.add(cob1)
 db.session.add(cob2)
 db.session.add(cob3)
@@ -103,14 +103,14 @@ i3 = Instrumento(codigo='LICOR', tipo='Espectroradiómetro', instrumento='Li-Cor
                  noice_equivalence_radiance_vnir='350 nm 2x10-7, 400 nm 7x10-8, 500-800 nm 3,5 x10-8, 800-1040 nm 3x10-8',
                  noice_equivalence_radiance_swir1='1100 nm  6x10-8', noice_equivalence_radiance_swir2='',
                  largo_fibra_optica=1.7, fov=3.15, fov_cosenoidal='Receptor cosenoidal  180 º FOV')
-i4 = Instrumento(codigo='20788', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 20788',
+i4 = Instrumento(codigo='FOT20788', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 20788',
                  marca='Solar Light', modelo='Microtops II Sunphotometer model 540 ', nro_serie='20788')
-i5 = Instrumento(codigo='17884', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 17884',
+i5 = Instrumento(codigo='FOT17884', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 17884',
                  marca='Solar Light', modelo='Microtops II Sunphotometer model 540 ', nro_serie='17884')
 i6 = Instrumento(codigo='GPS', tipo='GPS', instrumento='GPS Garmin', marca='Garmin')
-i7 = Instrumento(codigo='Espectralon', tipo='Patron', instrumento='Patron Espectralon', marca='Spectralon',
-                 modelo='Labsphere', nro_serie='2503')
-i8 = Instrumento(codigo='Camara', tipo='Camara', instrumento='Canon PowerShot SX700 HS', marca='Canon')
+i7 = Instrumento(codigo='ESPECTRALON', tipo='Patron', instrumento='Patron Espectralon', marca='Spectralon',
+                 modelo='LABSPHERE', nro_serie='2503')
+i8 = Instrumento(codigo='CAMARA', tipo='Camara', instrumento='Canon PowerShot SX700 HS', marca='Canon')
 db.session.add(i1)
 db.session.add(i2)
 db.session.add(i3)
@@ -118,14 +118,26 @@ db.session.add(i4)
 db.session.add(i5)
 db.session.add(i6)
 db.session.add(i7)
+db.session.add(i8)
 db.session.commit()
 
 # Carga de Metodologías
-m1 = Metodologia(nombre='IAFE-Muelle',
-                 descripcion='Todas las mediciones se hicieron en el mismo sitio. Las diferencias entre las puntos son '
+m1 = Metodologia(nombre='MUESTRA-INTERCALADA',
+                 descripcion='Todas las mediciones se hacen en el mismo sitio. Las diferencias entre los puntos son '
                              'temporales, se toma una medicion de esepctralon, luego tres mediciones de agua y cielo '
-                             '(intercaladas). Esto se repite tres veces por cada toma o "sitio"',
-                 )
+                             '(intercaladas). Esto se repite tres veces por cada toma o "sitio".',
+                 angulo_azimutal=90)
+m2 = Metodologia(nombre='MUESTRA-CONTINUA',
+                 descripcion='Metodología de toma de muestra continua.',
+                 angulo_azimutal=90)
+m3 = Metodologia(nombre='AYSA-CULTIVO-CLOROFILA',
+                 descripcion='El balde contenedor se lleno en un 90 % aprox. con liquido. Se hicieron tres réplicas'
+                             ' de cada medición (B1,B2 y B3). Se midió con espetralon una vez para cada triplete de réplicas',
+                 angulo_azimutal=90)
+db.session.add(m1)
+db.session.add(m2)
+db.session.add(m3)
+db.session.commit()
 
 # Carga de Campañas
 l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
@@ -310,9 +322,288 @@ db.session.add(c24)
 db.session.commit()
 
 l25 = Localidad.query.filter_by(nombre='PALERMO').first()
-f = date(2012, 11, 15)
-n = nombre_camp(l24, f)
-c24 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l24.id)
-db.session.add(c24)
+f = date(2012, 11, 16)
+n = nombre_camp(l25, f)
+c25 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
+                                                                    'Investigadores belgas'], id_localidad=l25.id)
+db.session.add(c25)
 db.session.commit()
+
+l26 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2012, 11, 19)
+n = nombre_camp(l26, f)
+c26 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
+                                                                    'Investigadores belgas'], id_localidad=l26.id)
+db.session.add(c26)
+db.session.commit()
+
+l27 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2012, 11, 21)
+n = nombre_camp(l27, f)
+c27 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
+                                                                    'Investigadores belgas'], id_localidad=l27.id)
+db.session.add(c27)
+db.session.commit()
+
+l28 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2012, 11, 23)
+n = nombre_camp(l28, f)
+c28 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti',
+                                                                    'Investigadores belgas'], id_localidad=l28.id)
+db.session.add(c28)
+db.session.commit()
+
+l29 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2013, 1, 23)
+n = nombre_camp(l29, f)
+c29 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Personal de DAyE', 'Ana Dogliotti'],
+               id_localidad=l29.id)
+db.session.add(c29)
+db.session.commit()
+
+l30 = Localidad.query.filter_by(nombre='GOLFO SAN MATIAS').first()
+f = date(2013, 2, 19)
+n = nombre_camp(l30, f)
+c30 = Campania(nombre=n, fecha=f, responsable=['Guillermo Ibañez'], id_localidad=l30.id)
+db.session.add(c30)
+db.session.commit()
+
+l31 = Localidad.query.filter_by(nombre='SAN ANOTNIO OESTE').first()
+f = date(2013, 2, 20)
+n = nombre_camp(l31, f)
+c31 = Campania(nombre=n, fecha=f, responsable=['Guillermo Ibañez'], id_localidad=l31.id)
+db.session.add(c31)
+db.session.commit()
+
+l32 = Localidad.query.filter_by(nombre='LAS GRUTAS').first()
+f = date(2013, 2, 21)
+n = nombre_camp(l32, f)
+c32 = Campania(nombre=n, fecha=f, responsable=['Guillermo Ibañez'], id_localidad=l32.id)
+db.session.add(c32)
+db.session.commit()
+
+l33 = Localidad.query.filter_by(nombre='PUNTA PIEDRAS').first()
+f = date(2013, 2, 27)
+n = nombre_camp(l33, f)
+c33 = Campania(nombre=n, fecha=f, responsable=['Guillermo Ibañez', 'Ana Dogliotti', 'Dra. Simionato'], id_localidad=l33.id)
+db.session.add(c33)
+db.session.commit()
+
+l34 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2013, 4, 16)
+n = nombre_camp(l34, f)
+c34 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Josefina Otero', 'Aldana Bini', 'Ana Dogliotti'],
+               id_localidad=l34.id)
+db.session.add(c34)
+db.session.commit()
+
+l35 = Localidad.query.filter_by(nombre='PUNTA PIEDRAS').first()
+f = date(2013, 4, 30)
+n = nombre_camp(l35, f)
+c35 = Campania(nombre=n, fecha=f, responsable=['Guillermo Ibañez', 'Ana Dogliotti', 'Dra. Simionato'], id_localidad=l35.id)
+db.session.add(c35)
+db.session.commit()
+
+l36 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2013, 5, 9)
+n = nombre_camp(l36, f)
+c36 = Campania(nombre=n+'-AYSA-CCLORO', fecha=f, responsable=['Juan Cobo', 'Maximiliano Guido', 'Aldana Bini',
+                                                              'Anabel Lamaro', 'Carolina Fernandez'], id_localidad=l36.id)
+db.session.add(c36)
+db.session.commit()
+
+l37 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2013, 5, 27)
+n = nombre_camp(l37, f)
+c37 = Campania(nombre=n+'-AYSA-CCIANO', fecha=f, responsable=['Juan Cobo', 'Anabel Lamaro', 'Ivanna Tropper'],
+               id_localidad=l37.id)
+db.session.add(c37)
+db.session.commit()
+
+l38 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
+f = date(2013, 11, 20)
+n = nombre_camp(l38, f)
+c38 = Campania(nombre=n, fecha=f, id_localidad=l38.id)
+db.session.add(c38)
+db.session.commit()
+
+l39 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
+f = date(2013, 12, 20)
+n = nombre_camp(l39, f)
+c39 = Campania(nombre=n, fecha=f, id_localidad=l39.id)
+db.session.add(c39)
+db.session.commit()
+
+l40 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
+f = date(2014, 1, 6)
+n = nombre_camp(l40, f)
+c40 = Campania(nombre=n, fecha=f, id_localidad=l40.id)
+db.session.add(c40)
+db.session.commit()
+
+l41 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
+f = date(2014, 3, 12)
+n = nombre_camp(l41, f)
+c41 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l41.id)
+db.session.add(c41)
+db.session.commit()
+
+l42 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
+f = date(2014, 3, 13)
+n = nombre_camp(l42, f)
+c42 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l42.id)
+db.session.add(c42)
+db.session.commit()
+
+l43 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
+f = date(2014, 3, 15)
+n = nombre_camp(l43, f)
+c43 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l43.id)
+db.session.add(c43)
+db.session.commit()
+
+l44 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2014, 3, 18)
+n = nombre_camp(l44, f)
+c44 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Ivanna Tropper'], id_localidad=l44.id)
+db.session.add(c44)
+db.session.commit()
+
+l45 = Localidad.query.filter_by(nombre='PALERMO').first()
+f = date(2014, 4, 15)
+n = nombre_camp(l45, f)
+c45 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsable=['Ivanna Tropper'], id_localidad=l45.id)
+db.session.add(c45)
+db.session.commit()
+
+l46 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
+f = date(2014, 4, 23)
+n = nombre_camp(l46, f)
+c46 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l46.id)
+db.session.add(c46)
+db.session.commit()
+
+l47 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
+f = date(2014, 4, 24)
+n = nombre_camp(l47, f)
+c47 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l47.id)
+db.session.add(c47)
+db.session.commit()
+
+l48 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
+f = date(2014, 4, 25)
+n = nombre_camp(l48, f)
+c48 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l48.id)
+db.session.add(c48)
+db.session.commit()
+
+l49 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
+f = date(2014, 5, 1)
+n = nombre_camp(l49, f)
+c49 = Campania(nombre=n, fecha=f, responsable=['Ivanna Tropper'], id_localidad=l49.id)
+db.session.add(c49)
+db.session.commit()
+
+l50 = Localidad.query.filter_by(nombre='FALDA DEL CARMEN').first()
+f = date(2014, 5, 7)
+n = nombre_camp(l50, f)
+c50 = Campania(nombre=n, fecha=f, id_localidad=l50.id)
+db.session.add(c50)
+db.session.commit()
+
+l51 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
+f = date(2014, 11, 12)
+n = nombre_camp(l51, f)
+c51 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l51.id)
+db.session.add(c51)
+db.session.commit()
+
+l52 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
+f = date(2014, 11, 13)
+n = nombre_camp(l52, f)
+c52 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l52.id)
+db.session.add(c52)
+db.session.commit()
+
+l53 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
+f = date(2014, 11, 14)
+n = nombre_camp(l53, f)
+c53 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l53.id)
+db.session.add(c53)
+db.session.commit()
+
+l54 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
+f = date(2014, 11, 15)
+n = nombre_camp(l54, f)
+c54 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l54.id)
+db.session.add(c54)
+db.session.commit()
+
+l55 = Localidad.query.filter_by(nombre='BAHIA SAMBOROMBON').first()
+f = date(2014, 11, 22)
+n = nombre_camp(l55, f)
+c55 = Campania(nombre=n, fecha=f, responsable=['Ivanna Tropper', 'Guillermo Ibañez'], id_localidad=l55.id)
+db.session.add(c55)
+db.session.commit()
+
+l56 = Localidad.query.filter_by(nombre='HILARIO ASCASUBI').first()
+f = date(2014, 12, 15)
+n = nombre_camp(l56, f)
+c56 = Campania(nombre=n, fecha=f, responsable=['Alejandro Pezzola', 'Mariana Horlent'], id_localidad=l56.id,
+               objetivo='Determinación de la firma espectral de cultivos bajo riego en la zona de Hilario Ascasubi.',
+               id_proyecto=Proyecto.query.filter_by(nombre='INTA-CONAE').first().id)
+db.session.add(c56)
+db.session.commit()
+
+l57 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
+f = date(2015, 1, 21)
+n = nombre_camp(l57, f)
+c57 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l57.id,
+               objetivo='Evaluar la contaminacion por algas y sedimentos el cauce del rio Uruguay y la Represa Salto Grande.',
+               id_proyecto=Proyecto.query.filter_by(nombre='CARU-CONAE').first().id)
+db.session.add(c57)
+db.session.commit()
+
+# Carga de Unidades Muestrales
+um1 = UnidadMuestral(nombre='UM-1', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um2 = UnidadMuestral(nombre='UM-2', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um3 = UnidadMuestral(nombre='UM-3', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um4 = UnidadMuestral(nombre='UM-4', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um5 = UnidadMuestral(nombre='UM-5', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um6 = UnidadMuestral(nombre='UM-6', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um7 = UnidadMuestral(nombre='UM-7', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+um8 = UnidadMuestral(nombre='UM-8', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
+                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+db.session.add(um1)
+db.session.add(um2)
+db.session.add(um3)
+db.session.add(um4)
+db.session.add(um5)
+db.session.add(um6)
+db.session.add(um7)
+db.session.add(um8)
+db.session.commit()
+
