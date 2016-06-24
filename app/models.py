@@ -57,8 +57,7 @@ class Proyecto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(140))
     descripcion = db.Column(db.String(140))
-    integrantes = db.Column(db.String(200))
-    responsable = db.Column(db.String(50))
+    responsables = db.Column(db.String(340))
     status = db.Column(db.Boolean)
     campanias = db.relationship('Campania', backref='proyecto_campania', lazy='dynamic',
                                 cascade="save-update, merge, delete")
@@ -96,23 +95,23 @@ class Campania(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
     fecha = db.Column(db.DateTime)
-    responsable = db.Column(db.String(140))
+    responsables = db.Column(db.String(340))
     id_localidad = db.Column(db.Integer, db.ForeignKey('localidad.id'))
     objetivo = db.Column(db.String(140))
     id_proyecto = db.Column(db.Integer, db.ForeignKey('proyecto.id'))
-    unidades_muestrales = db.relationship('UnidadMuestral', backref='campania_muestra', lazy='dynamic',
+    muestras = db.relationship('Muestra', backref='campania_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
 
-    def has_unidad_muestral(self, unidad_muestral):
-        return self.unidades_muestrales.filter(unidad_muestral.id_campania == self.id).count() > 0
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_campania == self.id).count() > 0
 
-    def add_unidad_muestral(self, unidad_muestral):
-        if not self.has_unidad_muestral(unidad_muestral):
-            self.unidades_muestrales.append(unidad_muestral)
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
             return self
 
-    def get_unidades_muestrales(self):
-        return UnidadMuestral.query.filter(UnidadMuestral.id_campania == self.id).all()
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_campania == self.id).all()
 
     @property
     def is_complete(self):
@@ -150,38 +149,42 @@ class Cobertura(db.Model):
     altura = db.Column(db.DECIMAL(precision=2))
     fenologia = db.Column(db.String(140))
     observaciones = db.Column(db.String(140))
-    unidades_muestrales = db.relationship('UnidadMuestral', backref='cobertura_muestra', lazy='dynamic',
+    muestras = db.relationship('Muestra', backref='cobertura_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
 
-    def has_unidad_muestral(self, unidad_muestral):
-        return self.unidades_muestrales.filter(unidad_muestral.id_cobertura == self.id).count() > 0
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_cobertura == self.id).count() > 0
 
-    def add_unidad_muestral(self, unidad_muestral):
-        if not self.has_unidad_muestral(unidad_muestral):
-            self.unidades_muestrales.append(unidad_muestral)
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
             return self
 
-    def get_unidades_muestrales(self):
-        return UnidadMuestral.query.filter(UnidadMuestral.id_cobertura == self.id).all()
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_cobertura == self.id).all()
 
     def __repr__(self): # pragma: no cover
         return '<Cobertura %r>' % (self.nombre)
 
-# Tabla Unidad Muestral
-class UnidadMuestral(db.Model):
+# Tabla Muestra
+class Muestra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
-    id_metodologia = db.Column(db.Integer, db.ForeignKey('metodologia.id'))
-    id_instrumento = db.Column(db.Integer, db.ForeignKey('instrumento.id'))
     operador = db.Column(db.String(80))
     uuid = db.Column(db.String(80))
     id_cobertura = db.Column(db.Integer, db.ForeignKey('cobertura.id'))
     id_campania = db.Column(db.Integer, db.ForeignKey('campania.id'))
+    id_metodologia = db.Column(db.Integer, db.ForeignKey('metodologia.id'))
+    id_radiometro = db.Column(db.Integer, db.ForeignKey('radiometro.id'))
+    id_camara = db.Column(db.Integer, db.ForeignKey('camara.id'))
+    id_gps = db.Column(db.Integer, db.ForeignKey('gps.id'))
+    id_fotometro = db.Column(db.Integer, db.ForeignKey('fotometro.id'))
+    id_patron = db.Column(db.Integer, db.ForeignKey('patron.id'))
     puntos = db.relationship('Punto', backref='punto', lazy='dynamic',
                              cascade="save-update, merge, delete")
 
     def has_punto(self, punto):
-        return self.coberturas.filter(punto.id_unidad_muestral == self.id).count() > 0
+        return self.coberturas.filter(punto.id_muestra == self.id).count() > 0
 
     def add_punto(self, punto):
         if not self.has_punto(punto):
@@ -189,17 +192,120 @@ class UnidadMuestral(db.Model):
             return self
 
     def get_puntos(self):
-        return Punto.query.filter(Punto.id_unidad_muestral == self.id).all()
+        return Punto.query.filter(Punto.id_muestra == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<Unidad Muestral %r>' % (self.nombre)
+        return '<Muestra %r>' % (self.nombre)
 
-# Tabla Instrumento
-class Instrumento(db.Model):
+# Tabla Camara
+class Camara(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(80))
-    tipo = db.Column(db.String(140))
-    instrumento = db.Column(db.String(140))
+    nombre = db.Column(db.String(140))
+    marca = db.Column(db.String(80))
+    modelo = db.Column(db.String(80))
+    nro_serie = db.Column(db.String(40))
+    accesorio = db.Column(db.String(340))
+    muestras = db.relationship('Muestra', backref='camara_muestra', lazy='dynamic',
+                                          cascade="save-update, merge, delete")
+
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
+            return self
+
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+
+    def __repr__(self): # pragma: no cover
+        return '<Cámara %r>' % (self.instrumento)
+
+# Tabla GPS
+class Gps(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(80))
+    nombre = db.Column(db.String(140))
+    marca = db.Column(db.String(80))
+    modelo = db.Column(db.String(80))
+    nro_serie = db.Column(db.String(40))
+    accesorio = db.Column(db.String(340))
+    muestras = db.relationship('Muestra', backref='gps_muestra', lazy='dynamic',
+                                          cascade="save-update, merge, delete")
+
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
+            return self
+
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+
+    def __repr__(self): # pragma: no cover
+        return '<GPS %r>' % (self.instrumento)
+
+# Tabla Fotometro
+class Fotometro(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(80))
+    nombre = db.Column(db.String(140))
+    marca = db.Column(db.String(80))
+    modelo = db.Column(db.String(80))
+    nro_serie = db.Column(db.String(40))
+    accesorio = db.Column(db.String(340))
+    muestras = db.relationship('Muestra', backref='fotometro_muestra', lazy='dynamic',
+                                          cascade="save-update, merge, delete")
+
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
+            return self
+
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+
+    def __repr__(self): # pragma: no cover
+        return '<GPS %r>' % (self.instrumento)
+
+# Tabla Patron
+class Patron(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(80))
+    nombre = db.Column(db.String(140))
+    marca = db.Column(db.String(80))
+    modelo = db.Column(db.String(80))
+    nro_serie = db.Column(db.String(40))
+    accesorio = db.Column(db.String(340))
+    muestras = db.relationship('Muestra', backref='gps_muestra', lazy='dynamic',
+                                          cascade="save-update, merge, delete")
+
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
+            return self
+
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+
+    def __repr__(self): # pragma: no cover
+        return '<Patron %r>' % (self.instrumento)
+
+# Tabla Radiometro
+class Radiometro(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(80))
+    nombre = db.Column(db.String(140))
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
@@ -218,24 +324,25 @@ class Instrumento(db.Model):
     largo_fibra_optica = db.Column(db.DECIMAL(precision=2))
     fov = db.Column(db.DECIMAL(precision=3))
     fov_cosenoidal = db.Column(db.String(80))
-    unidades_muestrales = db.relationship('UnidadMuestral', backref='instrumento_muestra', lazy='dynamic',
+    accesorio = db.Column(db.String(340))
+    muestras = db.relationship('Muestra', backref='radiometro_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
 
-    def has_unidad_muestral(self, unidad_muestral):
-        return self.unidades_muestrales.filter(unidad_muestral.id_instrumento == self.id).count() > 0
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
 
-    def add_unidad_muestral(self, unidad_muestral):
-        if not self.has_unidad_muestral(unidad_muestral):
-            self.unidades_muestrales.append(unidad_muestral)
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
             return self
 
-    def get_unidades_muestrales(self):
-        return UnidadMuestral.query.filter(UnidadMuestral.id_instrumento == self.id).all()
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<Instrumento %r>' % (self.instrumento)
+        return '<Espectrorradiómetro %r>' % (self.instrumento)
 
-# Tabla metodologia
+# Tabla Metodologia
 class Metodologia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80))
@@ -243,19 +350,19 @@ class Metodologia(db.Model):
     metodologia_medicion = db.Column(db.String(600))
     angulo_cenital = db.Column(db.DECIMAL(precision=2))
     angulo_azimutal = db.Column(db.DECIMAL(precision=2))
-    unidades_muestrales = db.relationship('UnidadMuestral', backref='metodo_muestra', lazy='dynamic',
+    muestras = db.relationship('Muestra', backref='metodo_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
 
-    def has_unidad_muestral(self, unidad_muestral):
-        return self.unidades_muestrales.filter(unidad_muestral.id_metodologia == self.id).count() > 0
+    def has_muestra(self, muestra):
+        return self.muestras.filter(muestra.id_metodologia == self.id).count() > 0
 
-    def add_unidad_muestral(self, unidad_muestral):
-        if not self.has_unidad_muestral(unidad_muestral):
-            self.unidades_muestrales.append(unidad_muestral)
+    def add_muestra(self, muestra):
+        if not self.has_muestra(muestra):
+            self.muestras.append(muestra)
             return self
 
-    def get_unidades_muestrales(self):
-        return UnidadMuestral.query.filter(UnidadMuestral.id_metodologia == self.id).all()
+    def get_muestras(self):
+        return Muestra.query.filter(Muestra.id_metodologia == self.id).all()
 
     def __repr__(self): # pragma: no cover
         return '<Metodología %r>' % (self.nombre)
@@ -277,7 +384,7 @@ class Punto(db.Model):
     oleaje = db.Column(db.String(80))
     observaciones = db.Column(db.String(240))
     foto = db.Column(db.String(50))
-    id_unidad_muestral = db.Column(db.Integer, db.ForeignKey('unidad_muestral.id'))
+    id_muestra = db.Column(db.Integer, db.ForeignKey('muestra.id'))
     radiometrias = db.relationship('Radiometria', backref='punto_radiometria', lazy='dynamic',
                                    cascade="save-update, merge, delete")
     fotometrias = db.relationship('Fotometria', backref='Fotometria', lazy='dynamic',

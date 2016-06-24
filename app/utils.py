@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from app.models import Campania
+from app.models import Campania, Muestra
 
 __author__ = 'Juanjo'
 from datetime import datetime
@@ -99,3 +99,13 @@ def nombre_camp(loc, f):
             l += ls
 
     return str(ult_id)+'-'+f+'-'+l
+
+
+def nombre_muestra():
+    m = Muestra.query.all()
+    ult_id = 0
+    if len(m) == 0:
+        ult_id = '1'
+    if len(m) > 0:
+        ult_id = m[len(m)-1].id + 1
+    return 'M-'+str(ult_id)

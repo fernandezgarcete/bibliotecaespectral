@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 from app import db
-from app.models import Localidad, Campania, TipoCobertura, Cobertura, Instrumento, Metodologia, Proyecto, UnidadMuestral
-from app.utils import nombre_camp
+from app.models import Localidad, Campania, TipoCobertura, Cobertura, Radiometro, Metodologia, Proyecto, Muestra, \
+    Fotometro, Gps, Patron, Camara
+from app.utils import nombre_camp, nombre_muestra
 
 __author__ = 'Juanjo'
 
@@ -71,7 +72,7 @@ db.session.add(cob16)
 db.session.commit()
 
 # Carga de Instrumento
-i1 = Instrumento(codigo='ASDFS4', tipo='Espectroradiómetro', instrumento='ASD FieldSpec4-HR', marca='ASD',
+r1 = Radiometro(codigo='ASDFS4', nombre='ASD FieldSpec4-HR', marca='ASD',
                  modelo='FieldSpec 4 Hi-Res', nro_serie='18285', rango_espectral='350-2500 nm',
                  resolucion_espectral='3 nm @ 700 nm - 8nm @ 1400/2100 nm',
                  ancho_banda='1.4 nm @ 350-1000 nm - 1.1 nm @ 1001-2500 nm',
@@ -83,7 +84,7 @@ i1 = Instrumento(codigo='ASDFS4', tipo='Espectroradiómetro', instrumento='ASD F
                  noice_equivalence_radiance_swir1='SWIR 1  1.4 X10-9  W/cm2/nm/sr @ 1400 nm',
                  noice_equivalence_radiance_swir2='SWIR 2  2.2 X10-9  W/cm2/nm/sr @ 2100 nm',
                  largo_fibra_optica=1.5, fov=25, fov_cosenoidal='')
-i2 = Instrumento(codigo='ASDFSPRO', tipo='Espectroradiómetro', instrumento='ASD FieldSpec FR', marca='ASD',
+r2 = Radiometro(codigo='ASDFSPRO', nombre='ASD FieldSpec FR', marca='ASD',
                  modelo='FieldSpec Pro FR', nro_serie='6250', rango_espectral='350-2500 nm',
                  resolucion_espectral='3 nm @ 700 nm - 10nm @ 1400/2100 nm',
                  ancho_banda='1.4 nm @ 350-1000 nm - 2 nm @ 1001-2500 nm',
@@ -95,7 +96,7 @@ i2 = Instrumento(codigo='ASDFSPRO', tipo='Espectroradiómetro', instrumento='ASD
                  noice_equivalence_radiance_swir1='SWIR 1  1.4 X10-9  W/cm2/nm/sr @ 1400 nm',
                  noice_equivalence_radiance_swir2='SWIR 2  2.2 X10-9  W/cm2/nm/sr @ 2100 nm',
                  largo_fibra_optica=1.5, fov=25, fov_cosenoidal='Receptor cosenoidal (RCR) 180 º FOV')
-i3 = Instrumento(codigo='LICOR', tipo='Espectroradiómetro', instrumento='Li-Cor 1800', marca='LICOR',
+r3 = Radiometro(codigo='LICOR', nombre='Li-Cor 1800', marca='LICOR',
                  modelo='Li-1800', nro_serie='PRS-199', rango_espectral='300-1100 nm',
                  resolucion_espectral='1 nm', ancho_banda='2 nm', tiempo_escaneo=27, reproducibilidad_ancho_banda=1,
                  exactitud_ancho_banda=1, detector_vnir='300-1100 nm silicon photovoltaic detector',
@@ -103,26 +104,26 @@ i3 = Instrumento(codigo='LICOR', tipo='Espectroradiómetro', instrumento='Li-Cor
                  noice_equivalence_radiance_vnir='350 nm 2x10-7, 400 nm 7x10-8, 500-800 nm 3,5 x10-8, 800-1040 nm 3x10-8',
                  noice_equivalence_radiance_swir1='1100 nm  6x10-8', noice_equivalence_radiance_swir2='',
                  largo_fibra_optica=1.7, fov=3.15, fov_cosenoidal='Receptor cosenoidal  180 º FOV')
-i4 = Instrumento(codigo='FOT20788', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 20788',
+fot1 = Fotometro(codigo='FOT20788', nombre='Solar Light Microtops II Sunphotometer model 540 - 20788',
                  marca='Solar Light', modelo='Microtops II Sunphotometer model 540 ', nro_serie='20788')
-i5 = Instrumento(codigo='FOT17884', tipo='Fotómetro', instrumento='Solar Light Microtops II Sunphotometer model 540 - 17884',
+fot2 = Fotometro(codigo='FOT17884', nombre='Solar Light Microtops II Sunphotometer model 540 - 17884',
                  marca='Solar Light', modelo='Microtops II Sunphotometer model 540 ', nro_serie='17884')
-i6 = Instrumento(codigo='GPS', tipo='GPS', instrumento='GPS Garmin', marca='Garmin')
-i7 = Instrumento(codigo='ESPECTRALON', tipo='Patron', instrumento='Patron Espectralon', marca='Spectralon',
+gps1 = Gps(codigo='GPS', tipo='GPS', instrumento='GPS Garmin', marca='Garmin')
+pat1 = Patron(codigo='ESPECTRALON', nombre='Espectralon', marca='Spectralon',
                  modelo='LABSPHERE', nro_serie='2503')
-i8 = Instrumento(codigo='CAMARA', tipo='Camara', instrumento='Canon PowerShot SX700 HS', marca='Canon')
-db.session.add(i1)
-db.session.add(i2)
-db.session.add(i3)
-db.session.add(i4)
-db.session.add(i5)
-db.session.add(i6)
-db.session.add(i7)
-db.session.add(i8)
+cam1 = Camara(codigo='CAMARA', nombre='Canon PowerShot SX700 HS', marca='Canon')
+db.session.add(r1)
+db.session.add(r2)
+db.session.add(r3)
+db.session.add(fot1)
+db.session.add(fot2)
+db.session.add(gps1)
+db.session.add(pat1)
+db.session.add(cam1)
 db.session.commit()
 
 # Carga de Metodologías
-m1 = Metodologia(nombre='MUESTRA-INTERCALADA',
+m1 = Metodologia(nombre='INTERCALADA',
                  descripcion='Todas las mediciones se hacen en el mismo sitio. Las diferencias entre los puntos son '
                              'temporales, se toma una medicion de esepctralon, luego tres mediciones de agua y cielo '
                              '(intercaladas). Esto se repite tres veces por cada toma o "sitio".',
@@ -130,13 +131,19 @@ m1 = Metodologia(nombre='MUESTRA-INTERCALADA',
 m2 = Metodologia(nombre='MUESTRA-CONTINUA',
                  descripcion='Metodología de toma de muestra continua.',
                  angulo_azimutal=90)
-m3 = Metodologia(nombre='AYSA-CULTIVO-CLOROFILA',
+m3 = Metodologia(nombre='AYSA-CLOROFILA-CIANO',
                  descripcion='El balde contenedor se lleno en un 90 % aprox. con liquido. Se hicieron tres réplicas'
-                             ' de cada medición (B1,B2 y B3). Se midió con espetralon una vez para cada triplete de réplicas',
+                             ' de cada medición (B1,B2,... Bn). Se midió con espetralon una vez para cada set de réplicas',
+                 angulo_azimutal=90)
+m4 = Metodologia(nombre='LOTE-VARIABILIDAD',
+                 descripcion='Se toman puntos de muestreo en todo el lote para captar la variabilidad del mismo. '
+                             'En cada punto de muestreo se define una parcela de 5x5 m, en la cual, se tomaron datos '
+                             'sistemáticamente. Los datos promediados compondrán la firma espectral del área sensada.',
                  angulo_azimutal=90)
 db.session.add(m1)
 db.session.add(m2)
 db.session.add(m3)
+db.session.add(m4)
 db.session.commit()
 
 # Carga de Campañas
@@ -564,46 +571,62 @@ c57 = Campania(nombre=n, fecha=f, responsable=['Personal CARU', 'Guillermo Ibañ
 db.session.add(c57)
 db.session.commit()
 
-# Carga de Unidades Muestrales
-um1 = UnidadMuestral(nombre='UM-1', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+# Carga de Muestras
+m1 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um2 = UnidadMuestral(nombre='UM-2', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m2 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um3 = UnidadMuestral(nombre='UM-3', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m3 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um4 = UnidadMuestral(nombre='UM-4', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m4 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um5 = UnidadMuestral(nombre='UM-5', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m5 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um6 = UnidadMuestral(nombre='UM-6', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m6 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um7 = UnidadMuestral(nombre='UM-7', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m7 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-um8 = UnidadMuestral(nombre='UM-8', id_metodologia=Metodologia.query.filter_by(nombre='MUESTRA-INTERCALADA').first().id,
-                     id_instrumento=Instrumento.query.filter_by(codigo='ASDFSPRO').first().id,
+m8 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
                      operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
                      id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
-db.session.add(um1)
-db.session.add(um2)
-db.session.add(um3)
-db.session.add(um4)
-db.session.add(um5)
-db.session.add(um6)
-db.session.add(um7)
-db.session.add(um8)
+db.session.add(m1)
+db.session.add(m2)
+db.session.add(m3)
+db.session.add(m4)
+db.session.add(m5)
+db.session.add(m6)
+db.session.add(m7)
+db.session.add(m8)
 db.session.commit()
+
+m9 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='LOTE-VARIABILIDAD').first().id,
+                     id_instrumento={Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+                                     Radiometro.query.filter_by(codigo='ESPECTRALON').first().id,
+                                     Radiometro.query.filter_by(codigo='CAMARA').first().id,
+                                     Radiometro.query.filter_by(codigo='GPS').first().id},
+                     operador='Alejandro Pezzola', id_cobertura=Cobertura.query.filter_by(nombre='CEBOLLA').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20141215-HILARIOASCASUBI')).first().id)
+m10 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='LOTE-VARIABILIDAD').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+m11 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='LOTE-VARIABILIDAD').first().id,
+                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 
