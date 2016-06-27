@@ -1,9 +1,9 @@
 #!virtual/bin/python3
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import date, datetime
 from app import db
 from app.models import Localidad, Campania, TipoCobertura, Cobertura, Radiometro, Metodologia, Proyecto, Muestra, \
-    Fotometro, Gps, Patron, Camara
+    Fotometro, Gps, Patron, Camara, Punto
 from app.utils import nombre_camp, nombre_muestra
 
 __author__ = 'Juanjo'
@@ -71,7 +71,7 @@ db.session.add(cob15)
 db.session.add(cob16)
 db.session.commit()
 
-# Carga de Instrumento
+# Carga de Instrumentos
 r1 = Radiometro(codigo='ASDFS4', nombre='ASD FieldSpec4-HR', marca='ASD',
                  modelo='FieldSpec 4 Hi-Res', nro_serie='18285', rango_espectral='350-2500 nm',
                  resolucion_espectral='3 nm @ 700 nm - 8nm @ 1400/2100 nm',
@@ -573,37 +573,69 @@ db.session.commit()
 
 # Carga de Muestras
 m1 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m2 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m3 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m4 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m5 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m6 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m7 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m8 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='INTERCALADA').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 db.session.add(m1)
 db.session.add(m2)
 db.session.add(m3)
@@ -615,18 +647,37 @@ db.session.add(m8)
 db.session.commit()
 
 m9 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='LOTE-VARIABILIDAD').first().id,
-                     id_instrumento={Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                                     Radiometro.query.filter_by(codigo='ESPECTRALON').first().id,
-                                     Radiometro.query.filter_by(codigo='CAMARA').first().id,
-                                     Radiometro.query.filter_by(codigo='GPS').first().id},
-                     operador='Alejandro Pezzola', id_cobertura=Cobertura.query.filter_by(nombre='CEBOLLA').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20141215-HILARIOASCASUBI')).first().id)
+             id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+             id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+             id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+             id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+             id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+             operador='Alejandro Pezzola', id_cobertura=Cobertura.query.filter_by(nombre='CEBOLLA').first().id,
+             id_campania=Campania.query.filter(Campania.nombre.like('%20141215-HILARIOASCASUBI')).first().id)
 m10 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='LOTE-VARIABILIDAD').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+              id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+              id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+              id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+              id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+              id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+              operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+              id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
 m11 = Muestra(nombre=nombre_muestra(), id_metodologia=Metodologia.query.filter_by(nombre='LOTE-VARIABILIDAD').first().id,
-                     id_instrumento=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
-                     operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
-                     id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+              id_radiometro=Radiometro.query.filter_by(codigo='ASDFSPRO').first().id,
+              id_patron=Patron.query.filter_by(codigo='ESPECTRALON').first().id,
+              id_camara=Camara.query.filter_by(codigo='CAMARA').first().id,
+              id_fotometro=Fotometro.query.filter_by(codigo='FOT17884').first().id,
+              id_gps=Gps.query.filter_by(codigo='GPS').first().id,
+              operador='Guillermo Ibañez', id_cobertura=Cobertura.query.filter_by(nombre='RIO').first().id,
+              id_campania=Campania.query.filter(Campania.nombre.like('%20150121-RIOURUGUAY')).first().id)
+db.session.add(m9)
+db.session.add(m10)
+db.session.add(m11)
+db.session.commit()
+
+# Carga de Puntos
+p1 = Punto(nombre='P1', fecha_hora=datetime(2014,1,21,10,40), geom='{POINT(-33,82656 -58,44279), SRID=4326}',
+           altura_medicion=0, presion=1015, temperatura=24.8, nubosidad='',
+           viento_direccion='',viento_velocidad='',estado='',cantidad_tomas='',oleaje='',obsevaciones='',foto='',
+           id_muestra='')
 
