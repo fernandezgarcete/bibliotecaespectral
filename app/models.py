@@ -210,7 +210,7 @@ class Camara(db.Model):
                                           cascade="save-update, merge, delete")
 
     def has_muestra(self, muestra):
-        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+        return self.muestras.filter(muestra.id_camara == self.id).count() > 0
 
     def add_muestra(self, muestra):
         if not self.has_muestra(muestra):
@@ -218,10 +218,10 @@ class Camara(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+        return Muestra.query.filter(Muestra.id_camara == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<Cámara %r>' % (self.instrumento)
+        return '<Cámara %r>' % (self.nombre)
 
 # Tabla GPS
 class Gps(db.Model):
@@ -236,7 +236,7 @@ class Gps(db.Model):
                                           cascade="save-update, merge, delete")
 
     def has_muestra(self, muestra):
-        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+        return self.muestras.filter(muestra.id_gps == self.id).count() > 0
 
     def add_muestra(self, muestra):
         if not self.has_muestra(muestra):
@@ -244,10 +244,10 @@ class Gps(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+        return Muestra.query.filter(Muestra.id_gps == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<GPS %r>' % (self.instrumento)
+        return '<GPS %r>' % (self.nombre)
 
 # Tabla Fotometro
 class Fotometro(db.Model):
@@ -262,7 +262,7 @@ class Fotometro(db.Model):
                                           cascade="save-update, merge, delete")
 
     def has_muestra(self, muestra):
-        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+        return self.muestras.filter(muestra.id_fotometro == self.id).count() > 0
 
     def add_muestra(self, muestra):
         if not self.has_muestra(muestra):
@@ -270,10 +270,10 @@ class Fotometro(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+        return Muestra.query.filter(Muestra.id_fotometro == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<GPS %r>' % (self.instrumento)
+        return '<GPS %r>' % (self.nombre)
 
 # Tabla Patron
 class Patron(db.Model):
@@ -284,11 +284,11 @@ class Patron(db.Model):
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
     accesorio = db.Column(db.String(340))
-    muestras = db.relationship('Muestra', backref='gps_muestra', lazy='dynamic',
+    muestras = db.relationship('Muestra', backref='patron_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
 
     def has_muestra(self, muestra):
-        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+        return self.muestras.filter(muestra.id_patron == self.id).count() > 0
 
     def add_muestra(self, muestra):
         if not self.has_muestra(muestra):
@@ -296,10 +296,10 @@ class Patron(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+        return Muestra.query.filter(Muestra.id_patron == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<Patron %r>' % (self.instrumento)
+        return '<Patron %r>' % (self.nombre)
 
 # Tabla Radiometro
 class Radiometro(db.Model):
@@ -329,7 +329,7 @@ class Radiometro(db.Model):
                                           cascade="save-update, merge, delete")
 
     def has_muestra(self, muestra):
-        return self.muestras.filter(muestra.id_instrumento == self.id).count() > 0
+        return self.muestras.filter(muestra.id_radiometro == self.id).count() > 0
 
     def add_muestra(self, muestra):
         if not self.has_muestra(muestra):
@@ -337,10 +337,10 @@ class Radiometro(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_instrumento == self.id).all()
+        return Muestra.query.filter(Muestra.id_radiometro == self.id).all()
 
     def __repr__(self): # pragma: no cover
-        return '<Espectrorradiómetro %r>' % (self.instrumento)
+        return '<Espectrorradiómetro %r>' % (self.nombre)
 
 # Tabla Metodologia
 class Metodologia(db.Model):

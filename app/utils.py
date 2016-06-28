@@ -101,11 +101,11 @@ def nombre_camp(loc, f):
     return str(ult_id)+'-'+f+'-'+l
 
 
-def nombre_muestra():
-    m = Muestra.query.all()
+def nombre_muestra(campania):
+    m = Muestra.query.filter_by(nombre=campania.nombre).first()
     ult_id = 0
     if len(m) == 0:
         ult_id = '1'
     if len(m) > 0:
         ult_id = m[len(m)-1].id + 1
-    return 'M-'+str(ult_id)
+    return campania.nombre+'-M'+str(ult_id)
