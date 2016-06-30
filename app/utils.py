@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from app.models import Campania, Muestra
+from app.models import Campania, Muestra, Punto
 
 __author__ = 'Juanjo'
 from datetime import datetime
@@ -102,10 +102,20 @@ def nombre_camp(loc, f):
 
 
 def nombre_muestra(campania):
-    m = Muestra.query.filter_by(nombre=campania.nombre).first()
+    m = Muestra.query.filter(Muestra.id_campania == campania.id).count()
     ult_id = 0
-    if len(m) == 0:
+    if m == 0:
         ult_id = '1'
-    if len(m) > 0:
-        ult_id = m[len(m)-1].id + 1
+    if m > 0:
+        ult_id = m + 1
     return campania.nombre+'-M'+str(ult_id)
+
+
+def nombre_punto(muestra):
+    p = Punto.query.filter(Punto.id_muestra == muestra.id).count()
+    ult_id = 0
+    if p == 0:
+        ult_id = '1'
+    if p > 0:
+        ult_id = p + 1
+    return muestra.nombre+'-P'+str(ult_id)
