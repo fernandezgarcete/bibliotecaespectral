@@ -53,6 +53,7 @@ cob13 = Cobertura(nombre='CEBADA', id_tipocobertura='2', altura=0)
 cob14 = Cobertura(nombre='RASTROJO', id_tipocobertura='2', altura=0)
 cob15 = Cobertura(nombre='SUELO', id_tipocobertura='2', altura=0)
 cob16 = Cobertura(nombre='SORGO', id_tipocobertura='2', altura=0)
+cob17 = Cobertura(nombre='CEBOLLA-MORADA', id_tipocobertura='2', altura=0)
 db.session.add(cob1)
 db.session.add(cob2)
 db.session.add(cob3)
@@ -634,15 +635,29 @@ m9 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m9)
 db.session.commit()
+cobertura = Cobertura.query.filter_by(nombre='MAIZ').first()
 m10 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m10)
 db.session.commit()
+cobertura = Cobertura.query.filter_by(nombre='GIRASOL').first()
 m11 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m11)
+db.session.commit()
+cobertura = Cobertura.query.filter_by(nombre='ALFALFA').first()
+m12 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+             id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
+             operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
+db.session.add(m12)
+db.session.commit()
+cobertura = Cobertura.query.filter_by(nombre='CEBOLLA-MORADA').first()
+m13 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+             id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
+             operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
+db.session.add(m13)
 db.session.commit()
 
 
@@ -697,3 +712,116 @@ db.session.add(p8)
 db.session.commit()
 
 
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M1')).first()
+p9 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 20), altura_medicion=2, presion=1012,
+           nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63305 -39.41874)::geometry',
+           foto='90.jpg', observaciones='Tomada a 7m', estado='B')
+db.session.add(p9)
+db.session.commit()
+p10 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 45), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62,63296 -39.41875)::geometry',
+            foto='89.jpg', observaciones='Suelo seco', estado='B', cantidad_tomas=28)
+db.session.add(p10)
+db.session.commit()
+p11 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 48), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.6329 -39.41879)::geometry',
+            foto='88.jpg', observaciones='', estado='B', cantidad_tomas=30)
+db.session.add(p11)
+db.session.commit()
+p12 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.6329 -39.41881)::geometry',
+            foto='87.jpg', observaciones='Suelo seco', estado='B', cantidad_tomas=34)
+db.session.add(p12)
+db.session.commit()
+p13 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63313 -39.41865)::geometry',
+            foto='91.jpg', observaciones='No se midió por pisoteo', estado='B')
+db.session.add(p13)
+db.session.commit()
+p14 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63309 -39.41863)::geometry',
+            foto='92.jpg', observaciones='Suelo húmedo', estado='B', cantidad_tomas=26)
+db.session.add(p14)
+db.session.commit()
+p15 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63305 -39.41865)::geometry',
+            foto='93.jpg', observaciones='Suelo seco', estado='B', cantidad_tomas=27)
+db.session.add(p15)
+db.session.commit()
+p16 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63302 -39.4187)::geometry',
+            foto='94.jpg', observaciones='Suelo intermedio de humedad', estado='B', cantidad_tomas=29)
+db.session.add(p16)
+db.session.commit()
+p17 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63328 -39.41849)::geometry',
+            foto='95.jpg', observaciones='No se midió por pisoteo', estado='B')
+db.session.add(p17)
+db.session.commit()
+p18 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=5, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63325 -39.41848)::geometry',
+            foto='96.jpg', observaciones='Bruma en el ambiente', estado='B')
+db.session.add(p18)
+db.session.commit()
+p19 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=5, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63319 -39.41848)::geometry',
+            foto='97.jpg', observaciones='Bruma en el ambiente', estado='B')
+db.session.add(p19)
+db.session.commit()
+p20 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 22), altura_medicion=2, presion=1012,
+            nubosidad=5, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63317 -39.4185)::geometry',
+            foto='98.jpg', observaciones='Bruma en el ambiente', estado='B')
+db.session.add(p20)
+db.session.commit()
+p21 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 10), altura_medicion=2, presion=1012,
+            nubosidad=5, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63316 -39.41854)::geometry',
+            foto='99.jpg', observaciones='Bruma en el ambiente', estado='B')
+db.session.add(p21)
+db.session.commit()
+p22 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 10), altura_medicion=2, presion=1012,
+            nubosidad=5, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63371 -39.41814)::geometry',
+            foto='100.jpg', observaciones='Suelo desnudo', estado='B')
+db.session.add(p22)
+db.session.commit()
+p23 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 10), altura_medicion=2, presion=1012,
+            viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63369 -39.41809)::geometry',
+            foto='101.jpg', observaciones='En cultivo')
+db.session.add(p23)
+db.session.commit()
+p24 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 10), altura_medicion=2, presion=1012,
+            viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63363 -39.41808)::geometry',
+            foto='102.jpg', observaciones='Entre surco')
+db.session.add(p24)
+db.session.commit()
+p25 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 10), altura_medicion=2, presion=1012,
+            viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63355 -39.41811)::geometry',
+            foto='103.jpg', observaciones='')
+db.session.add(p25)
+db.session.commit()
+p26 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 10), altura_medicion=2, presion=1012,
+            viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63357 -39.41816)::geometry',
+            foto='104.jpg', observaciones='')
+db.session.add(p26)
+db.session.commit()
+
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M2')).first()
+p27 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 13, 10), altura_medicion=1.8, presion=1005,
+            nubosidad=10, viento_velocidad=10, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60698 -39.30943)::geometry',
+            foto='80.jpg,81.jpg', observaciones='Manchón ralo, erosión eólica', estado='B', cantidad_tomas=41)
+db.session.add(p27)
+db.session.commit()
+p28 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 13, 32), altura_medicion=1.8, presion=1005,
+            nubosidad=10, viento_velocidad=10, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.606668 -39.30901)::geometry',
+            foto='83.jpg,84.jpg', observaciones='Un poco más alto y verde', estado='B', cantidad_tomas=31)
+db.session.add(p28)
+db.session.commit()
+p29 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 13, 44), altura_medicion=1.8, presion=1005,
+            nubosidad=10, viento_velocidad=10, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60579 -39.30783)::geometry',
+            foto='86.jpg,87.jpg', observaciones='Un poco más alto y verde', estado='B', cantidad_tomas=32)
+db.session.add(p29)
+db.session.commit()
+p30 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 14, 2), altura_medicion=1.8, presion=1005,
+            nubosidad=10, viento_velocidad=10, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60542 -39.30803)::geometry',
+            foto='90.jpg,91.jpg,92.jpg', observaciones='Verde en buen estado', estado='B', cantidad_tomas=31)
+db.session.add(p30)
+db.session.commit()
