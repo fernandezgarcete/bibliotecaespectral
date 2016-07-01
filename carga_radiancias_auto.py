@@ -35,22 +35,3 @@ for i, line in enumerate(f):
         print(v[25:39])
 
 f.close()
-
-
-f1 = Fotometria(sig380=1.1234567,
-                sig500=0,
-                sig675=0,
-                sig870=0,
-                sig1020=0,
-                std380=0,
-                std500=0,
-                std675=0,
-                std870=0,
-                std1020=0,
-                std380=0,
-                r380=0,
-                r500=0,
-                r675=0,
-                r870=0,
-                r1020=0,
-                id_punto=punto.id)
