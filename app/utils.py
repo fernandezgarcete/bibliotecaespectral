@@ -101,14 +101,14 @@ def nombre_camp(loc, f):
     return str(ult_id)+'-'+f+'-'+l
 
 
-def nombre_muestra(campania):
+def nombre_muestra(campania, cobertura):
     m = Muestra.query.filter(Muestra.id_campania == campania.id).count()
     ult_id = 0
     if m == 0:
         ult_id = '1'
     if m > 0:
         ult_id = m + 1
-    return campania.nombre+'-M'+str(ult_id)
+    return campania.nombre+'-M'+str(ult_id)+'-'+cobertura.nombre
 
 
 def nombre_punto(muestra):

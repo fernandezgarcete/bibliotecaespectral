@@ -70,6 +70,7 @@ db.session.add(cob13)
 db.session.add(cob14)
 db.session.add(cob15)
 db.session.add(cob16)
+db.session.add(cob17)
 db.session.commit()
 
 # Carga de Instrumentos
@@ -581,42 +582,42 @@ camara = Camara.query.filter_by(codigo='CAMARA').first()
 fotometro = Fotometro.query.filter_by(codigo='FOT17884').first()
 gps = Gps.query.filter_by(codigo='GPS').first()
 cobertura = Cobertura.query.filter_by(nombre='RIO').first()
-m1 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m1 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m1)
 db.session.commit()
-m2 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m2 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m2)
 db.session.commit()
-m3 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m3 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m3)
 db.session.commit()
-m4 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m4 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m4)
 db.session.commit()
-m5 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m5 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m5)
 db.session.commit()
-m6 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m6 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m6)
 db.session.commit()
-m7 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m7 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m7)
 db.session.commit()
-m8 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m8 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Guillermo Ibañez', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m8)
@@ -630,31 +631,31 @@ camara = Camara.query.filter_by(codigo='CAMARA').first()
 fotometro = Fotometro.query.filter_by(codigo='FOT17884').first()
 gps = Gps.query.filter_by(codigo='GPS').first()
 cobertura = Cobertura.query.filter_by(nombre='CEBOLLA').first()
-m9 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m9 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m9)
 db.session.commit()
 cobertura = Cobertura.query.filter_by(nombre='MAIZ').first()
-m10 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m10 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m10)
 db.session.commit()
 cobertura = Cobertura.query.filter_by(nombre='GIRASOL').first()
-m11 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m11 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m11)
 db.session.commit()
 cobertura = Cobertura.query.filter_by(nombre='ALFALFA').first()
-m12 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m12 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m12)
 db.session.commit()
 cobertura = Cobertura.query.filter_by(nombre='CEBOLLA-MORADA').first()
-m13 = Muestra(nombre=nombre_muestra(campania), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
+m13 = Muestra(nombre=nombre_muestra(campania, cobertura), id_metodologia=metodologia.id, id_radiometro=radiometro.id,
              id_patron=patron.id, id_camara=camara.id, id_fotometro=fotometro.id, id_gps=gps.id,
              operador='Alejandro Pezzola', id_cobertura=cobertura.id, id_campania=campania.id)
 db.session.add(m13)
@@ -662,49 +663,49 @@ db.session.commit()
 
 
 # Carga de Puntos
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M1')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M1%')).first()
 p1 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 10, 40), altura_medicion=0, presion=1015,
            temperatura=24.8, nubosidad=50, viento_direccion='SO', viento_velocidad=7.5, oleaje='0', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.44279 -33.82656)::geometry', foto='IMG_1140.jpg,IMG_1141.jpg,IMG_1142.jpg')
 db.session.add(p1)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M2')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M2%')).first()
 p2 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 11, 10), altura_medicion=0, presion=1015,
            temperatura=26.69, nubosidad=60, viento_direccion='', viento_velocidad=0, oleaje='0', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.45264 -33.83364)::geometry', foto='IMG_1143.jpg,IMG_1144.jpg,IMG_1145.jpg')
 db.session.add(p2)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M3')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M3%')).first()
 p3 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 12, 0), altura_medicion=0, presion=1015,
            temperatura=26.88, nubosidad=70, viento_direccion='NE', viento_velocidad=2, oleaje='0', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.46019 -33.81852)::geometry', foto='IMG_1146.jpg,IMG_1147.jpg,IMG_1148.jpg')
 db.session.add(p3)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M4')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M4%')).first()
 p4 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 12, 24), altura_medicion=0, presion=1015,
            temperatura=25.31, nubosidad=70, viento_direccion='SO', viento_velocidad=3, oleaje='0', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.44367 -33.78389)::geometry', foto='IMG_1149.jpg,IMG_1150.jpg,IMG_1151.jpg')
 db.session.add(p4)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M5')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M5%')).first()
 p5 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 13, 10), altura_medicion=0, presion=1015,
            temperatura=25.66, nubosidad=20, viento_direccion='SO', viento_velocidad=0, oleaje='0', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.53825 -33.72692)::geometry', foto='IMG_1152.jpg,IMG_1153.jpg,IMG_1154.jpg')
 db.session.add(p5)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M6')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M6%')).first()
 p6 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 13, 40), altura_medicion=0, presion=1015,
            temperatura=25.64, nubosidad=5, viento_direccion='NO', viento_velocidad=3.5, oleaje='5m', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.42336 -33.72503)::geometry', foto='IMG_1155.jpg,IMG_1156.jpg,IMG_1157.jpg')
 db.session.add(p6)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M7')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M7%')).first()
 p7 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 14, 15), altura_medicion=0, presion=1015,
            temperatura=25.8, nubosidad=5, viento_direccion='O', viento_velocidad=8.5, oleaje='5m', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.429 -33.80781)::geometry', foto='IMG_1158.jpg,IMG_1159.jpg,IMG_1160.jpg')
 db.session.add(p7)
 db.session.commit()
-muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M8')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20150121-RIOURUGUAY-M8%')).first()
 p8 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2015, 1, 21, 14, 45), altura_medicion=0, presion=1015,
            temperatura=26.73, nubosidad=60, viento_direccion='E', viento_velocidad=13, oleaje='10m', id_muestra=muestra.id,
            geom='SRID=4326;POINT(-58.41865 -33.86936)::geometry', foto='IMG_1161.jpg,IMG_1162.jpg,IMG_1163.jpg')
@@ -712,14 +713,14 @@ db.session.add(p8)
 db.session.commit()
 
 
-muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M1')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M1%')).first()
 p9 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 20), altura_medicion=2, presion=1012,
            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63305 -39.41874)::geometry',
            foto='90.jpg', observaciones='Tomada a 7m', estado='B')
 db.session.add(p9)
 db.session.commit()
 p10 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 13, 45), altura_medicion=2, presion=1012,
-            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62,63296 -39.41875)::geometry',
+            nubosidad=0, viento_velocidad=2, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63296 -39.41875)::geometry',
             foto='89.jpg', observaciones='Suelo seco', estado='B', cantidad_tomas=28)
 db.session.add(p10)
 db.session.commit()
@@ -804,7 +805,7 @@ p26 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 15, 14, 
 db.session.add(p26)
 db.session.commit()
 
-muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M2')).first()
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M2%')).first()
 p27 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 13, 10), altura_medicion=1.8, presion=1005,
             nubosidad=10, viento_velocidad=10, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60698 -39.30943)::geometry',
             foto='80.jpg,81.jpg', observaciones='Manchón ralo, erosión eólica', estado='B', cantidad_tomas=41)
@@ -825,3 +826,70 @@ p30 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 14, 
             foto='90.jpg,91.jpg,92.jpg', observaciones='Verde en buen estado', estado='B', cantidad_tomas=31)
 db.session.add(p30)
 db.session.commit()
+
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M3%')).first()
+p31 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 10, 15), altura_medicion=1.8, presion=1008,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60875 -39.31826)::geometry',
+            foto='55.jpg,56.jpg', observaciones='Altura de plantas 1m, parcela 10x10', estado='B', cantidad_tomas=35)
+db.session.add(p31)
+db.session.commit()
+p32 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 10, 42), altura_medicion=1.8, presion=1008,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60888 -39.31853)::geometry',
+            foto='58.jpg,59.jpg', observaciones='', estado='B', cantidad_tomas=39)
+db.session.add(p32)
+db.session.commit()
+p33 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 18, 11, 0), altura_medicion=1.8, presion=1008,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.60359 -39.319)::geometry',
+            foto='61.jpg,62.jpg', observaciones='', estado='B', cantidad_tomas=30)
+db.session.add(p33)
+db.session.commit()
+
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M4%')).first()
+p34 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 13, 58), altura_medicion=1.5, presion=1013,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63107 -39.34538)::geometry',
+            foto='', observaciones='', estado='B', cantidad_tomas=5)
+db.session.add(p34)
+db.session.commit()
+p35 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 14, 1), altura_medicion=1.5, presion=1013,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63071 -39.34531)::geometry',
+            foto='', observaciones='', estado='B', cantidad_tomas=5)
+db.session.add(p35)
+db.session.commit()
+p36 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 14, 3), altura_medicion=1.5, presion=1013,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.6305 -39.34526)::geometry',
+            foto='', observaciones='', estado='B', cantidad_tomas=5)
+db.session.add(p36)
+db.session.commit()
+
+muestra = Muestra.query.filter(Muestra.nombre.like('%20141215-HILARIOASCASUBI-M5%')).first()
+p37 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 12, 57), altura_medicion=1.5, presion=1013,
+            nubosidad=0, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63227 -39.34511)::geometry',
+            foto='15.jpf,16.jpg', observaciones='Cebolla 30 cm', estado='B', cantidad_tomas=30)
+db.session.add(p37)
+db.session.commit()
+p38 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 13, 4), altura_medicion=1.5, presion=1013,
+            nubosidad=5, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63259 -39.34522)::geometry',
+            foto='19.jpf,20.jpg', observaciones='', estado='B', cantidad_tomas=29)
+db.session.add(p38)
+db.session.commit()
+p39 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 13, 10), altura_medicion=1.5, presion=1013,
+            nubosidad=5, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.633 -39.34534)::geometry',
+            foto='23.jpf,24.jpg', observaciones='Nubes en el horizonte', estado='B', cantidad_tomas=29)
+db.session.add(p39)
+db.session.commit()
+p40 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 13, 17), altura_medicion=1.5, presion=1013,
+            nubosidad=5, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63333 -39.34537)::geometry',
+            foto='27.jpf,28.jpg', observaciones='Nubes que vienen', estado='B', cantidad_tomas=29)
+db.session.add(p40)
+db.session.commit()
+p41 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 13, 24), altura_medicion=1.5, presion=1013,
+            nubosidad=10, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63294 -39.3457)::geometry',
+            foto='31.jpf,32.jpg', observaciones='Nubes que vienen, más pelado', estado='B', cantidad_tomas=29)
+db.session.add(p41)
+db.session.commit()
+p42 = Punto(nombre=nombre_punto(muestra), fecha_hora=datetime(2014, 12, 17, 13, 32), altura_medicion=1.5, presion=1013,
+            nubosidad=10, viento_velocidad=3, id_muestra=muestra.id, geom='SRID=4326;POINT(-62.63231 -39.34559)::geometry',
+            foto='35.jpf,36.jpg', observaciones='Nubes más arriba', estado='B', cantidad_tomas=29)
+db.session.add(p42)
+db.session.commit()
+
