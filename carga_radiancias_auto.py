@@ -29,7 +29,7 @@ for i, line in enumerate(f):
         fot.r675 = float(v[37])
         fot.r870 = float(v[38])
         fot.r1020 = float(v[39])
-        id_punto=punto.id
+        fot.id_punto=punto.id
         db.session.add(fot)
         db.session.commit()
         print(v[25:39])
