@@ -377,7 +377,7 @@ c30 = Campania(nombre=n, fecha=f, responsables=['Guillermo Ibañez'], id_localid
 db.session.add(c30)
 db.session.commit()
 
-l31 = Localidad.query.filter_by(nombre='SAN ANOTNIO OESTE').first()
+l31 = Localidad.query.filter_by(nombre='SAN ANTONIO OESTE').first()
 f = date(2013, 2, 20)
 n = nombre_camp(l31, f)
 c31 = Campania(nombre=n, fecha=f, responsables=['Guillermo Ibañez'], id_localidad=l31.id)
