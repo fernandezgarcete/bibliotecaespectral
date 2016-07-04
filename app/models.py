@@ -431,21 +431,21 @@ class Punto(db.Model):
 # Tabla Fotometria
 class Fotometria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sig380 = db.Column(db.DECIMAL(precision=9, scale=7))
-    sig500 = db.Column(db.DECIMAL(precision=9, scale=7))
-    sig675 = db.Column(db.DECIMAL(precision=9, scale=7))
-    sig870 = db.Column(db.DECIMAL(precision=9, scale=7))
-    sig1020 = db.Column(db.DECIMAL(precision=9, scale=7))
-    std380 = db.Column(db.DECIMAL(precision=9, scale=7))
-    std500 = db.Column(db.DECIMAL(precision=9, scale=7))
-    std675 = db.Column(db.DECIMAL(precision=9, scale=7))
-    std870 = db.Column(db.DECIMAL(precision=9, scale=7))
-    std1020 = db.Column(db.DECIMAL(precision=9, scale=7))
-    r380 = db.Column(db.DECIMAL(precision=9, scale=7))
-    r500 = db.Column(db.DECIMAL(precision=9, scale=7))
-    r675 = db.Column(db.DECIMAL(precision=9, scale=7))
-    r870 = db.Column(db.DECIMAL(precision=9, scale=7))
-    r1020 = db.Column(db.DECIMAL(precision=9, scale=7))
+    sig380 = db.Column(db.DECIMAL(precision=12, scale=7))
+    sig500 = db.Column(db.DECIMAL(precision=12, scale=7))
+    sig675 = db.Column(db.DECIMAL(precision=12, scale=7))
+    sig870 = db.Column(db.DECIMAL(precision=12, scale=7))
+    sig1020 = db.Column(db.DECIMAL(precision=12, scale=7))
+    std380 = db.Column(db.DECIMAL(precision=12, scale=7))
+    std500 = db.Column(db.DECIMAL(precision=12, scale=7))
+    std675 = db.Column(db.DECIMAL(precision=12, scale=7))
+    std870 = db.Column(db.DECIMAL(precision=12, scale=7))
+    std1020 = db.Column(db.DECIMAL(precision=12, scale=7))
+    r380 = db.Column(db.DECIMAL(precision=12, scale=7))
+    r500 = db.Column(db.DECIMAL(precision=12, scale=7))
+    r675 = db.Column(db.DECIMAL(precision=12, scale=7))
+    r870 = db.Column(db.DECIMAL(precision=12, scale=7))
+    r1020 = db.Column(db.DECIMAL(precision=12, scale=7))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
 
     def __repr__(self): # pragma: no cover
@@ -454,9 +454,9 @@ class Fotometria(db.Model):
 # Tabla Producto Radiancia
 class ProductoRadiancia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    reflectancia = db.Column(db.DECIMAL(precision=20, scale=18))
-    radiancia_avg = db.Column(db.DECIMAL(precision=20, scale=18))
-    radiancia_std = db.Column(db.DECIMAL(precision=20, scale=18))
+    reflectancia = db.Column(db.DECIMAL(precision=20, scale=15))
+    radiancia_avg = db.Column(db.DECIMAL(precision=20, scale=15))
+    radiancia_std = db.Column(db.DECIMAL(precision=20, scale=15))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
 
     def __repr__(self): # pragma: no cover
@@ -466,7 +466,7 @@ class ProductoRadiancia(db.Model):
 class Radiometria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     longitud_onda = db.Column(db.Integer, unique=True)
-    radiancia = db.Column(db.DECIMAL(precision=20, scale=18))
+    radiancia = db.Column(db.DECIMAL(precision=20, scale=15))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
     id_superficie = db.Column(db.Integer, db.ForeignKey('superficie.id'))
 
