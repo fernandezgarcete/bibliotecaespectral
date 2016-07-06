@@ -465,7 +465,7 @@ class ProductoRadiancia(db.Model):
 # Tabla Radiometria
 class Radiometria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    longitud_onda = db.Column(db.Integer, unique=True)
+    longitud_onda = db.Column(db.Integer)
     radiancia = db.Column(db.DECIMAL(precision=20, scale=15))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
     id_superficie = db.Column(db.Integer, db.ForeignKey('superficie.id'))
