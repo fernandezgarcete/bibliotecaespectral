@@ -98,7 +98,7 @@ class ArchivoForm(Form):
         elif self.validate_radstdtxt(filename):
             return 'radstd'
         elif self.validate_reftxt(filename):
-            return 'ref'
+            return 'ref1'
         elif self.validate_refavgtxt(filename):
             return 'refavg'
         elif self.validate_refstdtxt(filename):

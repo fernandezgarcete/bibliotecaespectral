@@ -33,7 +33,7 @@ def cargar_archivo(lugar, name, tipo, archivo):
         except:
             raise
         return 3
-    elif tipo == 'ref':
+    elif tipo == 'ref1':
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)

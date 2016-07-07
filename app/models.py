@@ -454,6 +454,7 @@ class Fotometria(db.Model):
 # Tabla Producto Radiancia
 class ProductoRadiancia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    longitud_onda = db.Column(db.Integer)
     reflectancia = db.Column(db.DECIMAL(precision=20, scale=15))
     radiancia_avg = db.Column(db.DECIMAL(precision=20, scale=15))
     radiancia_std = db.Column(db.DECIMAL(precision=20, scale=15))
@@ -467,6 +468,7 @@ class Radiometria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     longitud_onda = db.Column(db.Integer)
     radiancia = db.Column(db.DECIMAL(precision=20, scale=15))
+    toma = db.Column(db.Integer)
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
     id_superficie = db.Column(db.Integer, db.ForeignKey('superficie.id'))
 
