@@ -506,7 +506,7 @@ followers = db.Table('followers',
 
 
 # Entidad Usuario con sus respectivos métodos
-class User(UserMixin, db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     social_id = db.Column(db.String(64), nullable=False, unique=True)
     nickname = db.Column(db.String(64), index=True, unique=True)

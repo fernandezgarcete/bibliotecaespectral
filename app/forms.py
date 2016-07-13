@@ -6,7 +6,7 @@ __author__ = 'Juanjo'
 from flask_wtf import Form
 from flask_babel import gettext
 from flask_wtf.file import FileRequired, FileAllowed
-from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField
+from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, NumberRange
 from app.models import User
 from config import ALLOWED_EXTENSIONS
@@ -40,12 +40,11 @@ class EditForm(Form):
             return True
         if self.nickname.data != User.make_valid_nickname(self.nickname.data):
             self.nickname.errors.append(
-                gettext('Este nickname tiene caracteres inválidos. Por favor use solo letras, números, puntos y guión bajo.')
-            )
+                'Este nickname tiene caracteres inválidos. Por favor use solo letras, números, puntos y guión bajo.')
             return False
         user = User.query.filter_by(nickname=self.nickname.data).first()
         if user is not None:
-            self.nickname.errors.append(gettext('Este nombre ya existe. Por favor ingrese otro.'))
+            self.nickname.errors.append('Este nombre ya existe. Por favor ingrese otro.')
             return False
         return True
 
@@ -62,7 +61,7 @@ class SearchForm(Form):
 
 # Formulario carga de archivos
 class CargarForm(Form):
-    proyecto = StringField('proyecto', validators=[DataRequired(message=u'Proyecto requerido')])
+    proyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
     localidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
     campania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
     fecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
@@ -70,18 +69,12 @@ class CargarForm(Form):
     institucion = StringField('intitucion', validators=[DataRequired(message=u'Institución requerida')])
     responsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
     objetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
-    tipo_cobertura = SelectField('tipo_cobertura', coerce=int,
-                                 choices=[(0,''),(1, 'Agricultura'), (2, 'Hidrología'), (3, 'Calibración'), (4, 'Laboratorio')],
-                                 validators=[NumberRange(min=1)])
-    cobertura = SelectField('cobertura', coerce=int,
-                            choices=[(0,''),(1, 'Alfalfa'), (2, 'Maíz'), (3, 'Soja'), (4, 'Sorgo'), (5, 'Trigo'), (6, 'Lago'), (7, 'Río'), (8, 'Mar'), (9, 'Calibracion'), (10, 'Laboratorio')],
-                            validators=[NumberRange(min=1)])
-    instrumento = SelectField('instrumento', choices=[(0,''),(1, 'ASD-PRO Nuevo'), (2, 'ASD Antiguo')], coerce=int,
-                              validators=[NumberRange(min=1)])
-    espectralon = SelectField('espectralon', choices=[(0,''),(1, 'Maestro'), (2, 'Grande'), (3, 'Chico')], coerce=int,
-                              validators=[NumberRange(min=1)])
-    gps = StringField('gps', validators=[DataRequired(message=u'Describa GPS')])
-    camara = StringField('camara', validators=[DataRequired(message=u'Cámara utilizada')])
+    tipo_cobertura = SelectField('tipo_cobertura', coerce=int)
+    cobertura = SelectField('cobertura', coerce=int)
+    instrumento = SelectField('instrumento', coerce=int)
+    espectralon = SelectField('espectralon', coerce=int)
+    gps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
+    camara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
 
 
 # Formulario de archivo
@@ -146,22 +139,18 @@ class ArchivoForm(Form):
 
 # Formulario de consulta
 class ConsultarForm(Form):
-    proyecto = proyecto = StringField('proyecto', validators=[DataRequired(message=u'Proyecto requerido')])
-    localidad = StringField('localidad', validators=[DataRequired(message=u'Localidad requerida')])
-    campania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
-    fecha_inicio = DateField(u'fecha_inicio', validators=[DataRequired(message=u'Ingrese una fecha')],
-                      format='%d-%m-%Y')
-    fecha_fin = DateField(u'fecha_fin', validators=[DataRequired(message=u'Ingrese una fecha')],
-                      format='%d-%m-%Y')
-    tipo_cobertura = SelectField('tipo_cobertura', coerce=int,
-                                 choices=[(0,''), (1, 'Agricultura'), (2, 'Hidrología'), (3, 'Calibración'), (4, 'Laboratorio')],
-                                 validators=[NumberRange(min=1)])
-    cobertura = SelectField('cobertura', coerce=int,
-                            choices=[(0,''), (1, 'Alfalfa'), (2, 'Maíz'), (3, 'Soja'), (4, 'Sorgo'), (5, 'Trigo'), (6, 'Lago'), (7, 'Río'), (8, 'Mar'), (9, 'Calibracion'), (10, 'Laboratorio')],
-                            validators=[NumberRange(min=1)])
-    radiancia = BooleanField('radiancia', default=True)
-    radiancia_avg = BooleanField('radiancia_avg', default=False)
-    radiancia_std = BooleanField('radiancia_std', default=False)
-    reflectancia = BooleanField('reflectancia', default=False)
-    reflectancia_avg = BooleanField('reflectancia_avg', default=False)
-    reflectancia_std = BooleanField('reflectancia_std', default=False)
+    filtro = SelectMultipleField('filtro', choices=['Proyecto', 'Localidad', 'Fecha', 'Tipo Cobertura',
+                                                    'Cobertura'])
+    proyecto = SelectField('proyecto', coerce=int)#, validators=[DataRequired(message=u'Proyecto requerido')])
+    localidad = SelectField('localidad', coerce=int)#, validators=[DataRequired(message=u'Localidad requerida')])
+    # campania = SelectField('campania', coerce=int)#, validators=[DataRequired(message=u'Campaña requerida')])
+    fecha_inicio = DateField(u'fecha_inicio', format='%d-%m-%Y')
+    fecha_fin = DateField(u'fecha_fin',  format='%d-%m-%Y')
+    tipo_cobertura = SelectField('tipo_cobertura', coerce=int)
+    cobertura = SelectField('cobertura', coerce=int)
+    # radiancia = BooleanField('radiancia', default=True)
+    # radiancia_avg = BooleanField('radiancia_avg', default=False)
+    # radiancia_std = BooleanField('radiancia_std', default=False)
+    # reflectancia = BooleanField('reflectancia', default=False)
+    # reflectancia_avg = BooleanField('reflectancia_avg', default=False)
+    # reflectancia_std = BooleanField('reflectancia_std', default=False)

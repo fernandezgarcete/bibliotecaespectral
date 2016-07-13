@@ -6,15 +6,18 @@ from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, CargarForm, ConsultarForm, ArchivoForm, LoginConaeForm
-from .models import User, Post, Localidad
+from .models import User, Post, Localidad, TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Campania, Proyecto, \
+    Muestra
 from .translate import microsoft_translate
 from .utils import cargar_archivo
 from datetime import datetime
-from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, TOKEN, LOGOUT
+from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, TOKEN, LOGOUT, \
+    CAMPAIGNS_FOLDER
 from guess_language import guessLanguage
 import os, re
 from .oauth import OAuthSignIn, ConaeSignIn
 from werkzeug.utils import secure_filename
+from sqlalchemy import or_
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -312,7 +315,7 @@ def delete(id):
 # Vista para cargar archivo
 @app.route('/resp', methods=['GET', 'POST'])
 def resp():
-    render_template('resp.html')
+    render_template('resultado.html')
 
 
 # Carga de archivos paso 1
@@ -320,7 +323,14 @@ def resp():
 #@login_required
 def cargar():
     form = CargarForm()
+    form.proyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
     form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
+    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+    form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+    form.camara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
+    form.espectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
+    form.instrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
+    form.gps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
     archivoform = ArchivoForm()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -380,7 +390,7 @@ def cargar():
             if count_img == 0:
                 flash('No ingresó ningún archivo de Imagen', 'error')
             if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form.validate_on_submit():
-                render_template('resp.html')
+                render_template('resultado.html')
         else:
             flash('Falta Completar:', 'error')
     return render_template('cargar.html',
@@ -400,7 +410,49 @@ def consultar():
 #@login_required
 def consultar():
     form = ConsultarForm()
+    # form.campania.choices = [(c.id, c.nombre) for c in Campania.query.order_by('nombre')]
+
+    form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+    form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
+    form.proyecto.choices = [(p.id, p.nombre) for p in Proyecto.query.order_by('nombre')]
+    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
     if request.method == 'POST':
+        proy = form.proyecto.data
+        loc = form.localidad.data
+        cob = form.cobertura.data
+        tp = form.tipo_cobertura.data
+        fi = form.fecha_inicio.data
+        ff = form.fecha_fin.data
+        camps = []
+        if loc is not None and proy is None and cob is None and tp is None and fi is None and ff is None:
+            camps = Campania.query.filter(Campania.id_localidad == loc).all()
+        if proy is not None and loc is None and cob is None and tp is None and fi is None and ff is None:
+            camps = Campania.query.filter(Campania.id_proyecto == proy).all()
+        if fi is not None and loc is None and proy is None and tp is None and cob is None and ff is None:
+            camps = Campania.query.filter(Campania.fecha >= fi).all()
+        if ff is not None and loc is None and cob is None and tp is None and fi is None and proy is None:
+            camps = Campania.query.filter(Campania.fecha <= ff).all()
+        if fi is not None and ff is not None and cob is None and tp is None and proy is None and loc is None:
+            camps = Campania.query.filter(Campania.fecha >= fi, Campania.fecha <= ff).all()
+        if cob is not None and loc is None and proy is None and tp is None and fi is None and ff is None:
+            camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id == Muestra.id_campania,
+                                                                   Muestra.id_cobertura == cob).all()
+        nombres = []
+        for c in camps:
+            nombres.append(c.nombre)
+        return resultado(nombres)
+        '''
+        proy = form.proyecto.data
+        camp = form.campania.data
+        loc = form.localidad.data
+        cob = form.cobertura.data
+        tp = form.tipo_cobertura.data
+        fi = form.fecha_inicio.data
+        ff = form.fecha_fin.data
+        if proy is not None and loc is not None and fi is not None and ff is not None and cob is not None and \
+                tp is not None:
+            camps = Campania.query.filter(Campania.id_proyecto==1).all()
+            return render_template('resultado.html', campañas=camps)
         if form.validate_on_submit():
             try:
                 flash(u'Localidad: '+form.localidad.data, 'success')
@@ -412,6 +464,7 @@ def consultar():
                 raise
         else:
             flash('Falta Completar:', 'error')
+        '''
     return render_template('consultar.html', form=form)
 
 
@@ -455,3 +508,22 @@ def documents():
 @app.route('/docs/<filename>')
 def show_file(filename):
     return send_from_directory(DOCUMENTS_FOLDER, filename)
+
+
+# Vista de Resultados
+#@app.route('/resultado')
+#@login_required
+def resultado(campañas):
+    archivos = os.listdir(CAMPAIGNS_FOLDER)
+    lista = []
+    for c in campañas:
+        for a in archivos:
+            if a.find(c.split('-')[1]) > -1:
+                lista.append(a)
+    return render_template('resultado.html', list=lista)
+
+
+# Muestra archivo de campaña
+@app.route('/resultado/<filename>')
+def show_campaign(filename):
+    return send_from_directory(CAMPAIGNS_FOLDER, filename)

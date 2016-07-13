@@ -152,221 +152,271 @@ db.session.commit()
 l1 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2011, 2, 10)
 n = nombre_camp(l1, f)
-c1 = Campania(nombre=n, fecha=f, responsables=['Christian Weber', 'Martin Sandoval', 'Anabel Lamaro'], id_localidad=l1.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c1 = Campania(nombre=n, fecha=f, responsables=['Christian Weber', 'Martin Sandoval', 'Anabel Lamaro'],
+              id_localidad=l1.id, id_proyecto=p.id)
 db.session.add(c1)
 db.session.commit()
 
 l2 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2011, 2, 17)
 n = nombre_camp(l2, f)
-c2 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero'], id_localidad=l2.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c2 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero'],
+              id_localidad=l2.id, id_proyecto=p.id)
 db.session.add(c2)
 db.session.commit()
 
 l3 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2011, 2, 18)
 n = nombre_camp(l3, f)
-c3 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero'], id_localidad=l3.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c3 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero'],
+              id_localidad=l3.id, id_proyecto=p.id)
 db.session.add(c3)
 db.session.commit()
 
 l4 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2011, 2, 25)
 n = nombre_camp(l4, f)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
 c4 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero',
-                                              'Maximiliano Pisano'], id_localidad=l4.id)
+                                              'Maximiliano Pisano'], id_localidad=l4.id, id_proyecto=p.id)
 db.session.add(c4)
 db.session.commit()
 
 l5 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2011, 2, 26)
 n = nombre_camp(l5, f)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
 c5 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero',
-                                              'Maximiliano Pisano'], id_localidad=l5.id)
+                                              'Maximiliano Pisano'], id_localidad=l5.id, id_proyecto=p.id)
 db.session.add(c5)
 db.session.commit()
 
 l6 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
 f = date(2011, 5, 10)
 n = nombre_camp(l6, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c6 = Campania(nombre=n, fecha=f, responsables=['Maximiliano Guido', 'Guillermo Ibañez', 'Anabel Lamaro',
-                                              'Claudio Sanchez', 'Nicolas Soldati'], id_localidad=l6.id)
+                                              'Claudio Sanchez', 'Nicolas Soldati'], id_localidad=l6.id, id_proyecto=p.id)
 db.session.add(c6)
 db.session.commit()
 
 l7 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
 f = date(2011, 9, 20)
 n = nombre_camp(l7, f)
-c7 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero'], id_localidad=l7.id)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
+c7 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Josefina Otero'],
+              id_localidad=l7.id, id_proyecto=p.id)
 db.session.add(c7)
 db.session.commit()
 
 l8 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2011, 10, 31)
 n = nombre_camp(l8, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c8 = Campania(nombre=n+'-AYSA-CCLORO', fecha=f, responsables=['Juan Cobo', 'Maximiliano Guido', 'Mariana Horlent',
-                                                             'Anabel Lamaro', 'Carolina Fernández'], id_localidad=l8.id)
+                                                             'Anabel Lamaro', 'Carolina Fernández'], id_localidad=l8.id,
+              id_proyecto=p.id)
 db.session.add(c8)
 db.session.commit()
 
 l9 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2011, 12, 1)
 n = nombre_camp(l9, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c9 = Campania(nombre=n+'-AYSA-CCIANO', fecha=f, responsables=['Juan Cobo', 'Maximiliano Guido', 'Mariana Horlent',
-                                                             'Anabel Lamaro', 'Carolina Fernández'], id_localidad=l9.id)
+                                                             'Anabel Lamaro', 'Carolina Fernández'], id_localidad=l9.id,
+              id_proyecto=p.id)
 db.session.add(c9)
 db.session.commit()
 
 l10 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2011, 12, 1)
 n = nombre_camp(l10, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c10 = Campania(nombre=n+'-AYSA-DIATOMEAS', fecha=f, responsables=['Juan Cobo', 'Maximiliano Guido', 'Mariana Horlent',
-                                              'Anabel Lamaro', 'Carolina Fernández'], id_localidad=l10.id)
+                                              'Anabel Lamaro', 'Carolina Fernández'], id_localidad=l10.id, id_proyecto=p.id)
 db.session.add(c10)
 db.session.commit()
 
 l11 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2011, 12, 13)
 n = nombre_camp(l11, f)
-c11 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Andrea Drozd'], id_localidad=l11.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c11 = Campania(nombre=n, fecha=f, responsables=['Personal de CARU', 'Guillermo Ibañez', 'Andrea Drozd'],
+               id_localidad=l11.id, id_proyecto=p.id)
 db.session.add(c11)
 db.session.commit()
 
 l12 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2011, 12, 27)
 n = nombre_camp(l12, f)
-c12 = Campania(nombre=n, fecha=f, id_localidad=l12.id)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
+c12 = Campania(nombre=n, fecha=f, id_localidad=l12.id, id_proyecto=p.id)
 db.session.add(c12)
 db.session.commit()
 
 l13 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
 f = date(2012, 2, 1)
 n = nombre_camp(l13, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c13 = Campania(nombre=n, fecha=f, responsables=['Juan Cobo', 'Nicolás Soldati', 'Claudio Sánchez',
-                                               'Carolina Fernández'], id_localidad=l13.id)
+                                                'Carolina Fernández'], id_localidad=l13.id, id_proyecto=p.id)
 db.session.add(c13)
 db.session.commit()
 
 l14 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2012, 3, 24)
 n = nombre_camp(l14, f)
-c14 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'], id_localidad=l14.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c14 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'],
+               id_localidad=l14.id, id_proyecto=p.id)
 db.session.add(c14)
 db.session.commit()
 
 l15 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2012, 3, 25)
 n = nombre_camp(l15, f)
-c15 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'], id_localidad=l15.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c15 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'],
+               id_localidad=l15.id, id_proyecto=p.id)
 db.session.add(c15)
 db.session.commit()
 
 l16 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2012, 4, 24)
 n = nombre_camp(l16, f)
-c16 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'], id_localidad=l16.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c16 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'],
+               id_localidad=l16.id, id_proyecto=p.id)
 db.session.add(c16)
 db.session.commit()
 
 l17 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2012, 4, 25)
 n = nombre_camp(l17, f)
-c17 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'], id_localidad=l17.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c17 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'],
+               id_localidad=l17.id, id_proyecto=p.id)
 db.session.add(c17)
 db.session.commit()
 
 l18 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2012, 3, 26)
 n = nombre_camp(l18, f)
-c18 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'], id_localidad=l18.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c18 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez', 'Andrea Drozd'],
+               id_localidad=l18.id, id_proyecto=p.id)
 db.session.add(c18)
 db.session.commit()
 
 l19 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
 f = date(2012, 10, 18)
 n = nombre_camp(l19, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c19 = Campania(nombre=n, fecha=f, responsables=['Juan Cobo', 'Guillermo Ibañez', 'Ana Dogliotti',
-                                               'Mariana Horlent', 'Claudio Sanchez', 'Carolina Gonzalez'], id_localidad=l19.id)
+                                                'Mariana Horlent', 'Claudio Sanchez', 'Carolina Gonzalez'],
+               id_localidad=l19.id, id_proyecto=p.id)
 db.session.add(c19)
 db.session.commit()
 
 l20 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
 f = date(2012, 10, 31)
 n = nombre_camp(l20, f)
-c20 = Campania(nombre=n, fecha=f, responsables=['Juan Cobo', 'Guillermo Ibañez', 'Anabel Lamaro',
-                                               'Claudio Sanchez', 'Carolina Gonzalez'], id_localidad=l20.id)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
+c20 = Campania(nombre=n, fecha=f, responsables=['Juan Cobo', 'Guillermo Ibañez', 'Anabel Lamaro', 'Claudio Sanchez',
+                                                'Carolina Gonzalez'], id_localidad=l20.id, id_proyecto=p.id)
 db.session.add(c20)
 db.session.commit()
 
 l21 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 1)
 n = nombre_camp(l21, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c21 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Guillermo Ibañez', 'Anabel Lamaro',
-                                                                    'Ana Dogliotti'], id_localidad=l21.id)
+                                                                     'Ana Dogliotti'], id_localidad=l21.id,
+               id_proyecto=p.id)
 db.session.add(c21)
 db.session.commit()
 
 l22 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 13)
 n = nombre_camp(l22, f)
-c22 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Guillermo Ibañez', 'Anabel Lamaro', 'Ana Dogliotti',
-                                                                    'Aldana Bini', 'Jesús Pérez'], id_localidad=l22.id)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
+c22 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Guillermo Ibañez', 'Anabel Lamaro',
+                                                                     'Ana Dogliotti', 'Aldana Bini', 'Jesús Pérez'],
+               id_localidad=l22.id, id_proyecto=p.id)
 db.session.add(c22)
 db.session.commit()
 
 l23 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 14)
 n = nombre_camp(l23, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c23 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l23.id)
+                                                                     'Investigadores belgas'], id_localidad=l23.id,
+               id_proyecto=p.id)
 db.session.add(c23)
 db.session.commit()
 
 l24 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 15)
 n = nombre_camp(l24, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c24 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l24.id)
+                                                                     'Investigadores belgas'], id_localidad=l24.id,
+               id_proyecto=p.id)
 db.session.add(c24)
 db.session.commit()
 
 l25 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 16)
 n = nombre_camp(l25, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c25 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l25.id)
+                                                                     'Investigadores belgas'], id_localidad=l25.id,
+               id_proyecto=p.id)
 db.session.add(c25)
 db.session.commit()
 
 l26 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 19)
 n = nombre_camp(l26, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c26 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l26.id)
+                                                                    'Investigadores belgas'], id_localidad=l26.id,
+               id_proyecto=p.id)
 db.session.add(c26)
 db.session.commit()
 
 l27 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 21)
 n = nombre_camp(l27, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c27 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l27.id)
+                                                                    'Investigadores belgas'], id_localidad=l27.id,
+               id_proyecto=p.id)
 db.session.add(c27)
 db.session.commit()
 
 l28 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2012, 11, 23)
 n = nombre_camp(l28, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c28 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti',
-                                                                    'Investigadores belgas'], id_localidad=l28.id)
+                                                                    'Investigadores belgas'], id_localidad=l28.id,
+               id_proyecto=p.id)
 db.session.add(c28)
 db.session.commit()
 
 l29 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2013, 1, 23)
 n = nombre_camp(l29, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c29 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Personal de DAyE', 'Ana Dogliotti'],
-               id_localidad=l29.id)
+               id_localidad=l29.id, id_proyecto=p.id)
 db.session.add(c29)
 db.session.commit()
 
@@ -394,38 +444,46 @@ db.session.commit()
 l33 = Localidad.query.filter_by(nombre='PUNTA PIEDRAS').first()
 f = date(2013, 2, 27)
 n = nombre_camp(l33, f)
-c33 = Campania(nombre=n, fecha=f, responsables=['Guillermo Ibañez', 'Ana Dogliotti', 'Dra. Simionato'], id_localidad=l33.id)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
+c33 = Campania(nombre=n, fecha=f, responsables=['Guillermo Ibañez', 'Ana Dogliotti', 'Dra. Simionato'],
+               id_localidad=l33.id, id_proyecto=p.id)
 db.session.add(c33)
 db.session.commit()
 
 l34 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2013, 4, 16)
 n = nombre_camp(l34, f)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
 c34 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Josefina Otero', 'Aldana Bini', 'Ana Dogliotti'],
-               id_localidad=l34.id)
+               id_localidad=l34.id, id_proyecto=p.id)
 db.session.add(c34)
 db.session.commit()
 
 l35 = Localidad.query.filter_by(nombre='PUNTA PIEDRAS').first()
 f = date(2013, 4, 30)
 n = nombre_camp(l35, f)
-c35 = Campania(nombre=n, fecha=f, responsables=['Guillermo Ibañez', 'Ana Dogliotti', 'Dra. Simionato'], id_localidad=l35.id)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
+c35 = Campania(nombre=n, fecha=f, responsables=['Guillermo Ibañez', 'Ana Dogliotti', 'Dra. Simionato'],
+               id_localidad=l35.id, id_proyecto=p.id)
 db.session.add(c35)
 db.session.commit()
 
 l36 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2013, 5, 9)
 n = nombre_camp(l36, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c36 = Campania(nombre=n+'-AYSA-CCLORO', fecha=f, responsables=['Juan Cobo', 'Maximiliano Guido', 'Aldana Bini',
-                                                              'Anabel Lamaro', 'Carolina Fernandez'], id_localidad=l36.id)
+                                                               'Anabel Lamaro', 'Carolina Fernandez'],
+               id_localidad=l36.id, id_proyecto=p.id)
 db.session.add(c36)
 db.session.commit()
 
 l37 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2013, 5, 27)
 n = nombre_camp(l37, f)
+p = Proyecto.query.filter_by(nombre='AYSA-CONAE').first()
 c37 = Campania(nombre=n+'-AYSA-CCIANO', fecha=f, responsables=['Juan Cobo', 'Anabel Lamaro', 'Ivanna Tropper'],
-               id_localidad=l37.id)
+               id_localidad=l37.id, id_proyecto=p.id)
 db.session.add(c37)
 db.session.commit()
 
@@ -453,63 +511,72 @@ db.session.commit()
 l41 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2014, 3, 12)
 n = nombre_camp(l41, f)
-c41 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l41.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c41 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l41.id, id_proyecto=p.id)
 db.session.add(c41)
 db.session.commit()
 
 l42 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2014, 3, 13)
 n = nombre_camp(l42, f)
-c42 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l42.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c42 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l42.id, id_proyecto=p.id)
 db.session.add(c42)
 db.session.commit()
 
 l43 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2014, 3, 15)
 n = nombre_camp(l43, f)
-c43 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l43.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c43 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l43.id, id_proyecto=p.id)
 db.session.add(c43)
 db.session.commit()
 
 l44 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2014, 3, 18)
 n = nombre_camp(l44, f)
-c44 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Ivanna Tropper'], id_localidad=l44.id)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
+c44 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Ivanna Tropper'], id_localidad=l44.id, id_proyecto=p.id)
 db.session.add(c44)
 db.session.commit()
 
 l45 = Localidad.query.filter_by(nombre='PALERMO').first()
 f = date(2014, 4, 15)
 n = nombre_camp(l45, f)
-c45 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Ivanna Tropper'], id_localidad=l45.id)
+p = Proyecto.query.filter_by(nombre='IAFE-CONAE').first()
+c45 = Campania(nombre=n+'-MUELLE-PESCADORES', fecha=f, responsables=['Ivanna Tropper'], id_localidad=l45.id, id_proyecto=p.id)
 db.session.add(c45)
 db.session.commit()
 
 l46 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
 f = date(2014, 4, 23)
 n = nombre_camp(l46, f)
-c46 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l46.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c46 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l46.id, id_proyecto=p.id)
 db.session.add(c46)
 db.session.commit()
 
 l47 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
 f = date(2014, 4, 24)
 n = nombre_camp(l47, f)
-c47 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l47.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c47 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l47.id, id_proyecto=p.id)
 db.session.add(c47)
 db.session.commit()
 
 l48 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
 f = date(2014, 4, 25)
 n = nombre_camp(l48, f)
-c48 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l48.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c48 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l48.id, id_proyecto=p.id)
 db.session.add(c48)
 db.session.commit()
 
 l49 = Localidad.query.filter_by(nombre='RIO DE LA PLATA').first()
 f = date(2014, 5, 1)
 n = nombre_camp(l49, f)
-c49 = Campania(nombre=n, fecha=f, responsables=['Ivanna Tropper'], id_localidad=l49.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c49 = Campania(nombre=n, fecha=f, responsables=['Ivanna Tropper'], id_localidad=l49.id, id_proyecto=p.id)
 db.session.add(c49)
 db.session.commit()
 
@@ -523,28 +590,32 @@ db.session.commit()
 l51 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2014, 11, 12)
 n = nombre_camp(l51, f)
-c51 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l51.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c51 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l51.id, id_proyecto=p.id)
 db.session.add(c51)
 db.session.commit()
 
 l52 = Localidad.query.filter_by(nombre='GUALEGUAYCHU').first()
 f = date(2014, 11, 13)
 n = nombre_camp(l52, f)
-c52 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l52.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c52 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l52.id, id_proyecto=p.id)
 db.session.add(c52)
 db.session.commit()
 
 l53 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2014, 11, 14)
 n = nombre_camp(l53, f)
-c53 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l53.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c53 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l53.id, id_proyecto=p.id)
 db.session.add(c53)
 db.session.commit()
 
 l54 = Localidad.query.filter_by(nombre='SALTO GRANDE').first()
 f = date(2014, 11, 15)
 n = nombre_camp(l54, f)
-c54 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l54.id)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
+c54 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l54.id, id_proyecto=p.id)
 db.session.add(c54)
 db.session.commit()
 
@@ -558,18 +629,20 @@ db.session.commit()
 l56 = Localidad.query.filter_by(nombre='HILARIO ASCASUBI').first()
 f = date(2014, 12, 15)
 n = nombre_camp(l56, f)
+p = Proyecto.query.filter_by(nombre='INTA-CONAE').first()
 c56 = Campania(nombre=n, fecha=f, responsables=['Alejandro Pezzola', 'Mariana Horlent'], id_localidad=l56.id,
                objetivo='Determinación de la firma espectral de cultivos bajo riego en la zona de Hilario Ascasubi.',
-               id_proyecto=Proyecto.query.filter_by(nombre='INTA-CONAE').first().id)
+               id_proyecto=p.id)
 db.session.add(c56)
 db.session.commit()
 
 l57 = Localidad.query.filter_by(nombre='RIO URUGUAY').first()
 f = date(2015, 1, 21)
 n = nombre_camp(l57, f)
+p = Proyecto.query.filter_by(nombre='CARU-CONAE').first()
 c57 = Campania(nombre=n, fecha=f, responsables=['Personal CARU', 'Guillermo Ibañez'], id_localidad=l57.id,
                objetivo='Evaluar la contaminacion por algas y sedimentos el cauce del rio Uruguay y la Represa Salto Grande.',
-               id_proyecto=Proyecto.query.filter_by(nombre='CARU-CONAE').first().id)
+               id_proyecto=p.id)
 db.session.add(c57)
 db.session.commit()
 
