@@ -23,26 +23,30 @@
 
 <h1>Consulta de Datos</h1>
 <hr>
+<ul class="list-inline" name="filtro">
+    <li id="to" onclick="item_consulta('#to')"><a href="#"><h1><span class="label label-primary">Todos</span></h1></a></li>
+    <li id="p" onclick="item_consulta('#p')"><a href="#"><h2><span class="label label-info">Proyecto</span></h2></a></li>
+    <li id="l" onclick="item_consulta('#l')"><a href="#"><h2><span class="label label-info">Localidad</span></h2></a></li>
+    <li id="t" onclick="item_consulta('#t')"><a href="#"><h2><span class="label label-info">Tipo Cobertura</span></h2></a></li>
+    <li id="c" onclick="item_consulta('#c')"><a href="#"><h2><span class="label label-info">Cobertura</span></h2></a></li>
+    <li id="f" onclick="item_consulta('#f')"><a href="#"><h2><span class="label label-info">Fecha</span></h2></a></li>
+</ul>
+<br>
+<br>
 <form class="form-horizontal" action="" method="post" name="consultar">
-    <div class="form-group">
+    <div class="form-group" id="fp" style="display: none;">
         <label class="col-xs-2">Proyecto</label>
         <div class="col-xs-10">
             {{ form.proyecto(placeholder="Nombre de Proyecto", class="form-control") }}
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="fl" style="display: none;">
         <label class="col-xs-2">Localidad</label>
         <div class="col-xs-10">
             {{ form.localidad(placeholder="Nombre de la Localidad", class="form-control") }}
         </div>
     </div>
-    <!--div class="form-group">
-        <label class="col-xs-2">Campaña</label>
-        <div class="col-xs-10">
-
-        </div>
-    </div-->
-    <div class="form-group">
+    <div class="form-group" id="ff" style="display: none;">
         <label class="col-xs-2">Fechas</label>
         <div class="col-xs-10">
             <div class="input-group input-daterange">
@@ -55,13 +59,13 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="ft" style="display: none;">
         <label class="col-xs-2">Tipo de Cobertura</label>
         <div class="col-xs-10">
             {{ form.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()") }}
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="fc" style="display: none;">
         <label class="col-xs-2">Cobertura</label>
         <div class="col-xs-10">
             {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control") }}
@@ -99,14 +103,13 @@
             </div>
         </div>
     </div-->
-
     <div class="form-group">
         {{ form.hidden_tag() }}
     </div>
     <input type="submit" value="Consultar" class="btn btn-primary">
 </form>
 <hr>
-<!--div id="grafico_linea"></div--!>
+<!-- div id="grafico_linea"></div -->
 
 <!-- Scripts al terminar de cargar el documento -->
 <script>
@@ -131,6 +134,47 @@
         language: 'es',
         todayHighlight: true
     });
-
+function item_consulta(item){
+    $(item).hide();
+    if ($(item)[0].id === $('#p')[0].id){
+        $('#fp').show();
+    }
+    if ($(item)[0].id === $('#l')[0].id){
+        $('#fl').show();
+    }
+    if ($(item)[0].id === $('#f')[0].id){
+        $('#ff').show();
+    }
+    if ($(item)[0].id === $('#t')[0].id){
+        $('#ft').show();
+    }
+    if ($(item)[0].id === $('#c')[0].id){
+        $('#fc').show();
+    }
+    if ($(item)[0].id === $('#to')[0].id){
+        $('#to').show();
+        $('#p').show();
+        $('#l').show();
+        $('#f').show();
+        $('#t').show();
+        $('#c').show();
+        $('#fp').hide();
+        $('#fl').hide();
+        $('#ft').hide();
+        $('#fc').hide();
+        $('#ff').hide();
+        $('#proyecto')[0].value = 0;
+        $('#localidad')[0].value = 0;
+        $('#tipo_cobertura')[0].value = 0;
+        $('#fecha_inicio')[0].value = '';
+        $('#fecha_fin')[0].value = '';
+        $('#cobertura')[0].value = 0;
+    }
+}
+    $('#fp').hide();
+    $('#fl').hide();
+    $('#ft').hide();
+    $('#fc').hide();
+    $('#ff').hide();
 </script>
 {% endblock %}

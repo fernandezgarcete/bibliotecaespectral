@@ -31,23 +31,79 @@ function validaciones(item){
     });
 }
 
+// Filtro de consultas
+
+/*
+$(document).ready(function(){
+    $('#p').on('click',function(){
+        $(this).hide();
+        $('#fp').show();
+        $('#proyecto').value = 0;
+    });
+    $('#c').on('click',function(){
+        $(this).hide();
+        $('#fc').show();
+    });
+    $('#l').on('click',function(){
+        $(this).hide();
+        $('#fl').show();
+    });
+    $('#f').on('click',function(){
+        $(this).hide();
+        $('#ff').show();
+    });
+    $('#t').on('click',function(){
+        $(this).hide();
+        $('#ft').show();
+    });
+    $('#to').on('click',function(){
+        $('#p').show();
+        $('#l').show();
+        $('#t').show();
+        $('#c').show();
+        $('#f').show();
+        $('#fp').hide();
+        $('#fl').hide();
+        $('#ft').hide();
+        $('#fc').hide();
+        $('#ff').hide();
+    });
+});
+*/
+
 // Filtro para combos selectores
 function tipocobertura(){
     var elem = document.getElementById('tipo_cobertura');
     var valor = elem.options[elem.selectedIndex].value;
-    var agro = [[0,''],[1,'Alfalfa'], [2,'Maiz'], [3,'Soja'], [4,'Sorgo'], [5,'Trigo']];
-    var agua = [[0,''],[6,'Lago'], [7,'Rio'], [8,'Mar']];
-    var cali = [[0,''],[9,'Calibracion']];
-    var lab = [[0,''],[10,'Laboratorio']];
+    var agro = [[0,''],[8,'ALFALFA'], [4,'MAIZ'], [5,'SOJA'], [16,'SORGO'], [10,'TRIGO'], [6, 'GIRASOL'], [7, 'AGROPIRO'],
+                [9, 'CEBOLLA'], [11, 'ZANAHORIA'], [12, 'BARBECHO'], [13, 'CEBADA'], [14, 'RASTROJO'], [15, 'SUELO'],
+                [17, 'CEBOLLA MORADA']];
+    var agua = [[0,''],[3,'LAGO'], [2,'RIO'], [1,'MAR']];
+    var cali = [[0,''],[18,'CALIBRACION']];
+    var lab = [[0,''],[19,'LABORATORIO']];
 
     $('#cobertura').find('option').remove().end();
 
-    if (valor == 1) {
+    if (valor == 0){
+        for ( i = 0; i < agro.length; i++) {
+            $('#cobertura').find('option').end().append('<option value="' + agro[i][0] + '">' + agro[i][1] + '</option>');
+        }
+        for ( i = 1; i < agua.length; i++) {
+            $('#cobertura').find('option').end().append('<option value="' + agua[i][0] + '">' + agua[i][1] + '</option>');
+        }
+        for ( i = 1; i < cali.length; i++) {
+            $('#cobertura').find('option').end().append('<option value="' + cali[i][0] + '">' + cali[i][1] + '</option>');
+        }
+         for ( i=1; i < lab.length; i++){
+            $('#cobertura').find('option').end().append('<option value="'+lab[i][0]+'">'+lab[i][1]+'</option>');
+        }
+    }
+    if (valor == 2) {
         for (i = 0; i < agro.length; i++) {
             $('#cobertura').find('option').end().append('<option value="' + agro[i][0] + '">' + agro[i][1] + '</option>');
         }
     }
-    if (valor == 2) {
+    if (valor == 1) {
         for (i = 0; i < agua.length; i++) {
             $('#cobertura').find('option').end().append('<option value="' + agua[i][0] + '">' + agua[i][1] + '</option>');
         }
@@ -61,7 +117,6 @@ function tipocobertura(){
         for (i=0; i < lab.length; i++){
             $('#cobertura').find('option').end().append('<option value="'+lab[i][0]+'">'+lab[i][1]+'</option>');
         }
-
     }
 
     elem.options[elem.selectedIndex].value = valor;
