@@ -31,45 +31,6 @@ function validaciones(item){
     });
 }
 
-// Filtro de consultas
-
-/*
-$(document).ready(function(){
-    $('#p').on('click',function(){
-        $(this).hide();
-        $('#fp').show();
-        $('#proyecto').value = 0;
-    });
-    $('#c').on('click',function(){
-        $(this).hide();
-        $('#fc').show();
-    });
-    $('#l').on('click',function(){
-        $(this).hide();
-        $('#fl').show();
-    });
-    $('#f').on('click',function(){
-        $(this).hide();
-        $('#ff').show();
-    });
-    $('#t').on('click',function(){
-        $(this).hide();
-        $('#ft').show();
-    });
-    $('#to').on('click',function(){
-        $('#p').show();
-        $('#l').show();
-        $('#t').show();
-        $('#c').show();
-        $('#f').show();
-        $('#fp').hide();
-        $('#fl').hide();
-        $('#ft').hide();
-        $('#fc').hide();
-        $('#ff').hide();
-    });
-});
-*/
 
 // Filtro para combos selectores
 function tipocobertura(){
