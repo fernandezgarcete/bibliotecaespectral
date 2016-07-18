@@ -426,88 +426,161 @@ def consultar():
         fi = form.fecha_inicio.data
         ff = form.fecha_fin.data
         camps = []
+        criterios = {}
         if loc == 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.all()
         if loc > 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.filter(Campania.id_localidad == loc).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if loc > 0 and fi is not None and ff is not None and proy == 0 and cob == 0 and tp == 0:
             camps = Campania.query.filter(Campania.id_localidad == loc, Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if loc > 0 and tp > 0 and proy == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
                                                                    Cobertura.id_tipocobertura == tp).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if loc > 0 and cob > 0 and proy == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra).filter(Campania.id_localidad == loc, Muestra.id_cobertura == cob).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if proy > 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.filter(Campania.id_proyecto == proy).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
         if proy > 0 and loc > 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.id_localidad == loc).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if proy > 0 and fi is not None and ff is not None and loc == 0 and cob == 0 and tp == 0:
             camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if proy > 0 and cob > 0 and loc == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra).filter(Campania.id_proyecto == proy, Muestra.id_cobertura == cob).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if proy > 0 and tp > 0 and loc == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_proyecto == proy,
                                                                    Cobertura.id_tipocobertura == tp).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if fi is not None and loc == 0 and proy == 0 and tp == 0 and cob == 0 and ff is None:
             camps = Campania.query.filter(Campania.fecha >= fi).all()
+            criterios['Fecha Inicio'] = fi
         if ff is not None and loc == 0 and cob == 0 and tp == 0 and fi is None and proy == 0:
             camps = Campania.query.filter(Campania.fecha <= ff).all()
+            criterios['Fecha Fin'] = ff
         if fi is not None and ff is not None and cob == 0 and tp == 0 and proy == 0 and loc == 0:
             camps = Campania.query.filter(Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if cob > 0 and loc == 0 and proy == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob).all()
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if cob > 0 and fi is not None and ff is not None and loc == 0 and proy == 0 and tp == 0:
             camps = Campania.query.join(Muestra).filter(Campania.fecha >= fi, Campania.fecha <= ff,
                                                         Muestra.id_cobertura == cob).all()
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if tp > 0 and loc == 0 and proy == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp).all()
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if tp > 0 and fi is not None and ff is not None and loc == 0 and proy == 0 and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.fecha >= fi, Campania.fecha <= ff,
                                                                    Cobertura.id_tipocobertura == tp).all()
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if tp > 0 and cob > 0 and proy == 0 and loc == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and cob > 0 and proy > 0 and loc == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_proyecto == proy,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if tp > 0 and cob > 0 and loc > 0 and proy == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and loc > 0 and fi is not None and ff is not None and cob == 0 and proy == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if tp > 0 and cob > 0 and fi is not None and ff is not None and loc == 0 and proy == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Muestra.id_cobertura == cob,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if loc > 0 and cob > 0 and fi is not None and ff is not None and tp == 0 and proy == 0:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob, Campania.id_localidad == loc,
                                                         Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if proy > 0 and loc > 0 and fi is not None and ff is not None and cob == 0 and tp == 0:
             camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.id_localidad == loc,
                                           Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if proy > 0 and cob > 0 and fi is not None and ff is not None and loc == 0 and tp == 0:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob, Campania.id_proyecto == proy,
                                                         Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if proy > 0 and loc > 0 and tp > 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_proyecto == proy,
                                                                    Campania.id_localidad == loc,
                                                                    Cobertura.id_tipocobertura == tp).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if tp > 0 and proy > 0 and fi is not None and ff is not None and loc == 0 and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_proyecto == proy,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
         if proy > 0 and loc > 0 and cob > 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra).filter(Campania.id_proyecto == proy, Campania.id_localidad == loc,
                                                         Muestra.id_cobertura == cob).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and cob > 0 and proy > 0 and loc > 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_proyecto == proy,
                                                                    Campania.id_localidad == loc,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and cob > 0 and proy > 0 and loc > 0 and fi is not None and ff is not None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
                                                                    Campania.id_proyecto == proy,
@@ -515,10 +588,16 @@ def consultar():
                                                                    Campania.fecha <= ff,
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
+            criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
+            criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
+            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Fin'] = ff
+            criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
+            criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         nombres = []
         for c in camps:
             nombres.append(c.nombre)
-        return resultado(nombres)
+        return resultado(nombres, criterios)
     return render_template('consultar.html', form=form)
 
 
@@ -567,14 +646,14 @@ def show_file(filename):
 # Vista de Resultados
 #@app.route('/resultado')
 #@login_required
-def resultado(campañas):
+def resultado(campañas, criterios):
     archivos = os.listdir(CAMPAIGNS_FOLDER)
     lista = []
     for c in campañas:
         for a in archivos:
             if a.find(c.split('-')[1]) > -1:
                 lista.append(a)
-    return render_template('resultado.html', list=lista)
+    return render_template('resultado.html', list=lista, criterios=criterios)
 
 
 # Muestra archivo de campaña

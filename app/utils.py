@@ -2,7 +2,7 @@
 import fnmatch
 import os
 from app import db
-from app.models import Campania, Muestra, Punto, Fotometria
+from app.models import Campania, Muestra, Punto, Fotometria, Radiometria, ProductoRadiancia
 
 __author__ = 'Juanjo'
 from datetime import datetime
@@ -153,10 +153,10 @@ def find_pattern_files(pattern, path):
 # Cargar de archivo Fotometria
 def cargar_fotometria(uri, punto):
     f = open(uri, 'r')
-    for i, line in enumerate(f):
-        if i == 1:
-            print(line.split(',')[25:39])
-        if i > 1 and line != '\n':
+    f.readline()
+    f.readline()
+    for line in f:
+        if line != '\n':
             fot = Fotometria()
             v = line.split(',')
             fot.sig380 = float(v[25])
@@ -179,3 +179,38 @@ def cargar_fotometria(uri, punto):
             db.session.commit()
             print(v[25:39])
     f.close()
+
+def cargar_radiometria(uri, punto):
+    file = open(uri, 'r')
+    file.readline()
+    for line in file:
+        rad = Radiometria()
+        ref = line.split('\t')
+        rad.longitud_onda = int(ref[0])
+        rad.radiancia = float(ref[1].replace(',', '.'))
+        rad.id_punto = punto.id
+        db.session.add(rad)
+        db.session.commit()
+    file.close()
+
+# Carga de Reflectancia
+def cargar_prod_rad(ur1, ur2, ur3,  punto):
+    file1 = open(ur1, 'r')
+    file2 = open(ur2, 'r')
+    file3 = open(ur3, 'r')
+    file1.readline()
+    file2.readline()
+    file3.readline()
+    for line in file1:
+        prod = ProductoRadiancia()
+        ref = line.split('\t')
+        prod.longitud_onda = int(ref[0])
+        prod.reflectancia = float(ref[1].replace(',', '.'))
+        prod.radiancia_avg = float(file2.readline().split('\t')[1].replace(',', '.'))
+        prod.radiancia_std = float(file3.readline().split('\t')[1].replace(',', '.'))
+        prod.id_punto = punto.id
+        db.session.add(prod)
+        db.session.commit()
+    file1.close()
+    file2.close()
+    file3.close()

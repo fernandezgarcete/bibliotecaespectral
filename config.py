@@ -9,7 +9,7 @@ UPLOAD_FOLDER = basedir + sep + 'subidas' + sep
 ALLOWED_EXTENSIONS = set(['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG'])
 
 DOCUMENTS_FOLDER = basedir+sep+'docs'+sep
-CAMPAIGNS_FOLDER = basedir+sep+'campañas'+sep
+CAMPAIGNS_FOLDER = basedir+sep+'campanias'+sep
 
 ### Data Base Configuration ###
 db_manager = 'postgresql://'

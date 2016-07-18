@@ -37,7 +37,7 @@ archivo = '*FOT*'
 raiz = 'C:/Users/Juanjo/Documents/Biblioteca de firmas espectrales/Campañas/'
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-entablon_1216/'
+cob = 'Cebolla-entablon_1216/'
 f_url = raiz + camp + cob + 'Punto2'
 f = find_pattern_files(archivo, f_url)
 p2 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA-P2')).first()
@@ -79,7 +79,7 @@ p14 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA
 cargar_fotometria(f[0], p14)
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-temprana/'
+cob = 'Cebolla-temprana_1217/'
 f_url = raiz + camp + cob + 'Punto1'
 f = find_pattern_files(archivo, f_url)
 p1 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA-P1')).first()
@@ -116,7 +116,7 @@ p15 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA
 cargar_fotometria(f[0], p15)
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-temprana_12/'
+cob = 'Cebolla-temprana_1218/'
 f_url = raiz + camp + cob + 'Punto1'
 f = find_pattern_files(archivo, f_url)
 p16 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA-P16')).first()
@@ -189,7 +189,7 @@ p3 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M4-ALFALFA-
 cargar_fotometria(f[0], p3)
 
 camp = '56-20141215-HA/'
-cob = '5-Cebolla-morada-tardia_1217/'
+cob = 'Cebolla-morada-tardia_1217/'
 f_url = raiz + camp + cob + 'Punto1'
 f = find_pattern_files(archivo, f_url)
 p1 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M5-CEBOLLA-MORADA-P1')).first()
@@ -220,7 +220,7 @@ f = find_pattern_files(archivo, f_url)
 p6 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M5-CEBOLLA-MORADA-P6')).first()
 cargar_fotometria(f[0], p6)
 
-
+raiz = 'C:/Users/Juanjo/Documents/Biblioteca de firmas espectrales/Campañas/'
 archivo = '*FOT*'
 camp = '57-20150121-RU/'
 f_url = raiz + camp + 'Punto-1'
@@ -281,7 +281,7 @@ archivo = '*rad.txt*'
 raiz = 'C:/Users/Juanjo/Documents/Biblioteca de firmas espectrales/Campañas/'
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-entablon_1216/'
+cob = 'Cebolla-entablon_1216/'
 f_url = raiz + camp + cob + 'Punto2'
 f = find_pattern_files(archivo, f_url)
 p2 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA-P2')).first()
@@ -323,7 +323,7 @@ p14 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA
 cargar_radiometria(f[0], p14)
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-temprana/'
+cob = 'Cebolla-temprana_1217/'
 f_url = raiz + camp + cob + 'Punto1'
 f = find_pattern_files(archivo, f_url)
 p1 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA-P1')).first()
@@ -360,7 +360,7 @@ p15 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA
 cargar_radiometria(f[0], p15)
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-temprana_12/'
+cob = 'Cebolla-temprana_1218/'
 f_url = raiz + camp + cob + 'Punto1'
 f = find_pattern_files(archivo, f_url)
 p16 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M1-CEBOLLA-P16')).first()
@@ -433,7 +433,7 @@ p3 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M4-ALFALFA-
 cargar_radiometria(f[0], p3)
 
 camp = '56-20141215-HA/'
-cob = '5-Cebolla-morada-tardia_1217/'
+cob = 'Cebolla-morada-tardia_1217/'
 f_url = raiz + camp + cob + 'Punto1'
 f = find_pattern_files(archivo, f_url)
 p1 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M5-CEBOLLA-MORADA-P1')).first()
@@ -464,6 +464,7 @@ f = find_pattern_files(archivo, f_url)
 p6 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M5-CEBOLLA-MORADA-P6')).first()
 cargar_radiometria(f[0], p6)
 
+raiz = 'C:/Users/Juanjo/Documents/Biblioteca de firmas espectrales/Campañas/'
 
 camp = '57-20150121-RU/'
 f_url = raiz + camp + 'Punto-1'
@@ -531,7 +532,7 @@ def cargar_prod_rad(ur1, ur2, ur3,  punto):
 raiz = 'C:/Users/Juanjo/Documents/Biblioteca de firmas espectrales/Campañas/'
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-entablon_1216/'
+cob = 'Cebolla-entablon_1216/'
 f_url = raiz + camp + cob + 'Punto2'
 archivo = '*md.rts.txt*'
 ref1 = find_pattern_files(archivo, f_url)
@@ -614,7 +615,7 @@ cargar_prod_rad(ref1[0], ref2[0], ref3[0], p14)
 
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-temprana/'
+cob = 'Cebolla-temprana_1217/'
 f_url = raiz + camp + cob + 'Punto1'
 archivo = '*md.rts.txt*'
 ref1 = find_pattern_files(archivo, f_url)
@@ -687,7 +688,7 @@ cargar_prod_rad(ref1[0], ref2[0], ref3[0], p15)
 
 
 camp = '56-20141215-HA/'
-cob = '1-Cebolla-temprana_12/'
+cob = 'Cebolla-temprana_1218/'
 f_url = raiz + camp + cob + 'Punto1'
 archivo = '*md.rts.txt*'
 ref1 = find_pattern_files(archivo, f_url)
@@ -831,7 +832,7 @@ cargar_prod_rad(ref1[0], ref2[0], ref3[0], p3)
 
 
 camp = '56-20141215-HA/'
-cob = '5-Cebolla-morada-tardia_1217/'
+cob = 'Cebolla-morada-tardia_1217/'
 f_url = raiz + camp + cob + 'Punto1'
 archivo = '*md.rts.txt*'
 ref1 = find_pattern_files(archivo, f_url)
@@ -893,6 +894,7 @@ p6 = Punto.query.filter(Punto.nombre.like('%20141215-HILARIOASCASUBI-M5-CEBOLLA-
 cargar_prod_rad(ref1[0], ref2[0], ref3[0], p6)
 
 
+raiz = 'C:/Users/Juanjo/Documents/Biblioteca de firmas espectrales/Campañas/'
 
 camp = '57-20150121-RU/'
 f_url = raiz + camp + 'Punto-1'
