@@ -644,7 +644,6 @@ def show_file(filename):
 
 
 # Vista de Resultados
-#@app.route('/resultado')
 #@login_required
 def resultado(campañas, criterios):
     archivos = os.listdir(CAMPAIGNS_FOLDER)
