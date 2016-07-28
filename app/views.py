@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+import os
+import re
+
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
-from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.utils import secure_filename
+
+from flask_login import login_user, logout_user, current_user
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
-from .forms import LoginForm, EditForm, PostForm, SearchForm, CargarForm, ConsultarForm, ArchivoForm, LoginConaeForm
-from .models import User, Post, Localidad, TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Campania, Proyecto, \
+from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, EditarCampForm
+from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
-from .utils import cargar_archivo
-from datetime import datetime
-from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, TOKEN, LOGOUT, \
+from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form
+from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, LOGOUT, \
     CAMPAIGNS_FOLDER
 from guess_language import guessLanguage
-import os, re
 from .oauth import OAuthSignIn, ConaeSignIn
-from werkzeug.utils import secure_filename
-from sqlalchemy import or_
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -319,21 +321,20 @@ def resp():
 
 
 # Carga de archivos paso 1
-@app.route('/cargar', methods=['GET', 'POST'])
+@app.route('/cargar', methods=['GET'])
 #@login_required
 def cargar():
-    form = CargarForm()
-    form.proyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
-    form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
-    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
-    form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
-    form.camara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
-    form.espectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
-    form.instrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
-    form.gps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
+    return render_template('cargar.html')
+
+
+# Carga de archivos paso 1
+@app.route('/cargar/nuevo', methods=['GET', 'POST'])
+#@login_required
+def nuevo():
+    form_n = ini_nuevo_form()
     archivoform = ArchivoForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
+        if form_n.validate_on_submit():
             archivos = request.files.getlist('archivo')
             lugar = UPLOAD_FOLDER + re.findall("'([^']*)'", str(g.user))[0]
             count_rad=0
@@ -389,21 +390,111 @@ def cargar():
                 flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'error')
             if count_img == 0:
                 flash('No ingresó ningún archivo de Imagen', 'error')
-            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form.validate_on_submit():
+            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_n.validate_on_submit():
                 render_template('resultado.html')
         else:
             flash('Falta Completar:', 'error')
-    return render_template('cargar.html',
-                           form=form,
+    return render_template('cargar_n.html',
+                           form_n=form_n,
                            archivoform=archivoform)
 
 
-# Vista para consultar datos
-'''@app.route('/consultar')
-@login_required
-def consultar():
-    return render_template('consultar.html')
-'''
+@app.route('/cargar/editar', methods=['GET', 'POST'])
+#@login_required
+def editar_consulta():
+    id = request.args.get('id', 0, type=int)
+    form_c = ini_consulta_camp()
+    form_e = ini_editar_form(id)
+    archivoform = ArchivoForm()
+    if request.method == 'POST':
+        if form_c.validate_on_submit():
+            id = form_c.ccampania.data
+            form_e = ini_editar_form(id)
+        else:
+            flash('Falta Completar:', 'error')
+            return render_template('cargar_e.html',
+                                   form_c=form_c,
+                                   form_e=form_e,
+                                   archivoform=archivoform)
+    return render_template('cargar_e.html',
+                           form_c=form_c,
+                           form_e=form_e,
+                           archivoform=archivoform)
+
+
+@app.route('/editar/<id>', methods=['GET', 'POST'])
+#@login_required
+def editar(id):
+    form_e = ini_editar_form(id)
+    archivoform = ArchivoForm()
+    if request.method == 'POST':
+        if form_e.validate_on_submit():
+            archivos = request.files.getlist('archivo')
+            lugar = UPLOAD_FOLDER + re.findall("'([^']*)'", str(g.user))[0]
+            count_rad=0
+            count_radavg=0
+            count_radstd=0
+            count_ref=0
+            count_refavg=0
+            count_refstd=0
+            count_img=0
+            for a in archivos:
+                file_name = secure_filename(a.filename)
+                if len(file_name) > 0:
+                    tipo = archivoform.validate_archivo(file_name)
+                    if tipo:
+                        verif = cargar_archivo(lugar, file_name, tipo, a)
+                        if verif == 1:
+                            flash('Archivo Radiancia cargado: '+file_name, 'success')
+                            count_rad +=1
+                        elif verif == 2:
+                            flash('Archivo Radiancia Promedio cargado: '+file_name, 'success')
+                            count_radavg +=1
+                        elif verif == 3:
+                            flash('Archivo Radiancia Desviación Estándar cargado: '+file_name, 'success')
+                            count_radstd +=1
+                        elif verif == 4:
+                            flash('Archivo Reflectancia cargado: '+file_name, 'success')
+                            count_ref +=1
+                        elif verif == 5:
+                            flash('Archivo Reflectancia Promerdio cargado: '+file_name, 'success')
+                            count_refavg += 1
+                        elif verif == 6:
+                            flash('Archivo Reflectancia Desviación Estándar cargado: '+file_name, 'success')
+                            count_refstd +=1
+                        elif verif == 7:
+                            flash('Archivo Imagen cargado: '+file_name, 'success')
+                            count_img += 1
+                    else:
+                        flash('El archivo: '+file_name+' no es archivo de Radiancia, Reflectancia o Imagen válido.\n'+
+                              'Radiancia: ".rad.txt", ".md.txt", ".st.txt"\n'+
+                              'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n'+
+                              'Imagen: ".png", ".jpg", ".jpeg"', 'error')
+            if count_rad == 0:
+                flash('No ingresó ningún archivo de Radiancia', 'error')
+            if count_radavg == 0:
+                flash('No ingresó ningún archivo de Radiancia Promedio', 'error')
+            if count_radstd == 0:
+                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'error')
+            if count_ref == 0:
+                flash('No ingresó ningún archivo de Reflectancia', 'error')
+            if count_refavg == 0:
+                flash('No ingresó ningún archivo de Reflectancia Promedio', 'error')
+            if count_refstd == 0:
+                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'error')
+            if count_img == 0:
+                flash('No ingresó ningún archivo de Imagen', 'error')
+            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_n.validate_on_submit():
+                render_template('resultado.html')
+        if not form_e.validate_on_submit():
+            flash('Falta Completar:', 'error')
+        return render_template('cargar_e.html',
+                           form_e=form_e,
+                           archivoform=archivoform)
+    return render_template('cargar_e.html',
+                           form_e=form_e,
+                           archivoform=archivoform)
+
 
 # Carga de archivos
 @app.route('/consultar', methods=['GET', 'POST'])

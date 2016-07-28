@@ -5,146 +5,38 @@
 <head><meta charset="UTF-8"></head>
 <script>navegador('#cargar')</script>
 
-{% if form.errors or archivoform.errors%}
-    <div class="alert alert-dismissable alert-danger">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <ul>
-            {% for error in form.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
-            {% endfor %}
-            {% for error in archivoform.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
-
-
 <h1>Cargar datos de campaña</h1>
 <hr>
-<form class="form-horizontal" action="" method="post" name="cargar" enctype="multipart/form-data">
-    <div class="form-group">
-        <label class="col-xs-2">Proyecto</label>
-        <div class="col-xs-10">
-            {{ form.proyecto(placeholder="Nombre de Proyecto", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Localidad</label>
-        <div class="col-xs-10">
-            {{ form.localidad(placeholder="Nombre de la Localidad", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Campaña</label>
-        <div class="col-xs-10">
-            {{ form.campania(placeholder="Nombre de Campaña", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Fecha</label>
-        <div class="col-xs-10">
-            <div class="input-group date">
-                {{ form.fecha(placeholder='dd-mm-aaaa', class="form-control") }}
-                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Institución</label>
-        <div class="col-xs-10">
-            {{ form.institucion(placeholder="Institución involucrada", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Responsable</label>
-        <div class="col-xs-10">
-            {{ form.responsable(placeholder="Responsable de la campaña", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Objetivo</label>
-        <div class="col-xs-10">
-            {{ form.objetivo(placeholder="Describa el objetivo de campaña", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Tipo de Cobertura</label>
-        <div class="col-xs-10">
-            {{ form.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchage="tipocobertura()") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Cobertura</label>
-        <div class="col-xs-10">
-            {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Intrumento</label>
-        <div class="col-xs-10">
-            {{ form.instrumento(placeholder="Seleccione un Instrumento", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Espectralón</label>
-        <div class="col-xs-10">
-            {{ form.espectralon(placeholder="Seleccione el espectralon", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">GPS</label>
-        <div class="col-xs-10">
-            {{ form.gps(placeholder="GPS utilizado", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Cámara</label>
-        <div class="col-xs-10">
-            {{ form.camara(placeholder="Cámara utilzada", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Radiancias</label>
-        <div class="col-xs-10">
-            <div class="panel-group">
-                <label>Radiancia TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
-            </div>
-            <div class="panel-group">
-                <label>Radiancia Promedio y Desviación Estándar TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Reflectancias</label>
-        <div class="col-xs-10">
-            <div class="panel-group">
-                <label>Reflectancia TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
-            </div>
-            <div class="panel-group">
-                <label>Reflectancia Promedio y Desviación Estándar TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple") }}
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Fotos</label>
-        <div class="col-xs-10">
-            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
-        </div>
-    </div>
 
-    <div class="form-group">
-        {{ form.hidden_tag() }}
-    </div>
+<ul class="list-inline" name="filtro">
+    <li id="n" onclick="carga('#n')"><a href="#"><h1 style="font-weight: normal;">
+        <span class="label label-primary">Nuevo
+            <span class="glyphicon glyphicon-plus"></span>
+        </span></h1></a>
+    </li>
+    <li id="e" onclick="carga('#e')"><a href="#"><h1 style="font-weight: normal;">
+        <span class="label label-success">Existente
+            <span class="glyphicon glyphicon-tasks"></span>
+        </span></h1></a>
+    </li>
+</ul>
 
-    <input type="submit" value="Guardar" class="btn btn-primary">
-</form>
+
+
 
 <br>
 <!-- Scripts al cargar todo el documento -->
-<script>pickerdate('#fecha'); validaciones('#fecha');</script>
+<script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+function carga(item){
+    $('#e').hide();
+    $('#n').hide();
+    if ($(item)[0].id === $('#e')[0].id){
+        window.location = $SCRIPT_ROOT+'/cargar/editar'
+    }
+    if ($(item)[0].id === $('#n')[0].id){
+        window.location = $SCRIPT_ROOT+'/cargar/nuevo'
+    }
+}
+</script>
 {% endblock %}

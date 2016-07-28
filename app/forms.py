@@ -60,21 +60,40 @@ class SearchForm(Form):
 
 
 # Formulario carga de archivos
-class CargarForm(Form):
-    proyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
-    localidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
-    campania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
-    fecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
+class NuevaCampForm(Form):
+    nproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
+    nlocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
+    ncampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
+    nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
                       format='%d-%m-%Y')
-    institucion = StringField('intitucion', validators=[DataRequired(message=u'Institución requerida')])
-    responsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
-    objetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
-    tipo_cobertura = SelectField('tipo_cobertura', coerce=int)
-    cobertura = SelectField('cobertura', coerce=int)
-    instrumento = SelectField('instrumento', coerce=int)
-    espectralon = SelectField('espectralon', coerce=int)
-    gps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
-    camara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
+    #ninstitucion = StringField('intitucion', validators=[DataRequired(message=u'Institución requerida')])
+    nresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
+    nobjetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
+    # ntipo_cobertura = SelectField('tipo_cobertura', coerce=int)
+    # ncobertura = SelectField('cobertura', coerce=int)
+    ninstrumento = SelectField('instrumento', coerce=int)
+    nespectralon = SelectField('espectralon', coerce=int)
+    ngps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
+    ncamara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
+
+class EditarCampForm(Form):
+    eproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
+    elocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
+    ecampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
+    efecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
+                      format='%d-%m-%Y')
+    einstitucion = StringField('intitucion', validators=[DataRequired(message=u'Institución requerida')])
+    eresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
+    eobjetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
+    etipo_cobertura = SelectField('tipo_cobertura', coerce=int)
+    ecobertura = SelectField('cobertura', coerce=int)
+    einstrumento = SelectField('instrumento', coerce=int)
+    eespectralon = SelectField('espectralon', coerce=int)
+    egps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
+    ecamara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
+
+class ConsultaCampForm(Form):
+    ccampania = SelectField('campania', coerce=int, validators=[DataRequired(message=u'Campaña requerida')])
 
 
 # Formulario de archivo

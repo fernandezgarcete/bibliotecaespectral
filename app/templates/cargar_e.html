@@ -1,0 +1,264 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+
+{% if form_c.errors or form_e.errors or archivoform.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for error in form_c.errors %}
+                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% endfor %}
+            {% for error in form_e.errors %}
+                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% endfor %}
+            {% for error in archivoform.errors %}
+                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
+<h1>Editar datos de campaña</h1>
+<hr>
+
+<form class="form-horizontal" action="" method="post" name="c_camp" id="c_camp" style="display: none;">
+    <div class="form-group" id="cc">
+        <label class="col-xs-2">Campaña</label>
+        <div class="col-xs-10">
+            {{ form_c.ccampania(placeholder="Nombre de Campaña", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        {{ form_c.hidden_tag() }}
+    </div>
+
+    <input type="submit" value="Editar" class="btn btn-primary" id="csub">
+</form>
+
+
+<form class="form-horizontal" action="" method="post" name="e_camp" id="e_camp" style="display: none;">
+    <div class="form-group" id="ec">
+        <label class="col-xs-2">Campaña</label>
+        <div class="col-xs-10">
+            {{ form_e.ecampania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
+        </div>
+    </div>
+    <div class="form-group" id="ep">
+        <label class="col-xs-2">Proyecto</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+                {{ form_e.eproyecto(placeholder="Nombre de Proyecto", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#eproyecto', '#bp')" id="bp">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="el">
+        <label class="col-xs-2">Localidad</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+                {{ form_e.elocalidad(placeholder="Nombre de la Localidad", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#elocalidad', '#bl')" id="bl">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="ef">
+        <label class="col-xs-2">Fecha</label>
+        <div class="col-xs-10">
+            <div class="input-group date">
+                {{ form_e.efecha(placeholder='dd-mm-aaaa', class="form-control", disabled=true) }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#efecha', '#bf')" id="bf">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="eres">
+        <label class="col-xs-2">Responsable</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+                {{ form_e.eresponsable(placeholder="Responsable de la campaña", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#eresponsable', '#br')" id="br">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="eo">
+        <label class="col-xs-2">Objetivo</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+                {{ form_e.eobjetivo(placeholder="Describa el objetivo de campaña", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#eobjetivo', '#bo')" id="bo">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="etp">
+        <label class="col-xs-2">Tipo de Cobertura</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+                {{ form_e.etipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchage="tipocobertura()", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#etipo_cobertura', '#btp')" id="btp">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="ecob">
+        <label class="col-xs-2">Cobertura</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_e.ecobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecobertura', '#bcob')" id="bcob">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="eins">
+        <label class="col-xs-2">Espectro-radiómetro</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_e.einstrumento(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#einstrumento', '#bi')" id="bi">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="epat">
+        <label class="col-xs-2">Espectralón</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_e.eespectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#eespectralon', '#besp')" id="besp">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="egps">
+        <label class="col-xs-2">GPS</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_e.egps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#egps', '#bgps')" id="bgps">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="ecam">
+        <label class="col-xs-2">Cámara</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_e.ecamara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecamara', '#bcam')" id="bcam">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- div class="form-group" id="erad">
+        <label class="col-xs-2">Radiancias</label>
+        <div class="col-xs-10">
+            <div class="panel-group">
+                <label>Radiancia TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
+            </div>
+            <div class="panel-group">
+                <label>Radiancia Promedio y Desviación Estándar TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="eref">
+        <label class="col-xs-2">Reflectancias</label>
+        <div class="col-xs-10">
+            <div class="panel-group">
+                <label>Reflectancia TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
+            </div>
+            <div class="panel-group">
+                <label>Reflectancia Promedio y Desviación Estándar TXT</label>
+                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="efot">
+        <label class="col-xs-2">Fotos</label>
+        <div class="col-xs-10">
+            {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
+        </div>
+    </div -->
+
+    <div class="form-group">
+        {{ form_e.hidden_tag() }}
+    </div>
+
+    <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
+</form>
+
+<br>
+
+<!-- Scripts al cargar el documento -->
+<script>pickerdate('#efecha'); validaciones('#efecha');
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+var id = $('#ecampania')[0].value
+if($('#ccampania')[0].selectedIndex == 0){
+    $('#c_camp').show();
+    $('#e_camp').hide();
+}else{
+    $('#c_camp').hide();
+    $('#e_camp').show();
+}
+
+function habilitar(item, boton){
+    if($(boton+' i')[0].classList.contains('glyphicon-pencil')){
+        $(boton+' i')[0].classList.remove('glyphicon-pencil');
+        $(boton+' i')[0].classList.add('glyphicon-check')
+        $(item)[0].disabled = false;
+        return
+    }
+    if($(boton+' i')[0].classList.contains('glyphicon-check')){
+        $(boton+' i')[0].classList.remove('glyphicon-check');
+        $(boton+' i')[0].classList.add('glyphicon-pencil')
+        $(item)[0].disabled = true;
+    }
+}
+
+$('#c_camp').submit(function(){
+    if ($('#ccampania')[0].selectedIndex !== 0){
+        $('#ecampania')[0].value = $('#ccampania')[0].selectedIndex;
+
+        $.ajax({url: $SCRIPT_ROOT+'/cargar/editar', success: function(){
+            $('#c_camp').hide();
+            $('#e_camp').show();
+        }});
+    }
+});
+</script>
+{% endblock %}
