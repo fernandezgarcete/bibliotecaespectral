@@ -45,7 +45,13 @@
     <div class="form-group" id="ec">
         <label class="col-xs-2">Campaña</label>
         <div class="col-xs-10">
-            {{ form_e.ecampania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
+            <div class="input-group">
+                {{ form_e.ecampania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecampania', '#bcamp')" id="bcamp">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
         </div>
     </div>
     <div class="form-group" id="ep">
