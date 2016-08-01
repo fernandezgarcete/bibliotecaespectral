@@ -221,8 +221,8 @@ def ini_editar_form(id):
         view = db.session.query(Campania, Muestra, Cobertura).join(Muestra, Cobertura).filter(Campania.id == id).all()
         if len(view) > 0:
             camp = view[0][0]
-            mues = view[0][1]
-            cob = view[0][2]
+            mues = [view[i][1] for i, v in enumerate(view)]
+            cob = [view[i][2] for i, v in enumerate(view)]
             form.ecampania.data = camp.nombre
             form.eproyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
             form.eproyecto.data = camp.id_proyecto
@@ -232,16 +232,16 @@ def ini_editar_form(id):
             form.eresponsable.data = camp.responsables
             form.eobjetivo.data = camp.objetivo
             form.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
-            form.ecamara.data = mues.id_camara
+            form.ecamara.data = mues[0].id_camara
             form.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
-            form.eespectralon.data = mues.id_patron
+            form.eespectralon.data = mues[0].id_patron
             form.einstrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
-            form.einstrumento.data = mues.id_radiometro
+            form.einstrumento.data = mues[0].id_radiometro
             form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
-            form.egps.data = mues.id_gps
+            form.egps.data = mues[0].id_gps
             form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
-            form.etipo_cobertura.data = cob.id_tipocobertura
-            form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.filter_by(id_tipocobertura=cob.id_tipocobertura).order_by('nombre')]
+            form.etipo_cobertura.data = cob[0].id_tipocobertura
+            form.ecobertura.choices = [(cob.id, cob.nombre) for cob in cob]
             return form
         if len(view) == 0:
             form = EditarCampForm()

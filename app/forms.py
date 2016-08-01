@@ -6,7 +6,7 @@ __author__ = 'Juanjo'
 from flask_wtf import Form
 from flask_babel import gettext
 from flask_wtf.file import FileRequired, FileAllowed
-from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField
+from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField, RadioField
 from wtforms.validators import DataRequired, Length, NumberRange
 from app.models import User
 from config import ALLOWED_EXTENSIONS

@@ -191,7 +191,7 @@
     <div id="container">
 
     </div>
-    <a href="#" onclick="agregarCobertura()"><h3>
+    <a href="#ecobertura" onclick="agregarCobertura()"><h3>
         <span class="label label-primary">Agregar
             <span class="glyphicon glyphicon-plus"></span>
         </span></h3>
@@ -239,7 +239,7 @@
 <br>
 
 <!-- Scripts al cargar el documento -->
-<script>pickerdate('#efecha'); validaciones('#efecha'); agregarCobertura();
+<script>pickerdate('#efecha'); validaciones('#efecha');
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 var id = $('#ecampania')[0].value
 if($('#ccampania')[0].selectedIndex == 0){
@@ -259,7 +259,7 @@ function agregarCobertura(){
     while (container.hasChildNodes()){
         container.removeChild(container.lastChild);
     }
-    for (var i=1; i<cant; i++){
+    for (var i=0; i<cant; i++){
         // Crear el nuevo nodo
         var div_col = document.createElement('div');
         div_col.id = 'col'+i
@@ -285,13 +285,16 @@ function agregarCobertura(){
         var p = document.createElement('p');
         cap.appendChild(p);
 
-        var a = document.createElement('a');
+        var a = document.createElement('span');
         a.id = 'a'+i;
         p.appendChild(a);
         document.getElementById('a'+i).classList.add('btn');
         document.getElementById('a'+i).classList.add('btn-info');
-        document.getElementById('a'+i).setAttribute('role','button');
-        document.getElementById('a'+i).setAttribute('href','#');
+        document.getElementById('a'+i).role = 'button';
+        document.getElementById('a'+i).addEventListener('click', function(){
+            var child = this.parentElement.parentElement.parentElement.parentElement;
+            document.getElementById('container').removeChild(child);
+        });
         a.appendChild(document.createTextNode('Borrar Cobertura'));
 
         var b = document.createElement('a');
@@ -299,8 +302,23 @@ function agregarCobertura(){
         p.appendChild(b);
         document.getElementById('a2'+i).classList.add('btn');
         document.getElementById('a2'+i).classList.add('btn-default');
-        document.getElementById('a2'+i).setAttribute('role','button');
-        document.getElementById('a2'+i).setAttribute('href','#');
+        document.getElementById('a2'+i).role = 'button';
+        document.getElementById('a2'+i).addEventListener('click', function(){
+            var caption = this.parentElement.parentElement;
+            var p = this.parentElement;
+            caption.removeChild(p);
+            var puntos = caption.childElementCount - 1;
+
+            var punto = document.createElement('div');
+            punto.id = 'p'+puntos+1;
+            caption.appendChild(punto);
+            document.getElementById('p'+puntos+1).appendChild(document.createTextNode('Punto '+puntos+1));
+            var f = document.createElement('form');
+            f.id = 'fp'+puntos+1;
+            document.getElementById('p'+puntos+1).appendChild(f);
+            f.appendChild(document.createElement('label'));
+            caption.appendChild(p);
+        });
         b.appendChild(document.createTextNode('Agregar Punto'));
     }
 }
