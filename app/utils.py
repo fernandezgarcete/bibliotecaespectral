@@ -242,7 +242,6 @@ def ini_editar_form(id):
             form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
             form.etipo_cobertura.data = cob.id_tipocobertura
             form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.filter_by(id_tipocobertura=cob.id_tipocobertura).order_by('nombre')]
-            form.ecobertura.data = cob.id
             return form
         if len(view) == 0:
             form = EditarCampForm()

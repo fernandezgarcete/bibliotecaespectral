@@ -7,6 +7,9 @@ function navegador(item){
     $(item).addClass("active");
 }
 
+// Agregar Cobertura
+
+
 // Date-picker
 function pickerdate(item) {
     $(item).datepicker({
