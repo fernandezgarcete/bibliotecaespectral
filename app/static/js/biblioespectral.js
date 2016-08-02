@@ -7,6 +7,64 @@ function navegador(item){
     $(item).addClass("active");
 }
 
+// Habilitar Edicion
+function habilitar(item, boton){
+    if($(boton+' i')[0].classList.contains('glyphicon-pencil')){
+        $(boton+' i')[0].classList.remove('glyphicon-pencil');
+        $(boton+' i')[0].classList.add('glyphicon-check')
+        $(item)[0].disabled = false;
+        return
+    }
+    if($(boton+' i')[0].classList.contains('glyphicon-check')){
+        $(boton+' i')[0].classList.remove('glyphicon-check');
+        $(boton+' i')[0].classList.add('glyphicon-pencil')
+        $(item)[0].disabled = true;
+    }
+}
+
+// Item a consultar
+function item_consulta(item){
+    $(item).hide();
+    if ($(item)[0].id === $('#p')[0].id){
+        $('#fp').show();
+    }
+    if ($(item)[0].id === $('#l')[0].id){
+        $('#fl').show();
+    }
+    if ($(item)[0].id === $('#f')[0].id){
+        $('#ff').show();
+    }
+    if ($(item)[0].id === $('#t')[0].id){
+        $('#ft').show();
+    }
+    if ($(item)[0].id === $('#c')[0].id){
+        $('#fc').show();
+    }
+    if ($(item)[0].id === $('#to')[0].id){
+        $('#to').show();
+        $('#p').show();
+        $('#l').show();
+        $('#f').show();
+        $('#t').show();
+        $('#c').show();
+        $('#fp').hide();
+        $('#fl').hide();
+        $('#ft').hide();
+        $('#fc').hide();
+        $('#ff').hide();
+        $('#proyecto')[0].value = 0;
+        $('#localidad')[0].value = 0;
+        $('#tipo_cobertura')[0].value = 0;
+        $('#fecha_inicio')[0].value = '';
+        $('#fecha_fin')[0].value = '';
+        $('#cobertura')[0].value = 0;
+    }
+}
+
+// Agregar Cobertura
+
+
+
 // Date-picker
 function pickerdate(item) {
     $(item).datepicker({

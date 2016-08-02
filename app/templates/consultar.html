@@ -136,44 +136,6 @@
         startView: 2
     });
 
-function item_consulta(item){
-    $(item).hide();
-    if ($(item)[0].id === $('#p')[0].id){
-        $('#fp').show();
-    }
-    if ($(item)[0].id === $('#l')[0].id){
-        $('#fl').show();
-    }
-    if ($(item)[0].id === $('#f')[0].id){
-        $('#ff').show();
-    }
-    if ($(item)[0].id === $('#t')[0].id){
-        $('#ft').show();
-    }
-    if ($(item)[0].id === $('#c')[0].id){
-        $('#fc').show();
-    }
-    if ($(item)[0].id === $('#to')[0].id){
-        $('#to').show();
-        $('#p').show();
-        $('#l').show();
-        $('#f').show();
-        $('#t').show();
-        $('#c').show();
-        $('#fp').hide();
-        $('#fl').hide();
-        $('#ft').hide();
-        $('#fc').hide();
-        $('#ff').hide();
-        $('#proyecto')[0].value = 0;
-        $('#localidad')[0].value = 0;
-        $('#tipo_cobertura')[0].value = 0;
-        $('#fecha_inicio')[0].value = '';
-        $('#fecha_fin')[0].value = '';
-        $('#cobertura')[0].value = 0;
-    }
-}
-
     $('#fp').hide();
     $('#fl').hide();
     $('#ft').hide();

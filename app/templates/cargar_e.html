@@ -178,7 +178,7 @@
     </div>
     <div class="form-group" id="ecob">
         <label class="col-xs-2">Cobertura</label>
-        <div class="col-xs-10">
+        <div class="col-xs-10" style="display: block;">
             <div class="input-group">
             {{ form_e.ecobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
@@ -191,7 +191,7 @@
     <div id="container">
 
     </div>
-    <a href="#ecobertura" onclick="agregarCobertura()"><h3>
+    <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h3>
         <span class="label label-primary">Agregar
             <span class="glyphicon glyphicon-plus"></span>
         </span></h3>
@@ -239,102 +239,17 @@
 <br>
 
 <!-- Scripts al cargar el documento -->
-<script>pickerdate('#efecha'); validaciones('#efecha');
+<script>pickerdate('#efecha'); validaciones('#efecha'); cargarCobetura(); limpiaResponsables();
+
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-var id = $('#ecampania')[0].value
+var id = $('#ecampania')[0].value;
+
 if($('#ccampania')[0].selectedIndex == 0){
     $('#c_camp').show();
     $('#e_camp').hide();
 }else{
     $('#c_camp').hide();
     $('#e_camp').show();
-}
-
-function agregarCobertura(){
-    // Cantidad de elementos a crear
-    var cant = document.getElementById('ecobertura').length;
-    // lugar donde agragaremos los items
-    var container = document.getElementById('container');
-    // Limpiar contenido previo
-    while (container.hasChildNodes()){
-        container.removeChild(container.lastChild);
-    }
-    for (var i=0; i<cant; i++){
-        // Crear el nuevo nodo
-        var div_col = document.createElement('div');
-        div_col.id = 'col'+i
-        // agregamos al contenedor
-        container.appendChild(div_col);
-        document.getElementById('col'+i).classList.add('col-md-4');
-        document.getElementById('col'+i).classList.add('col-sm-6');
-
-        var div = document.createElement('div');
-        div.id = 'thumbnail'+i;
-        div_col.appendChild(div);
-        document.getElementById('thumbnail'+i).classList.add('thumbnail');
-
-        var cap = document.createElement('div');
-        cap.id = 'caption'+i;
-        div.appendChild(cap);
-        document.getElementById('caption'+i).classList.add('caption');
-
-        var h = document.createElement('h5');
-        cap.appendChild(h);
-        h.appendChild(document.createTextNode(document.getElementById('ecobertura')[i].text));
-
-        var p = document.createElement('p');
-        cap.appendChild(p);
-
-        var a = document.createElement('span');
-        a.id = 'a'+i;
-        p.appendChild(a);
-        document.getElementById('a'+i).classList.add('btn');
-        document.getElementById('a'+i).classList.add('btn-info');
-        document.getElementById('a'+i).role = 'button';
-        document.getElementById('a'+i).addEventListener('click', function(){
-            var child = this.parentElement.parentElement.parentElement.parentElement;
-            document.getElementById('container').removeChild(child);
-        });
-        a.appendChild(document.createTextNode('Borrar Cobertura'));
-
-        var b = document.createElement('a');
-        b.id = 'a2'+i;
-        p.appendChild(b);
-        document.getElementById('a2'+i).classList.add('btn');
-        document.getElementById('a2'+i).classList.add('btn-default');
-        document.getElementById('a2'+i).role = 'button';
-        document.getElementById('a2'+i).addEventListener('click', function(){
-            var caption = this.parentElement.parentElement;
-            var p = this.parentElement;
-            caption.removeChild(p);
-            var puntos = caption.childElementCount - 1;
-
-            var punto = document.createElement('div');
-            punto.id = 'p'+puntos+1;
-            caption.appendChild(punto);
-            document.getElementById('p'+puntos+1).appendChild(document.createTextNode('Punto '+puntos+1));
-            var f = document.createElement('form');
-            f.id = 'fp'+puntos+1;
-            document.getElementById('p'+puntos+1).appendChild(f);
-            f.appendChild(document.createElement('label'));
-            caption.appendChild(p);
-        });
-        b.appendChild(document.createTextNode('Agregar Punto'));
-    }
-}
-
-function habilitar(item, boton){
-    if($(boton+' i')[0].classList.contains('glyphicon-pencil')){
-        $(boton+' i')[0].classList.remove('glyphicon-pencil');
-        $(boton+' i')[0].classList.add('glyphicon-check')
-        $(item)[0].disabled = false;
-        return
-    }
-    if($(boton+' i')[0].classList.contains('glyphicon-check')){
-        $(boton+' i')[0].classList.remove('glyphicon-check');
-        $(boton+' i')[0].classList.add('glyphicon-pencil')
-        $(item)[0].disabled = true;
-    }
 }
 
 $('#c_camp').submit(function(){
@@ -347,5 +262,196 @@ $('#c_camp').submit(function(){
         }});
     }
 });
+
+// Escapar caracteres especiales
+function escapeRegExp(str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+// Reemplazar todas las ocurrencias de un caracter
+function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+function limpiaResponsables(){
+    var r = document.getElementById('eresponsable').value;
+    var r1 = replaceAll(r,'"','');
+    var r2 = replaceAll(r1,'{','');
+    var r3 = replaceAll(r2,',',', ');
+    var r4 = replaceAll(r3,'}','');
+    document.getElementById('eresponsable').value = r4;
+}
+
+
+function cargarCobetura(){
+    // Cantidad de elementos a crear
+    var cob = document.getElementById('ecobertura');
+    var cant = cob.length;
+    // lugar donde agragaremos los items
+    var container = document.getElementById('container');
+
+    if(cob.value > 0){
+        // Limpiar contenido previo
+        while (container.hasChildNodes()){
+            container.removeChild(container.lastChild);
+        }
+        for (var i=0; i< cant; i++){
+            // Crear el nuevo nodo
+            var div_col = document.createElement('div');
+            div_col.id = 'col'+i;
+            // agregamos al contenedor
+            div_col.classList.add('col-md-4');
+            div_col.classList.add('col-sm-6');
+            container.appendChild(div_col);
+
+            var div = document.createElement('div');
+            div.id = 'thumb'+i;
+            div.classList.add('thumbnail');
+            div_col.appendChild(div);
+
+            var cap = document.createElement('div');
+            cap.id = 'cap'+i;
+            cap.classList.add('caption');
+            div.appendChild(cap);
+
+            var a = document.createElement('span');
+            a.id = 'a'+i;
+            a.classList.add('btn');
+            a.classList.add('glyphicon');
+            a.classList.add('glyphicon-remove');
+            a.style = 'float:right;';
+            a.setAttribute('data-toggle','confirmation');
+            a.addEventListener('click', function(){
+                var child = this.parentElement.parentElement.parentElement;
+                document.getElementById('container').removeChild(child);
+            });
+            cap.appendChild(a);
+
+            var h = document.createElement('h4');
+            cap.appendChild(h);
+            h.appendChild(document.createTextNode(document.getElementById('ecobertura')[i].text));
+
+            var p = document.createElement('p');
+            cap.appendChild(p);
+
+            var b = document.createElement('span');
+            b.id = 'b'+i;
+            b.classList.add('btn');
+            b.classList.add('btn-default');
+            b.role = 'button';
+            b.addEventListener('click', function(){
+                var caption = this.parentElement.parentElement;
+                var p = this.parentElement;
+                caption.removeChild(p);
+                var puntos = caption.childElementCount - 1;
+
+                var punto = document.createElement('div');
+                punto.id = caption.id+'p'+puntos;
+
+                var elim = document.createElement('span');
+                elim.classList.add('glyphicon');
+                elim.classList.add('glyphicon-remove');
+                elim.classList.add('btn');
+                elim.addEventListener('click', function(){
+                    var child = this.parentElement;
+                    caption.removeChild(child);
+                });
+                punto.appendChild(document.createTextNode('Punto '+puntos+' '));
+                punto.appendChild(elim);
+
+                var f = document.createElement('form');
+                f.id = 'fp'+puntos;
+                punto.appendChild(f);
+                f.appendChild(document.createElement('label'));
+
+                caption.appendChild(punto);
+                caption.appendChild(p);
+            });
+            p.appendChild(b);
+            b.appendChild(document.createTextNode('Agregar Punto'));
+        }
+    }
+}
+
+function agregarCobertura(){
+    // Cantidad de elementos a crear
+    var cob = document.getElementById('ecobertura');
+    var cant = cob.length;
+    // lugar donde agragaremos los items
+    var container = document.getElementById('container');
+
+    var j = container.childElementCount;
+    // Crear el nuevo nodo
+    var div_col = document.createElement('div');
+    div_col.id = 'col'+j;
+    // agregamos al contenedor
+    div_col.classList.add('col-md-4');
+    div_col.classList.add('col-sm-6');
+    container.appendChild(div_col);
+
+    var div = document.createElement('div');
+    div.id = 'thumb'+j;
+    div.classList.add('thumbnail');
+    div_col.appendChild(div);
+
+    var cap = document.createElement('div');
+    cap.id = 'cap'+j;
+    cap.classList.add('caption');
+    div.appendChild(cap);
+
+    var a = document.createElement('span');
+    a.id = 'a'+j;
+    a.classList.add('glyphicon');
+    a.classList.add('glyphicon-remove');
+    a.classList.add('btn');
+    a.style = 'float:right;';
+    a.addEventListener('click', function(){
+        var child = this.parentElement.parentElement.parentElement;
+        document.getElementById('container').removeChild(child);
+    });
+    cap.appendChild(a);
+
+    var h = document.createElement('h5');
+    cap.appendChild(h);
+    h.innerHTML = '{{ form_e.ecobertura|safe }}';
+
+    var p = document.createElement('p');
+    cap.appendChild(p);
+
+    var b = document.createElement('span');
+    b.id = 'b'+j;
+    b.classList.add('btn');
+    b.classList.add('btn-default');
+    b.addEventListener('click', function(){
+        var caption = this.parentElement.parentElement;
+        var p = this.parentElement;
+        caption.removeChild(p);
+        var puntos = caption.childElementCount - 1;
+
+        var punto = document.createElement('div');
+        punto.id = caption.id+'p'+puntos;
+
+        var elim = document.createElement('span');
+        elim.classList.add('glyphicon');
+        elim.classList.add('glyphicon-remove');
+        elim.classList.add('btn');
+        elim.addEventListener('click', function(){
+            var child = this.parentElement;
+            caption.removeChild(child);
+        });
+        punto.appendChild(document.createTextNode('Punto '+puntos+' '));
+        punto.appendChild(elim);
+
+        var f = document.createElement('form');
+        f.id = 'fp'+puntos;
+        punto.appendChild(f);
+        f.appendChild(document.createElement('label'));
+
+        caption.appendChild(punto);
+        caption.appendChild(p);
+    });
+    p.appendChild(b);
+    b.appendChild(document.createTextNode('Agregar Punto'));
+}
 </script>
 {% endblock %}
