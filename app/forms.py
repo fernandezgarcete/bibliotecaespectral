@@ -59,7 +59,7 @@ class SearchForm(Form):
     search = StringField('search', validators=[DataRequired(message=u'Este dato es requerido')])
 
 
-# Formulario carga de archivos
+# Formulario carga de Campaña
 class NuevaCampForm(Form):
     nproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
     nlocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
@@ -76,6 +76,7 @@ class NuevaCampForm(Form):
     ngps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
     ncamara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
 
+# Formulario Editar Campaña
 class EditarCampForm(Form):
     eproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
     elocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
@@ -87,14 +88,23 @@ class EditarCampForm(Form):
     eobjetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
     etipo_cobertura = SelectField('tipo_cobertura', coerce=int)
     ecobertura = SelectField('cobertura', coerce=int)
+    ecobertura_nueva = SelectField('cobertura', coerce=int)
     einstrumento = SelectField('instrumento', coerce=int)
     eespectralon = SelectField('espectralon', coerce=int)
     egps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
     ecamara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
 
+# Formulario Consulta de Campaña
 class ConsultaCampForm(Form):
     ccampania = SelectField('campania', coerce=int, validators=[DataRequired(message=u'Campaña requerida')])
 
+# Formulario Nueva Cobertura
+class NuevaCoberturaForm(Form):
+    ncnombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre')])
+    ncid_tipocobertura = StringField('id_tipocobertura', validators=[DataRequired])
+    ncaltura = StringField('altura')
+    ncfenologia = StringField('fenologia')
+    ncobservaciones = TextAreaField('observaciones')
 
 # Formulario de archivo
 class ArchivoForm(Form):

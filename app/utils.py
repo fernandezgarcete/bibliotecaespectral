@@ -242,6 +242,9 @@ def ini_editar_form(id):
             form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
             form.etipo_cobertura.data = cob[0].id_tipocobertura
             form.ecobertura.choices = [(cob.id, cob.nombre) for cob in cob]
+            form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
+            ult = len(form.ecobertura_nueva.choices)
+            form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
             return form
         if len(view) == 0:
             form = EditarCampForm()
@@ -266,6 +269,9 @@ def ini_editar_form(id):
             form.etipo_cobertura.choices.insert(0, (0, ''))
             form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
             form.ecobertura.choices.insert(0, (0, ''))
+            form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
+            ult = len(form.ecobertura_nueva.choices)
+            form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
             return form
     if id == 0:
         form = EditarCampForm()
@@ -277,6 +283,7 @@ def ini_editar_form(id):
         form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
         form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
         form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+        form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.all()]
         return form
 
 # Iniciar Formulario Nueva Campaña

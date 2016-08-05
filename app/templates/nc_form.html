@@ -1,0 +1,13 @@
+
+<form id="nc_form">
+    {{ form.ncid_tipocobertura(class="form-control", style="display: none;") }}
+    <label>Cobertura</label>
+    {{ form.ncnombre(class="form-control", placeholder="Nombre de Cobertura") }}
+    <label>Altura</label>
+    {{ form.ncaltura(class="form-control", placeholder="Altura de Cobertura en mts. si corresponde Ej.: 1.65") }}
+    <label>Fenologia</label>
+    {{ form.ncfenologia(class="form-control", placeholder="Describa la fenologia si corresponde.") }}
+    <label>Observaciones</label>
+    {{ form.ncobservaciones(class="form-control", placeholder="Informacion extra sobre la Cobertura") }}
+</form>
+<script>validaciones('#ncaltura');</script>

@@ -11,7 +11,8 @@ from flask_login import login_user, logout_user, current_user
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
-from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, EditarCampForm
+from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, EditarCampForm, \
+    NuevaCoberturaForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
@@ -405,6 +406,7 @@ def editar_consulta():
     id = request.args.get('id', 0, type=int)
     form_c = ini_consulta_camp()
     form_e = ini_editar_form(id)
+    form_nc = NuevaCoberturaForm()
     archivoform = ArchivoForm()
     if request.method == 'POST':
         if form_c.validate_on_submit():
@@ -418,8 +420,37 @@ def editar_consulta():
                                    archivoform=archivoform)
     return render_template('cargar_e.html',
                            form_c=form_c,
+                           form_nc=form_nc,
                            form_e=form_e,
                            archivoform=archivoform)
+
+
+@app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
+#@login_required
+def nueva_cobertura():
+    form = NuevaCoberturaForm()
+    if request.method == 'POST':
+        nombre = form.ncnombre.data
+        id_tipocobertura = int(form.ncid_tipocobertura.data)
+        altura = float(form.ncaltura.data)
+        fenologia = form.ncfenologia.data
+        observaciones = request.form.getlist('ncobservaciones[]')
+        try:
+            cob = Cobertura(nombre=nombre,
+                            id_tipocobertura=id_tipocobertura,
+                            altura=altura,
+                            fenologia=fenologia,
+                            observaciones=observaciones)
+            db.session.add(cob)
+            db.session.commit()
+            return jsonify({'cob': cob.nombre})
+        except:
+            db.session.rollback()
+            return jsonify({'cob': 'error',
+                            'error': 'Datos invalidos.'})
+        return jsonify({'cob': 'error',
+                        'error': form.errors})
+    return render_template('nc_form.html', form=form)
 
 
 @app.route('/editar/<id>', methods=['GET', 'POST'])
@@ -489,8 +520,8 @@ def editar(id):
         if not form_e.validate_on_submit():
             flash('Falta Completar:', 'error')
         return render_template('cargar_e.html',
-                           form_e=form_e,
-                           archivoform=archivoform)
+                               form_e=form_e,
+                               archivoform=archivoform)
     return render_template('cargar_e.html',
                            form_e=form_e,
                            archivoform=archivoform)

@@ -178,24 +178,26 @@
     </div>
     <div class="form-group" id="ecob">
         <label class="col-xs-2">Cobertura</label>
-        <div class="col-xs-10" style="display: block;">
+        <div class="col-xs-10">
             <div class="input-group">
-            {{ form_e.ecobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
+                <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h3>
+                <span class="label label-primary">Agregar
+                    <span class="glyphicon glyphicon-plus"></span>
+                </span></h3>
+                </a>
+                {{ form_e.ecobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true, style="display: none;") }}
+                <span class="input-group-btn", style="display: none;">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#ecobertura', '#bcob')" id="bcob">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
         </div>
     </div>
+
     <div id="container">
 
     </div>
-    <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h3>
-        <span class="label label-primary">Agregar
-            <span class="glyphicon glyphicon-plus"></span>
-        </span></h3>
-    </a>
+
     <!-- div class="form-group" id="erad">
         <label class="col-xs-2">Radiancias</label>
         <div class="col-xs-10">
@@ -227,7 +229,9 @@
         <div class="col-xs-10">
             {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
         </div>
-    </div -->
+    </div>
+     -->
+    {{ form_e.ecobertura_nueva(class="form-control", disabled=true, style="display:none;") }}
 
     <div class="form-group">
         {{ form_e.hidden_tag() }}
@@ -236,10 +240,19 @@
     <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
 </form>
 
+<form id="form_nc", style="display:none;">
+    {{ form_nc.ncnombre(class="form-control") }}
+    {{ form_nc.ncid_tipocobertura(class="form-control") }}
+    {{ form_nc.ncaltura(class="form-control") }}
+    {{ form_nc.ncfenologia(class="form-control") }}
+    {{ form_nc.ncobservaciones(class="form-control") }}
+</form>
+
 <br>
 
 <!-- Scripts al cargar el documento -->
-<script>pickerdate('#efecha'); validaciones('#efecha'); cargarCobetura(); limpiaResponsables();
+<script>
+pickerdate('#efecha'); validaciones('#efecha'); cargarCoberturas(); limpiaResponsables();
 
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 var id = $('#ecampania')[0].value;
@@ -263,195 +276,6 @@ $('#c_camp').submit(function(){
     }
 });
 
-// Escapar caracteres especiales
-function escapeRegExp(str) {
-    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
 
-// Reemplazar todas las ocurrencias de un caracter
-function replaceAll(str, find, replace) {
-  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-}
-
-function limpiaResponsables(){
-    var r = document.getElementById('eresponsable').value;
-    var r1 = replaceAll(r,'"','');
-    var r2 = replaceAll(r1,'{','');
-    var r3 = replaceAll(r2,',',', ');
-    var r4 = replaceAll(r3,'}','');
-    document.getElementById('eresponsable').value = r4;
-}
-
-
-function cargarCobetura(){
-    // Cantidad de elementos a crear
-    var cob = document.getElementById('ecobertura');
-    var cant = cob.length;
-    // lugar donde agragaremos los items
-    var container = document.getElementById('container');
-
-    if(cob.value > 0){
-        // Limpiar contenido previo
-        while (container.hasChildNodes()){
-            container.removeChild(container.lastChild);
-        }
-        for (var i=0; i< cant; i++){
-            // Crear el nuevo nodo
-            var div_col = document.createElement('div');
-            div_col.id = 'col'+i;
-            // agregamos al contenedor
-            div_col.classList.add('col-md-4');
-            div_col.classList.add('col-sm-6');
-            container.appendChild(div_col);
-
-            var div = document.createElement('div');
-            div.id = 'thumb'+i;
-            div.classList.add('thumbnail');
-            div_col.appendChild(div);
-
-            var cap = document.createElement('div');
-            cap.id = 'cap'+i;
-            cap.classList.add('caption');
-            div.appendChild(cap);
-
-            var a = document.createElement('span');
-            a.id = 'a'+i;
-            a.classList.add('btn');
-            a.classList.add('glyphicon');
-            a.classList.add('glyphicon-remove');
-            a.style = 'float:right;';
-            a.setAttribute('data-toggle','confirmation');
-            a.addEventListener('click', function(){
-                var child = this.parentElement.parentElement.parentElement;
-                document.getElementById('container').removeChild(child);
-            });
-            cap.appendChild(a);
-
-            var h = document.createElement('h4');
-            cap.appendChild(h);
-            h.appendChild(document.createTextNode(document.getElementById('ecobertura')[i].text));
-
-            var p = document.createElement('p');
-            cap.appendChild(p);
-
-            var b = document.createElement('span');
-            b.id = 'b'+i;
-            b.classList.add('btn');
-            b.classList.add('btn-default');
-            b.role = 'button';
-            b.addEventListener('click', function(){
-                var caption = this.parentElement.parentElement;
-                var p = this.parentElement;
-                caption.removeChild(p);
-                var puntos = caption.childElementCount - 1;
-
-                var punto = document.createElement('div');
-                punto.id = caption.id+'p'+puntos;
-
-                var elim = document.createElement('span');
-                elim.classList.add('glyphicon');
-                elim.classList.add('glyphicon-remove');
-                elim.classList.add('btn');
-                elim.addEventListener('click', function(){
-                    var child = this.parentElement;
-                    caption.removeChild(child);
-                });
-                punto.appendChild(document.createTextNode('Punto '+puntos+' '));
-                punto.appendChild(elim);
-
-                var f = document.createElement('form');
-                f.id = 'fp'+puntos;
-                punto.appendChild(f);
-                f.appendChild(document.createElement('label'));
-
-                caption.appendChild(punto);
-                caption.appendChild(p);
-            });
-            p.appendChild(b);
-            b.appendChild(document.createTextNode('Agregar Punto'));
-        }
-    }
-}
-
-function agregarCobertura(){
-    // Cantidad de elementos a crear
-    var cob = document.getElementById('ecobertura');
-    var cant = cob.length;
-    // lugar donde agragaremos los items
-    var container = document.getElementById('container');
-
-    var j = container.childElementCount;
-    // Crear el nuevo nodo
-    var div_col = document.createElement('div');
-    div_col.id = 'col'+j;
-    // agregamos al contenedor
-    div_col.classList.add('col-md-4');
-    div_col.classList.add('col-sm-6');
-    container.appendChild(div_col);
-
-    var div = document.createElement('div');
-    div.id = 'thumb'+j;
-    div.classList.add('thumbnail');
-    div_col.appendChild(div);
-
-    var cap = document.createElement('div');
-    cap.id = 'cap'+j;
-    cap.classList.add('caption');
-    div.appendChild(cap);
-
-    var a = document.createElement('span');
-    a.id = 'a'+j;
-    a.classList.add('glyphicon');
-    a.classList.add('glyphicon-remove');
-    a.classList.add('btn');
-    a.style = 'float:right;';
-    a.addEventListener('click', function(){
-        var child = this.parentElement.parentElement.parentElement;
-        document.getElementById('container').removeChild(child);
-    });
-    cap.appendChild(a);
-
-    var h = document.createElement('h5');
-    cap.appendChild(h);
-    h.innerHTML = '{{ form_e.ecobertura|safe }}';
-
-    var p = document.createElement('p');
-    cap.appendChild(p);
-
-    var b = document.createElement('span');
-    b.id = 'b'+j;
-    b.classList.add('btn');
-    b.classList.add('btn-default');
-    b.addEventListener('click', function(){
-        var caption = this.parentElement.parentElement;
-        var p = this.parentElement;
-        caption.removeChild(p);
-        var puntos = caption.childElementCount - 1;
-
-        var punto = document.createElement('div');
-        punto.id = caption.id+'p'+puntos;
-
-        var elim = document.createElement('span');
-        elim.classList.add('glyphicon');
-        elim.classList.add('glyphicon-remove');
-        elim.classList.add('btn');
-        elim.addEventListener('click', function(){
-            var child = this.parentElement;
-            caption.removeChild(child);
-        });
-        punto.appendChild(document.createTextNode('Punto '+puntos+' '));
-        punto.appendChild(elim);
-
-        var f = document.createElement('form');
-        f.id = 'fp'+puntos;
-        punto.appendChild(f);
-        f.appendChild(document.createElement('label'));
-
-        caption.appendChild(punto);
-        caption.appendChild(p);
-    });
-    p.appendChild(b);
-    b.appendChild(document.createTextNode('Agregar Punto'));
-}
 </script>
 {% endblock %}
