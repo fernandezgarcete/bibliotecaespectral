@@ -19,9 +19,9 @@ class LoginForm(Form):
 
 # Formulario de inicio de sesión CONAE
 class LoginConaeForm(Form):
-    username = StringField('Usuario email', validators=[DataRequired(message=u'Este dato es requerido')])
+    username = StringField('User', validators=[DataRequired(message=u'Este dato es requerido')])
     password = StringField('Password', validators=[DataRequired(message=u'Este dato es requerido')])
-    userid = StringField('tocken')
+    userId = StringField('token')
 
 
 # Formulario de edición de perfil de usuario

@@ -75,7 +75,13 @@ def login():
         return redirect(url_for('index'))
     if request.method == 'POST':
         if form.validate_on_submit():
-            return sign.login(form)
+            if sign.login(form):
+                print('singin realizado')
+                return redirect(url_for('index'))
+            else:
+                return redirect(url_for('login'))
+        else:
+            flash('Falta Completar:', 'error')
     return render_template('login.html',
                            form=form)
 
@@ -416,6 +422,7 @@ def editar_consulta():
             flash('Falta Completar:', 'error')
             return render_template('cargar_e.html',
                                    form_c=form_c,
+                                   form_nc=form_nc,
                                    form_e=form_e,
                                    archivoform=archivoform)
     return render_template('cargar_e.html',
@@ -515,7 +522,7 @@ def editar(id):
                 flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'error')
             if count_img == 0:
                 flash('No ingresó ningún archivo de Imagen', 'error')
-            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_n.validate_on_submit():
+            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
                 render_template('resultado.html')
         if not form_e.validate_on_submit():
             flash('Falta Completar:', 'error')

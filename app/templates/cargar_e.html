@@ -180,10 +180,10 @@
         <label class="col-xs-2">Cobertura</label>
         <div class="col-xs-10">
             <div class="input-group">
-                <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h3>
-                <span class="label label-primary">Agregar
+                <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h4>
+                <span class="label label-primary">Agregar Cobertura
                     <span class="glyphicon glyphicon-plus"></span>
-                </span></h3>
+                </span></h4>
                 </a>
                 {{ form_e.ecobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true, style="display: none;") }}
                 <span class="input-group-btn", style="display: none;">
@@ -240,7 +240,7 @@
     <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
 </form>
 
-<form id="form_nc", style="display:none;">
+<form id="form_nc" style="display:none;">
     {{ form_nc.ncnombre(class="form-control") }}
     {{ form_nc.ncid_tipocobertura(class="form-control") }}
     {{ form_nc.ncaltura(class="form-control") }}

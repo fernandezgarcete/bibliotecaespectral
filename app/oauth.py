@@ -1,4 +1,5 @@
 import json
+import traceback
 from config import TOKEN, LOGUEO, DATOS
 import requests
 
@@ -111,22 +112,30 @@ class TwitterSignIn(OAuthSignIn):
 class ConaeSignIn():
 
     def login(self, form):
+        # !!!! Cambiar la request por la cookie de la session app
+        print(session.get('session_id'))
         resp = requests.get(TOKEN)
-        session['token'] = requests.utils.dict_from_cookiejar(resp.cookies)['PHPSESSID']
-        data = {'username': form.username.data, 'password': form.password.data, 'userId': session['token']}
+        session['userid'] = requests.utils.dict_from_cookiejar(resp.cookies)['PHPSESSID']
+        data = {'username': form.username.data, 'password': form.password.data, 'userId': form.userId.data}
+        print('data: ')
+        print(data)
         try:
-            requests.post(LOGUEO, data=data)
+            res = requests.post(LOGUEO, data=data)
+            print(res.content)
+            return True
         except:
-            self.login(form)
+            traceback.print_exc()
+            return False
 
     def is_logued(self):
-        print('tipo: '+type(session['token']))
-        print('tocado: '+session['token'])
-        if session['token'] is None or session['token'] == '':
-            return False
-        resp = requests.get(DATOS + session['token'])
-        email = json.loads(resp.content.decode('utf-8'))['email']
-        if email == 'false':
-            return False
+        if 'token' in session:
+            if session['token'] is None or session['token'] == '':
+                return False
+            resp = requests.get(DATOS + session['token'])
+            email = json.loads(resp.content.decode('utf-8'))['email']
+            if email == 'false':
+                return False
+            else:
+                return email
         else:
-            return email
+            return False

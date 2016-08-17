@@ -10,14 +10,14 @@ from flask_oidc import OpenIDConnect
 from flask_mail import Mail
 from flask.json import JSONEncoder
 from flask_bootstrap import Bootstrap
-from .momentjs import momentjs
+#from .momentjs import momentjs
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, WHOOSH_BASE
 
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-app.jinja_env.globals['momentjs'] = momentjs
+#app.jinja_env.globals['momentjs'] = momentjs
 
 lm = LoginManager()
 lm.init_app(app)

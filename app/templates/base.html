@@ -41,8 +41,8 @@
                     <ul class="nav navbar-nav">
                         <li id="inicio" class=""><a href="/index">Inicio</a></li>
                         <!-- {} #if g.user.is_authenticated %} -->
-                        <li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
-                        <li id="foro" class=""><a href="/foro">Foro</a></li>
+                        <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+                        <li id="foro" class=""><a href="/foro">Foro</a></li -->
                         <li id="docs" class=""><a href="/docs">Documentos</a></li>
                         <li id="cargar" class=""><a href="/cargar">Cargar</a></li>
                         <li id="consultar" class=""><a href="/consultar">Consultar</a></li>
@@ -57,6 +57,12 @@
             </div>
         </nav>
     </header>
+</div>
+
+<div>
+    <h2>
+        <span class="label label-default"><span class="glyphicon glyphicon-pushpin"></span>  Versión Beta</span>
+    </h2>
 </div>
 
 <div data-target="#menubar" class="container">
