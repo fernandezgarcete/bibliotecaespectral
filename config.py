@@ -6,18 +6,20 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 sep = os.path.sep
 UPLOAD_FOLDER = basedir + sep + 'subidas' + sep
-ALLOWED_EXTENSIONS = set(['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 DOCUMENTS_FOLDER = basedir+sep+'docs'+sep
 CAMPAIGNS_FOLDER = basedir+sep+'campanias'+sep
 
 ### Data Base Configuration ###
 db_manager = 'postgresql://'
-db_user = 'juanjo'
+db_user = 'jjfernandez'
 db_password = 'epsilon1'
 db_url = 'localhost'
 db_name = 'alchemy'
 db_search_whoosh = 'search_alchemy'
+# slow database query threshold (in seconds)
+DATABASE_QUERY_TIMEOUT = 0.5
 WHOOSH_BASE = db_manager+db_user+':'+db_password+'@'+db_url+'/'+db_search_whoosh
 SQLALCHEMY_DATABASE_URI = db_manager + db_user + ':' + db_password + '@' + db_url + '/' +db_name
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
@@ -43,11 +45,16 @@ OAUTH_CREDENTIALS = {
 }
 
 # API Registro CONAE
-TOKEN = 'https://registracionapi.conae.gov.ar/nombrecookie'
+API = 'https://dev-api.conae.gov.ar'
+USUARIO = 'usuario1@conae.gov.ar'
+PASSW = '123456'
+TOKEN = 'https://registracionapi.conae.gov.ar/nombrecookie/'
 DATOS = 'https://registracionapi.conae.gov.ar/datos/'
 LOGOUT = 'https://registracionapi.conae.gov.ar/logOut/'
 FORMULARIO = 'https://registracionapi.conae.gov.ar/formulario/'
 LOGUEO = 'https://registracionapi.conae.gov.ar/logueo/'
+
+
 # Configuraciones de servidor de mail
 MAIL_SERVER = 'mail.conae.gov.ar'
 MAIL_PORT = 587

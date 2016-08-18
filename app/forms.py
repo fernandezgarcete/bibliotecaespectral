@@ -21,7 +21,6 @@ class LoginForm(Form):
 class LoginConaeForm(Form):
     username = StringField('User', validators=[DataRequired(message=u'Este dato es requerido')])
     password = StringField('Password', validators=[DataRequired(message=u'Este dato es requerido')])
-    userId = StringField('token')
 
 
 # Formulario de edición de perfil de usuario

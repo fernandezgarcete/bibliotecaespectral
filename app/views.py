@@ -3,22 +3,21 @@
 from datetime import datetime
 import os
 import re
-
+import requests
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
-
-from flask_login import login_user, logout_user, current_user
+from flask_sqlalchemy import get_debug_queries
+from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
-from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, EditarCampForm, \
-    NuevaCoberturaForm
+from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, LOGOUT, \
-    CAMPAIGNS_FOLDER
+    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
 
@@ -26,7 +25,7 @@ from .oauth import OAuthSignIn, ConaeSignIn
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def index(page=1):
     user = g.user   # Se asigna el usuario de sesión actual
     form = PostForm()
@@ -54,30 +53,41 @@ def index(page=1):
 @app.before_request
 def before_request():
     g.user = current_user
-    if g.user.is_anonymous:
-        g.user = User.query.filter_by(email='anonymous@example.com').first()
-    else:
-        g.user = current_user   # agregamos a g.user al usuario de la sesión actual antes de cada request.
-    #if g.user.is_authenticated:                 # Si el usuario está autenticado,
-    g.user.last_seen = datetime.utcnow()    # registramos su última visita
-    db.session.add(g.user)                  # cargamos a la BD toda la información del usuario
-    db.session.commit()                     # y confirmamos la persistencia en la BD.
-    g.search_form = SearchForm()
+    #if g.user.is_anonymous:
+    #    g.user = User.query.filter_by(email='anonymous@example.com').first()
+    #else:
+    #    g.user = current_user   # agregamos a g.user al usuario de la sesión actual antes de cada request.
+    if g.user.is_authenticated:                 # Si el usuario está autenticado,
+        g.user.last_seen = datetime.utcnow()    # registramos su última visita
+        db.session.add(g.user)                  # cargamos a la BD toda la información del usuario
+        db.session.commit()                     # y confirmamos la persistencia en la BD.
+        g.search_form = SearchForm()
     g.locale = get_locale()
+
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning(
+                "SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                (query.statement, query.parameters, query.duration,
+                 query.context))
+    return response
 
 
 # Inicio de sesión API Conae
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginConaeForm()
-    sign = ConaeSignIn()
-    if sign.is_logued():
+    if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
+    form = LoginConaeForm()
+    conae_sign = ConaeSignIn()
     if request.method == 'POST':
         if form.validate_on_submit():
-            if sign.login(form):
-                print('singin realizado')
-                return redirect(url_for('index'))
+            datos = conae_sign.login(form)
+            if datos:
+                conae_after_login(datos)
             else:
                 return redirect(url_for('login'))
         else:
@@ -88,7 +98,7 @@ def login():
 
 
 # Inicio de sesión del usuario
-@app.route('/loginoid', methods=['GET','POST'])
+@app.route('/loginoid', methods=['GET', 'POST'])
 @oid.loginhandler       # Comunica a Flask-OpenID que es la función de Inicio de Sesión
 def loginoid():
     # Se utiliza la variable "g" de Flask para guardar valores globales. En este caso la sesión del usuario se guarda
@@ -111,10 +121,33 @@ def load_user(id):
     return User.query.get(int(id))
 
 
+def conae_after_login(datos):
+    user = User.query.filter_by(email=datos['email']).first()
+    if user is None:                                    # Si no existe, registraremos al nuevo usuario en la BD.
+        nickname = datos['nombre']+' '+datos['apellido']# Se intenta obtener el nickname de la respuesta.
+        if nickname is None or nickname == "":          # Si no se obtiene de la respuesta "resp",
+            nickname = datos['email'].split('@')[0]     # se entresaca el nickname desde el email hasta el '@'
+        nickname = User.make_valid_nickname(nickname)   # Validaciones previas a la aceptacion del nickname.
+        nickname = User.make_unique_nickname(nickname)  # No aceptar duplicados.
+        user = User(social_id='sinredsocial', nickname=nickname, email=datos['email'])# Obtenidos los datos, creamos User con el nickname y email
+        db.session.add(user)        # Agregamos a la sesión de la Base de Datos
+        db.session.commit()         # Confirmamos la persistencia del nuevo Usuario en la BD.
+        ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
+        db.session.add(user.follow(user))
+        db.session.commit()
+    # Se crea una variable para guardar el dato recuerdame
+    remember_me = False
+    if 'remember_me' in session:                # Si recuerdame está en la sesión,
+        remember_me = session['remember_me']    # se guarda el valor de la variable
+        session.pop('remember_me', None)        # y luego se saca del array de la sesión
+    login_user(user, remember=remember_me)       # Iniciamos sesión con el Usuario y recordamos si se indica
+    # Finalmente redigimos al inicio con sesión iniciada.
+    return redirect(request.args.get('next') or url_for('index'))
+
+
 # Recibiendo la respuesta del intento de inicio de sesión
 @oid.after_login
 def after_login(resp):
-
     if resp.email is None or resp.email == "":          # Si la respuesta "resp" devuelve vacío el campo email, no se
         flash('Inicio de sesión inválido. Por favor intente de nuevo.', 'error') # inició sesión y se pide de vuelta
         return redirect(url_for('login'))                               # otro intento
@@ -173,14 +206,18 @@ def oauth_callback(provider):
 def logout():
     logout_user()                       # Usamos la función de cerrar sesión de Flask
     session.pop('id', None)
-    request.get(LOGOUT+session['token'])
+    try:
+        requests.get(LOGOUT + session['userid'])
+    except:
+        pass
+    session.pop('userid', None)
     return redirect(url_for('index'))   # Redirigimos al inicio de sesión
 
 
 # Vista del perfil de usuario
 @app.route('/user/<nickname>')
 @app.route('/user/<nickname>/<int:page>')
-#@login_required
+@login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()  # Carga datos del usuario desde la BD en "user".
     if user == None:                                    # Si no existe el usuario,
@@ -194,7 +231,7 @@ def user(nickname, page=1):
 
 # Vista de la edición de perfil
 @app.route('/edit', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit():
     form = EditForm(g.user.nickname)   # Cargamos un formulario del tipo EditForm
     if form.validate_on_submit():               # Si el formulario es válido
@@ -226,7 +263,7 @@ def internal_error(error):
 
 # Vista de seguir a un usuario
 @app.route('/follow/<nickname>')
-#@login_required
+@login_required
 def follow(nickname):
     user = User.query.filter_by(nickname=nickname).first()  # Traemos el usuario requerido desde la BD
     if user is None:
@@ -248,7 +285,7 @@ def follow(nickname):
 
 # Vista de dejar de seguir a un usuario
 @app.route('/unfollow/<nickname>')
-#@login_required
+@login_required
 def unfollow(nickname):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
@@ -269,7 +306,7 @@ def unfollow(nickname):
 
 # Vista de busqueda
 @app.route('/search', methods=['POST'])
-#@login_required
+@login_required
 def search():
     if not g.search_form.validate_on_submit():
         return redirect(url_for('index'))
@@ -278,7 +315,7 @@ def search():
 
 # Vista de resultados de busqueda
 @app.route('/search_results/<query>')
-#@login_required
+@login_required
 def search_results(query):
     results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
     return render_template('search_results.html',
@@ -293,7 +330,7 @@ def get_locale():
 
 # Vista para la traduccion
 @app.route('/translate', methods=['POST'])
-#@login_required
+@login_required
 def translate():
     return jsonify({
         'text': microsoft_translate(
@@ -306,7 +343,7 @@ def translate():
 
 # Vista para borrar posteos
 @app.route('/delete/<int:id>')
-#@login_required
+@login_required
 def delete(id):
     post = Post.query.get(id)
     if post is None:
@@ -329,14 +366,14 @@ def resp():
 
 # Carga de archivos paso 1
 @app.route('/cargar', methods=['GET'])
-#@login_required
+@login_required
 def cargar():
     return render_template('cargar.html')
 
 
 # Carga de archivos paso 1
 @app.route('/cargar/nuevo', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def nuevo():
     form_n = ini_nuevo_form()
     archivoform = ArchivoForm()
@@ -407,7 +444,7 @@ def nuevo():
 
 
 @app.route('/cargar/editar', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def editar_consulta():
     id = request.args.get('id', 0, type=int)
     form_c = ini_consulta_camp()
@@ -433,7 +470,7 @@ def editar_consulta():
 
 
 @app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def nueva_cobertura():
     form = NuevaCoberturaForm()
     if request.method == 'POST':
@@ -461,7 +498,7 @@ def nueva_cobertura():
 
 
 @app.route('/editar/<id>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def editar(id):
     form_e = ini_editar_form(id)
     archivoform = ArchivoForm()
@@ -536,7 +573,7 @@ def editar(id):
 
 # Carga de archivos
 @app.route('/consultar', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def consultar():
     form = ConsultarForm()
     form.proyecto.choices = [(p.id, p.nombre) for p in Proyecto.query.order_by('nombre')]
@@ -734,7 +771,7 @@ def consultar():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/foro', methods=['GET', 'POST'])
 @app.route('/foro/<int:page>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def foro(page=1):
     user = g.user   # Se asigna el usuario de sesión actual
     form = PostForm()
@@ -760,7 +797,7 @@ def foro(page=1):
 
 # Vista de Documentos
 @app.route('/docs')
-#@login_required
+@login_required
 def documents():
     docs = os.listdir(DOCUMENTS_FOLDER)
     return render_template('docs.html', list=docs)
@@ -773,7 +810,7 @@ def show_file(filename):
 
 
 # Vista de Resultados
-#@login_required
+@login_required
 def resultado(campañas, criterios):
     archivos = os.listdir(CAMPAIGNS_FOLDER)
     lista = []

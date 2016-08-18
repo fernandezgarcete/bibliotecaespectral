@@ -18,7 +18,7 @@
     {% if title %}
     <title>{{ title }} - Biblioteca Espectral CONAE</title>
     {% else %}
-    <title>Bienvenido a Biblioteca Espectral</title>
+    <title>Biblioteca Espectral CONAE</title>
     {% endif %}
 </head>
 
@@ -40,7 +40,7 @@
                 <div class="collapse navbar-collapse navbarCollapse">
                     <ul class="nav navbar-nav">
                         <li id="inicio" class=""><a href="/index">Inicio</a></li>
-                        <!-- {} #if g.user.is_authenticated %} -->
+                        {% if g.user.is_authenticated %}
                         <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
                         <li id="docs" class=""><a href="/docs">Documentos</a></li>
@@ -50,8 +50,8 @@
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <!-- <li><a href="{{ url_for('logout') }}" onclick="signOut()">Cerrar Sesión</a></li>
-                         {} #endif %} -->
+                        <li><a href="{{ url_for('logout') }}" onclick="signOut()">Cerrar Sesión</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
