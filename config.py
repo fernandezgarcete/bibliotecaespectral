@@ -44,10 +44,16 @@ OAUTH_CREDENTIALS = {
     }
 }
 
-# API Registro CONAE
-API = 'https://dev-api.conae.gov.ar'
+# API REGISTRO CONAE DESARROLLO
+DEVREG = 'https://dev-api.conae.gov.ar/'
+DEVTOKEN = 'https://dev-api.conae.gov.ar/nombrecookie/'
+DEVDATOS = 'https://dev-api.conae.gov.ar/datos/'
+DEVLOGOUT = 'https://dev-api.conae.gov.ar/logOut/'
+DEVFORMULARIO = 'https://dev-api.conae.gov.ar/formulario/'
+DEVLOGUEO = 'https://dev-api.conae.gov.ar/logueo/'
 USUARIO = 'usuario1@conae.gov.ar'
 PASSW = '123456'
+# API REGISTRO CONAE PRODUCCION
 TOKEN = 'https://registracionapi.conae.gov.ar/nombrecookie/'
 DATOS = 'https://registracionapi.conae.gov.ar/datos/'
 LOGOUT = 'https://registracionapi.conae.gov.ar/logOut/'

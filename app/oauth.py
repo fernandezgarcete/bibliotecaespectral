@@ -1,6 +1,6 @@
 import json
 import traceback
-from config import TOKEN, LOGUEO, DATOS
+from config import DEVTOKEN, DEVLOGUEO, DEVDATOS
 import requests
 
 __author__ = 'Juanjo'
@@ -112,14 +112,14 @@ class TwitterSignIn(OAuthSignIn):
 class ConaeSignIn():
     def login(self, form):
         s = requests.Session()
-        rt = s.get(TOKEN)
+        rt = s.get(DEVTOKEN)
         session['userid'] = requests.utils.dict_from_cookiejar(rt.cookies)['PHPSESSID']
         data = {'username': form.username.data, 'password': form.password.data, 'userId': session['userid']}
         try:
-            s.post(LOGUEO + session['userid'], data=data)
+            s.post(DEVLOGUEO + session['userid'], data=data)
         except:
             pass
-        rd = s.get(DATOS + session['userid'])
+        rd = s.get(DEVDATOS + session['userid'])
         if rd.content == b'false':
             return False
         else:
@@ -130,7 +130,7 @@ class ConaeSignIn():
         if 'userid' in session:
             if session['userid'] is None or session['userid'] == '':
                 return False
-            resp = requests.get(DATOS + session['userid'])
+            resp = requests.get(DEVDATOS + session['userid'])
             if resp.content == b'false':
                 return False
             else:

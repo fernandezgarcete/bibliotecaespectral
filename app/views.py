@@ -16,7 +16,7 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
     Muestra
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form
-from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, LOGOUT, \
+from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
@@ -124,12 +124,16 @@ def load_user(id):
 def conae_after_login(datos):
     user = User.query.filter_by(email=datos['email']).first()
     if user is None:                                    # Si no existe, registraremos al nuevo usuario en la BD.
+        print('Nombre')
+        print(datos['nombre'])
         nickname = datos['nombre']+' '+datos['apellido']# Se intenta obtener el nickname de la respuesta.
+        print(nickname)
         if nickname is None or nickname == "":          # Si no se obtiene de la respuesta "resp",
             nickname = datos['email'].split('@')[0]     # se entresaca el nickname desde el email hasta el '@'
         nickname = User.make_valid_nickname(nickname)   # Validaciones previas a la aceptacion del nickname.
         nickname = User.make_unique_nickname(nickname)  # No aceptar duplicados.
-        user = User(social_id='sinredsocial', nickname=nickname, email=datos['email'])# Obtenidos los datos, creamos User con el nickname y email
+        uid = User.query.order_by(User.id.desc()).first().id + 1
+        user = User(social_id='sinredsocial'+str(uid), nickname=nickname, email=datos['email'])# Obtenidos los datos, creamos User con el nickname y email
         db.session.add(user)        # Agregamos a la sesión de la Base de Datos
         db.session.commit()         # Confirmamos la persistencia del nuevo Usuario en la BD.
         ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
@@ -142,11 +146,10 @@ def conae_after_login(datos):
         session.pop('remember_me', None)        # y luego se saca del array de la sesión
     login_user(user, remember=remember_me)       # Iniciamos sesión con el Usuario y recordamos si se indica
     # Finalmente redigimos al inicio con sesión iniciada.
-    return redirect(request.args.get('next') or url_for('index'))
+    return render_template('index.html')
 
 
 # Recibiendo la respuesta del intento de inicio de sesión
-@oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":          # Si la respuesta "resp" devuelve vacío el campo email, no se
         flash('Inicio de sesión inválido. Por favor intente de nuevo.', 'error') # inició sesión y se pide de vuelta
@@ -207,7 +210,7 @@ def logout():
     logout_user()                       # Usamos la función de cerrar sesión de Flask
     session.pop('id', None)
     try:
-        requests.get(LOGOUT + session['userid'])
+        requests.get(DEVLOGOUT + session['userid'])
     except:
         pass
     session.pop('userid', None)
