@@ -146,7 +146,7 @@ def conae_after_login(datos):
         session.pop('remember_me', None)        # y luego se saca del array de la sesión
     login_user(user, remember=remember_me)       # Iniciamos sesión con el Usuario y recordamos si se indica
     # Finalmente redigimos al inicio con sesión iniciada.
-    return render_template('index.html')
+    return redirect(request.args.get('next') or url_for('index'))
 
 
 # Recibiendo la respuesta del intento de inicio de sesión
