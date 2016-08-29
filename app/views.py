@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import re
 import requests
+import traceback
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import get_debug_queries
@@ -15,7 +16,7 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form
+from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -223,7 +224,7 @@ def logout():
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()  # Carga datos del usuario desde la BD en "user".
-    if user == None:                                    # Si no existe el usuario,
+    if user is None:                                    # Si no existe el usuario,
         flash(gettext('Usuario %s no encontrado.' % nickname), 'info')   # muestra un mensaje y
         return redirect(url_for('index'))               # envia de vuelta al inicio de sesión.
     posts = user.posts.paginate(page, POST_PER_PAGE, False)
@@ -375,9 +376,9 @@ def cargar():
 
 
 # Carga de archivos paso 1
-@app.route('/cargar/nuevo', methods=['GET', 'POST'])
+@app.route('/cargar/nueva', methods=['GET', 'POST'])
 @login_required
-def nuevo():
+def nueva():
     form_n = ini_nuevo_form()
     archivoform = ArchivoForm()
     if request.method == 'POST':
@@ -446,30 +447,30 @@ def nuevo():
                            archivoform=archivoform)
 
 
-@app.route('/cargar/editar', methods=['GET', 'POST'])
+@app.route('/cargar/actualizarcob')
 @login_required
-def editar_consulta():
-    id = request.args.get('id', 0, type=int)
+def actualizarcob():
+    arg = request.args.get('id')
+    idtp = int(request.args.get('idtp'))
+    id = int(arg.split('-')[0])
+    form = ini_actualizar_form(id, idtp)
+    return render_template('actualizarcob.html', form=form)
+
+
+@app.route('/cargar/existente', methods=['GET', 'POST'])
+@login_required
+def consulta_existente():
     form_c = ini_consulta_camp()
-    form_e = ini_editar_form(id)
-    form_nc = NuevaCoberturaForm()
-    archivoform = ArchivoForm()
     if request.method == 'POST':
         if form_c.validate_on_submit():
             id = form_c.ccampania.data
-            form_e = ini_editar_form(id)
+            return redirect(url_for('editar', id=id))
         else:
             flash('Falta Completar:', 'error')
-            return render_template('cargar_e.html',
-                                   form_c=form_c,
-                                   form_nc=form_nc,
-                                   form_e=form_e,
-                                   archivoform=archivoform)
-    return render_template('cargar_e.html',
-                           form_c=form_c,
-                           form_nc=form_nc,
-                           form_e=form_e,
-                           archivoform=archivoform)
+            return render_template('cargar_c.html',
+                                   form_c=form_c)
+    return render_template('cargar_c.html',
+                           form_c=form_c)
 
 
 @app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
@@ -479,32 +480,42 @@ def nueva_cobertura():
     if request.method == 'POST':
         nombre = form.ncnombre.data
         id_tipocobertura = int(form.ncid_tipocobertura.data)
-        altura = float(form.ncaltura.data)
-        fenologia = form.ncfenologia.data
-        observaciones = request.form.getlist('ncobservaciones[]')
         try:
-            cob = Cobertura(nombre=nombre,
+            altura = float(form.ncaltura.data)
+        except:
+            altura = 0.0
+        fenologia = form.ncfenologia.data
+        observaciones = form.ncobservaciones.data
+        if id_tipocobertura == 0:
+            return jsonify({'cob': 'error', 'error': 'Antes de crear la Cobertura, cierre esta ventana \n '
+                                                     'y elija un Tipo de Cobertura desde formulario anterior.'})
+        if nombre is None or nombre == '':
+            return jsonify({'cob': 'error', 'error': 'Ingrese un nombre para la Cobertura'})
+        try:
+            cob = Cobertura(nombre=nombre.upper(),
                             id_tipocobertura=id_tipocobertura,
                             altura=altura,
                             fenologia=fenologia,
                             observaciones=observaciones)
+
             db.session.add(cob)
             db.session.commit()
             return jsonify({'cob': cob.nombre})
         except:
+            traceback.print_exc()
             db.session.rollback()
             return jsonify({'cob': 'error',
                             'error': 'Datos invalidos.'})
-        return jsonify({'cob': 'error',
-                        'error': form.errors})
+
     return render_template('nc_form.html', form=form)
 
 
-@app.route('/editar/<id>', methods=['GET', 'POST'])
+@app.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar(id):
     form_e = ini_editar_form(id)
     archivoform = ArchivoForm()
+    form_nc = NuevaCoberturaForm()
     if request.method == 'POST':
         if form_e.validate_on_submit():
             archivos = request.files.getlist('archivo')
@@ -566,12 +577,14 @@ def editar(id):
                 render_template('resultado.html')
         if not form_e.validate_on_submit():
             flash('Falta Completar:', 'error')
-        return render_template('cargar_e.html',
+        return render_template('editar.html',
                                form_e=form_e,
-                               archivoform=archivoform)
-    return render_template('cargar_e.html',
+                               archivoform=archivoform,
+                               form_nc=form_nc)
+    return render_template('editar.html',
                            form_e=form_e,
-                           archivoform=archivoform)
+                           archivoform=archivoform,
+                           form_nc=form_nc)
 
 
 # Carga de archivos

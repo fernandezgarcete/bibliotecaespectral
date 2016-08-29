@@ -77,25 +77,26 @@ class NuevaCampForm(Form):
 
 # Formulario Editar Campaña
 class EditarCampForm(Form):
+    ecampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
     eproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
     elocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
-    ecampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
     efecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
                       format='%d-%m-%Y')
-    einstitucion = StringField('intitucion', validators=[DataRequired(message=u'Institución requerida')])
     eresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
-    eobjetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
-    etipo_cobertura = SelectField('tipo_cobertura', coerce=int)
-    ecobertura = SelectField('cobertura', coerce=int)
+    eobjetivo = TextAreaField('objetivo')
     ecobertura_nueva = SelectField('cobertura', coerce=int)
     einstrumento = SelectField('instrumento', coerce=int)
     eespectralon = SelectField('espectralon', coerce=int)
-    egps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
-    ecamara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
+    egps = SelectField('gps', coerce=int)  # validators=[DataRequired(message=u'Describa GPS')])
+    ecamara = SelectField('camara', coerce=int)  # validators=[DataRequired(message=u'Cámara utilizada')])
+    etipo_cobertura = SelectField('tipo_cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese un Tipo de Cobertura')])
+    ecobertura = SelectMultipleField('cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese una Cobertura')])
+
 
 # Formulario Consulta de Campaña
 class ConsultaCampForm(Form):
     ccampania = SelectField('campania', coerce=int, validators=[DataRequired(message=u'Campaña requerida')])
+
 
 # Formulario Nueva Cobertura
 class NuevaCoberturaForm(Form):
@@ -104,6 +105,7 @@ class NuevaCoberturaForm(Form):
     ncaltura = StringField('altura')
     ncfenologia = StringField('fenologia')
     ncobservaciones = TextAreaField('observaciones')
+
 
 # Formulario de archivo
 class ArchivoForm(Form):

@@ -92,6 +92,137 @@ function limpiaResponsables(){
     document.getElementById('eresponsable').value = r4;
 }
 
+// Crear Mensaje de Error Generico
+function errorMensaje(id, nombre, mens, parent){
+    var alerta = document.createElement('div');
+    alerta.id = nombre + id;
+    alerta.classList.add('alert');
+    alerta.classList.add('alert-danger');
+    alerta.classList.add('alert-dismissible');
+    alerta.role = 'alert';
+    parent.appendChild(alerta);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('close');
+    btn.setAttribute('data-dismissible','alert');
+    btn.setAttribute('aria-label','Cerrar');
+    alerta.appendChild(btn);
+
+    var sp = document.createElement('span');
+    sp.setAttribute('aria-hidden','true');
+    sp.classList.add('glyphicon');
+    sp.classList.add('glyphicon-remove');
+    sp.classList.add('btn');
+    btn.addEventListener('click', function(){alerta.remove();});
+    btn.appendChild(sp);
+
+    var tit = document.createElement('strong');
+    tit.appendChild(document.createTextNode('Error: '));
+    alerta.appendChild(tit);
+
+    alerta.appendChild(document.createTextNode(mens));
+}
+
+// Crear Mensaje de Info Generico
+function infoMensaje(id, nombre, mens, parent){
+    var alerta = document.createElement('div');
+    alerta.id = nombre + id;
+    alerta.classList.add('alert');
+    alerta.classList.add('alert-info');
+    alerta.classList.add('alert-dismissible');
+    alerta.role = 'alert';
+    parent.appendChild(alerta);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('close');
+    btn.setAttribute('data-dismissible','alert');
+    btn.setAttribute('aria-label','Cerrar');
+    alerta.appendChild(btn);
+
+    var sp = document.createElement('span');
+    sp.setAttribute('aria-hidden','true');
+    sp.classList.add('glyphicon');
+    sp.classList.add('glyphicon-remove');
+    sp.classList.add('btn');
+    btn.addEventListener('click', function(){alerta.remove();});
+    btn.appendChild(sp);
+
+    var tit = document.createElement('strong');
+    tit.appendChild(document.createTextNode('Info: '));
+    alerta.appendChild(tit);
+
+    alerta.appendChild(document.createTextNode(mens));
+}
+
+// Crear Modal Generico
+function crearModal(id, nombre, tit, mensaje, okBtnText, btnclass){
+    var modal = document.createElement('div');
+    modal.id = nombre + id;
+    modal.classList.add('modal');
+    modal.classList.add('fade');
+    modal.role = 'dialog';
+    modal.setAttribute('tab-index','-1');
+    modal.setAttribute('aria-labelledby','modal-title');
+    document.body.appendChild(modal);
+
+    var dialog = document.createElement('div');
+    dialog.classList.add('modal-dialog');
+    dialog.role = 'document';
+    modal.appendChild(dialog);
+
+    var content = document.createElement('div');
+    content.classList.add('modal-content');
+    dialog.appendChild(content);
+
+    var header = document.createElement('div');
+    header.classList.add('modal-header');
+    content.appendChild(header);
+
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.classList.add('close');
+    close.setAttribute('data-dismiss','modal');
+    close.setAttribute('aria-label','Close');
+    close.classList.add('glyphicon');
+    close.classList.add('glyphicon-remove');
+    close.classList.add('btn');
+    header.appendChild(close);
+
+    var title = document.createElement('h4');
+    title.classList.add('modal-title');
+    title.id = 'modal-title';
+    title.appendChild(document.createTextNode(tit));
+    header.appendChild(title);
+
+    var body = document.createElement('div');
+    body.classList.add('modal-body');
+    content.appendChild(body);
+
+    var mens = document.createElement('p');
+    mens.appendChild(document.createTextNode(mensaje));
+    body.appendChild(mens);
+
+    var footer = document.createElement('div');
+    footer.classList.add('modal-footer');
+    content.appendChild(footer);
+
+    var cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.classList.add('btn');
+    cancel.classList.add('btn-default');
+    cancel.setAttribute('data-dismiss','modal');
+    cancel.appendChild(document.createTextNode('Cancelar'));
+    footer.appendChild(cancel);
+
+    var ok = document.createElement('a');
+    ok.classList.add('btn');
+    ok.classList.add(btnclass);
+    ok.classList.add('btn-ok');
+    ok.appendChild(document.createTextNode(okBtnText));
+    footer.appendChild(ok);
+}
 
 function cargarCoberturas(){
     // Cantidad de elementos a crear
@@ -119,6 +250,12 @@ function agregarCobertura(nombre){
     var container = document.getElementById('container');
     // Nro de item actual
     var j = container.childElementCount;
+
+    if($('select[name=etipo_cobertura]').val() == 0){
+        var mens = 'Antes de continuar elija un Tipo de Cobertura';
+        errorMensaje(j,'err',mens,container);
+        return;
+    }
 
     // Crear el nuevo nodo
     var div_col = document.createElement('div');
@@ -177,7 +314,7 @@ function agregarCobertura(nombre){
         cob.addEventListener('change', function(){
             var val = this.options[this.selectedIndex].text;
             if(val === 'Nueva..'){
-                crearModalCobertura(j)
+                crearModalNuevaCobertura(j)
                 $('#nueva-cob'+j).modal('show');
             } else {
                 var parent = this.parentElement;
@@ -247,129 +384,47 @@ function crearModalBorrar(id, tit, mensaje){
 }
 
 // Crear Modal Nueva Cobertura
-function crearModalCobertura(id){
+function crearModalNuevaCobertura(id){
     crearModal(id, 'nueva-cob', 'Nueva Cobertura', 'Cargar los datos de la nueva cobertura', 'Guardar', 'btn-primary');
 
     var body = $('#nueva-cob'+id+' .modal-body')[0];
 
     var f = $.ajax({url:$SCRIPT_ROOT+'/editar/nueva_cobertura', success: function(res){
         body.innerHTML = res;
-        $('#ncid_tipocobertura')[0].value = document.getElementById('etipo_cobertura').selectedIndex;
-
+        $('#ncaltura')[0].addEventListener('keydown', function(e){
+            var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,189]; // numeros, guion, borrar, enter
+            if ($.inArray(e.keyCode, accepted) == -1){
+                e.preventDefault();
+            }
+        });
         $('#nueva-cob'+id+' .btn-ok')[0].addEventListener('click', function(){
-            $('#nc_form').submit(function(event){
-                event.preventDefault();
-                var data = $(this).serialize;
-                $.post($SCRIPT_ROOT+'/editar/nueva_cobertura', data,
-                    function(res){
-                        if(res["cob"] === "error"){
-                            errorMensaje(id,'err',res["error"],$('#nueva-cob'+id)[0]);
-                        }
-                    }
-                );
+            var valores = {};
+            $.each($('#nc_form').serializeArray(), function(i,field){
+                valores[field.name] = field.value;
             });
-            $('#nc_form').submit();
+            valores['ncid_tipocobertura'] = $('select[name=etipo_cobertura]').val();
+            $.ajax({method:'POST', url:$SCRIPT_ROOT+'/editar/nueva_cobertura', data:valores})
+                .done(function(res){
+                    if(res["cob"] === "error"){
+                        errorMensaje(id,'err',res["error"],$('#nueva-cob'+id)[0]);
+                    }
+                    if(res["cob"] !== "error"){
+                        infoMensaje(id, 'info', res["cob"],$('#nueva-cob'+id)[0]);
+                        setTimeout(function() {$('#nueva-cob'+id).modal('hide');}, 2500);
+                        var cober = document.getElementById('ecobertura_nueva');
+                        $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
+                            data:{id:$('#ecampania').val(), idtp:$('#etipo_cobertura').val()}, success: function(resp) {
+                                cober.innerHTML = resp;
+                            }
+                        });
+                    }
+                });
         });
     }});
 
-    $('#nueva-cob'+id).on('hidden.bs.modal', function(e){$('#nueva-cob'+id).remove();});
+    $('#nueva-cob'+id).on('hidden.bs.modal', function(e){$('#nueva-cob'+id).remove(); $('#col'+id).remove();});
 }
 
-// Crear Mensaje de Error Generico
-function errorMensaje(id, nombre, mens, parent){
-    var alerta = document.createElement('div');
-    alerta.id = nombre + id;
-    alerta.classList.add('alert');
-    alerta.classList.add('alert-danger');
-    alerta.classList.add('alert-dismissible');
-    alerta.role = 'alert';
-    parent.appendChild(alerta);
-
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.classList.add('close');
-    btn.setAttribute('data-dismissible','alert');
-    btn.setAttribute('aria-label','Cerrar');
-    alerta.appendChild(btn);
-
-    var sp = document.createElement('span');
-    sp.setAttribute('aria-hidden','true');
-    sp.appendChild(document.createTextNode('x'));
-    btn.addEventListener('click', function(){alerta.remove();});
-    btn.appendChild(sp);
-
-    var tit = document.createElement('strong');
-    tit.appendChild(document.createTextNode('Error: '));
-    alerta.appendChild(tit);
-
-    alerta.appendChild(document.createTextNode(mens));
-}
-
-// Crear Modal Generico
-function crearModal(id, nombre, tit, mensaje, okBtnText, btnclass){
-    var modal = document.createElement('div');
-    modal.id = nombre + id;
-    modal.classList.add('modal');
-    modal.classList.add('fade');
-    modal.role = 'dialog';
-    modal.setAttribute('tab-index','-1');
-    modal.setAttribute('aria-labelledby','modal-title');
-    document.body.appendChild(modal);
-
-    var dialog = document.createElement('div');
-    dialog.classList.add('modal-dialog');
-    dialog.role = 'document';
-    modal.appendChild(dialog);
-
-    var content = document.createElement('div');
-    content.classList.add('modal-content');
-    dialog.appendChild(content);
-
-    var header = document.createElement('div');
-    header.classList.add('modal-header');
-    content.appendChild(header);
-
-    var close = document.createElement('button');
-    close.type = 'button';
-    close.classList.add('close');
-    close.setAttribute('data-dismiss','modal');
-    close.setAttribute('aria-label','Close');
-    close.appendChild(document.createTextNode('x'));
-    header.appendChild(close);
-
-    var title = document.createElement('h4');
-    title.classList.add('modal-title');
-    title.id = 'modal-title';
-    title.appendChild(document.createTextNode(tit));
-    header.appendChild(title);
-
-    var body = document.createElement('div');
-    body.classList.add('modal-body');
-    content.appendChild(body);
-
-    var mens = document.createElement('p');
-    mens.appendChild(document.createTextNode(mensaje));
-    body.appendChild(mens);
-
-    var footer = document.createElement('div');
-    footer.classList.add('modal-footer');
-    content.appendChild(footer);
-
-    var cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.classList.add('btn');
-    cancel.classList.add('btn-default');
-    cancel.setAttribute('data-dismiss','modal');
-    cancel.appendChild(document.createTextNode('Cancelar'));
-    footer.appendChild(cancel);
-
-    var ok = document.createElement('a');
-    ok.classList.add('btn');
-    ok.classList.add(btnclass);
-    ok.classList.add('btn-ok');
-    ok.appendChild(document.createTextNode(okBtnText));
-    footer.appendChild(ok);
-}
 
 // Date-picker
 function pickerdate(item) {
@@ -384,58 +439,13 @@ function pickerdate(item) {
     });
 }
 
-
-// Filtro para combos selectores
 function tipocobertura(){
-    var elem = document.getElementById('tipo_cobertura');
-    var valor = elem.options[elem.selectedIndex].value;
-    var agro = [[0,''],[8,'ALFALFA'], [4,'MAIZ'], [5,'SOJA'], [16,'SORGO'], [10,'TRIGO'], [6, 'GIRASOL'], [7, 'AGROPIRO'],
-                [9, 'CEBOLLA'], [11, 'ZANAHORIA'], [12, 'BARBECHO'], [13, 'CEBADA'], [14, 'RASTROJO'], [15, 'SUELO'],
-                [17, 'CEBOLLA MORADA']];
-    var agua = [[0,''],[3,'LAGO'], [2,'RIO'], [1,'MAR']];
-    var cali = [[0,''],[18,'CALIBRACION']];
-    var lab = [[0,''],[19,'LABORATORIO']];
-
-    $('#cobertura').find('option').remove().end();
-
-    if (valor == 0){
-        for ( i = 0; i < agro.length; i++) {
-            $('#cobertura').find('option').end().append('<option value="' + agro[i][0] + '">' + agro[i][1] + '</option>');
+    var cober = document.getElementById('ecobertura_nueva');
+    $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
+        data:{id:$('#ecampania').val(), idtp:$('#etipo_cobertura').val()}, success: function(resp) {
+            cober.innerHTML = resp;
         }
-        for ( i = 1; i < agua.length; i++) {
-            $('#cobertura').find('option').end().append('<option value="' + agua[i][0] + '">' + agua[i][1] + '</option>');
-        }
-        for ( i = 1; i < cali.length; i++) {
-            $('#cobertura').find('option').end().append('<option value="' + cali[i][0] + '">' + cali[i][1] + '</option>');
-        }
-         for ( i=1; i < lab.length; i++){
-            $('#cobertura').find('option').end().append('<option value="'+lab[i][0]+'">'+lab[i][1]+'</option>');
-        }
-    }
-    if (valor == 2) {
-        for (i = 0; i < agro.length; i++) {
-            $('#cobertura').find('option').end().append('<option value="' + agro[i][0] + '">' + agro[i][1] + '</option>');
-        }
-    }
-    if (valor == 1) {
-        for (i = 0; i < agua.length; i++) {
-            $('#cobertura').find('option').end().append('<option value="' + agua[i][0] + '">' + agua[i][1] + '</option>');
-        }
-    }
-    if (valor == 3) {
-        for (i = 0; i < cali.length; i++) {
-            $('#cobertura').find('option').end().append('<option value="' + cali[i][0] + '">' + cali[i][1] + '</option>');
-        }
-    }
-    if (valor == 4) {
-        for (i=0; i < lab.length; i++){
-            $('#cobertura').find('option').end().append('<option value="'+lab[i][0]+'">'+lab[i][1]+'</option>');
-        }
-    }
-
-    elem.options[elem.selectedIndex].value = valor;
-
-    return elem.options[elem.selectedIndex].value = valor;
+    });
 }
 
 // Llamado que crea y amplia una tabla de datos, instancia el grafico de tortas, pasa el dato y lo dibuja.

@@ -55,7 +55,7 @@ class Localidad(db.Model):
 # Tabla Proyecto
 class Proyecto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(140))
+    nombre = db.Column(db.String(140), nullable=False, unique=True)
     descripcion = db.Column(db.String(140))
     responsables = db.Column(db.String(340))
     status = db.Column(db.Boolean)
@@ -93,7 +93,7 @@ class Proyecto(db.Model):
 # Tabla Campaña
 class Campania(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(80))
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
     fecha = db.Column(db.DateTime)
     responsables = db.Column(db.String(340))
     id_localidad = db.Column(db.Integer, db.ForeignKey('localidad.id'))
@@ -123,7 +123,7 @@ class Campania(db.Model):
 # Tabla tipo de cobertura
 class TipoCobertura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(80))
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
     coberturas = db.relationship('Cobertura', backref='cobertura', lazy='dynamic',
                                  cascade="save-update, merge, delete")
 
@@ -144,7 +144,7 @@ class TipoCobertura(db.Model):
 # Tabla Cobertura
 class Cobertura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(80))
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
     id_tipocobertura = db.Column(db.Integer, db.ForeignKey('tipo_cobertura.id'))
     altura = db.Column(db.DECIMAL(precision=5, scale=2))
     fenologia = db.Column(db.String(140))
@@ -169,7 +169,7 @@ class Cobertura(db.Model):
 # Tabla Muestra
 class Muestra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(80))
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
     operador = db.Column(db.String(80))
     uuid = db.Column(db.String(80))
     id_cobertura = db.Column(db.Integer, db.ForeignKey('cobertura.id'))
@@ -201,7 +201,7 @@ class Muestra(db.Model):
 class Camara(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(80))
-    nombre = db.Column(db.String(140))
+    nombre = db.Column(db.String(140), nullable=False, unique=True)
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
@@ -227,7 +227,7 @@ class Camara(db.Model):
 class Gps(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(80))
-    nombre = db.Column(db.String(140))
+    nombre = db.Column(db.String(140), nullable=False, unique=True)
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
@@ -253,7 +253,7 @@ class Gps(db.Model):
 class Fotometro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(80))
-    nombre = db.Column(db.String(140))
+    nombre = db.Column(db.String(140), nullable=False, unique=True)
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
@@ -279,7 +279,7 @@ class Fotometro(db.Model):
 class Patron(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(80))
-    nombre = db.Column(db.String(140))
+    nombre = db.Column(db.String(140), nullable=False, unique=True)
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
@@ -305,7 +305,7 @@ class Patron(db.Model):
 class Radiometro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(80))
-    nombre = db.Column(db.String(140))
+    nombre = db.Column(db.String(140), nullable=False, unique=True)
     marca = db.Column(db.String(80))
     modelo = db.Column(db.String(80))
     nro_serie = db.Column(db.String(40))
@@ -345,7 +345,7 @@ class Radiometro(db.Model):
 # Tabla Metodologia
 class Metodologia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(80))
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
     descripcion = db.Column(db.String(600))
     metodologia_medicion = db.Column(db.String(600))
     angulo_cenital = db.Column(db.DECIMAL(precision=5, scale=2))
@@ -370,7 +370,7 @@ class Metodologia(db.Model):
 # Tabla Punto
 class Punto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(80))
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
     fecha_hora = db.Column(db.DateTime)
     geom = db.Column(Geometry(geometry_type='POINT', srid=4326))
     altura_medicion = db.Column(db.DECIMAL(precision=6, scale=3))
@@ -478,7 +478,7 @@ class Radiometria(db.Model):
 # Tabla Superficie
 class Superficie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50))
+    nombre = db.Column(db.String(50), nullable=False, unique=True)
     radiometrias = db.relationship('Radiometria', backref='superficie_radiometria', lazy='dynamic',
                                    cascade="save-update, merge, delete")
 

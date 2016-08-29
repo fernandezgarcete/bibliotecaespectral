@@ -5,13 +5,10 @@
 <head><meta charset="UTF-8"></head>
 <script>navegador('#cargar')</script>
 
-{% if form_c.errors or form_e.errors or archivoform.errors %}
+{% if form_e.errors or archivoform.errors %}
     <div class="alert alert-dismissable alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <ul>
-            {% for error in form_c.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
-            {% endfor %}
             {% for error in form_e.errors %}
                 <li><span style="color:darkred;">{{ error }}</span><br></li>
             {% endfor %}
@@ -26,22 +23,7 @@
 <h1>Editar datos de campaña</h1>
 <hr>
 
-<form class="form-horizontal" action="" method="post" name="c_camp" id="c_camp" style="display: none;">
-    <div class="form-group" id="cc">
-        <label class="col-xs-2">Campaña</label>
-        <div class="col-xs-10">
-            {{ form_c.ccampania(placeholder="Nombre de Campaña", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        {{ form_c.hidden_tag() }}
-    </div>
-
-    <input type="submit" value="Editar" class="btn btn-primary" id="csub">
-</form>
-
-
-<form class="form-horizontal" action="" method="post" name="e_camp" id="e_camp" style="display: none;">
+<form class="form-horizontal" action="" method="post" name="e_camp" id="e_camp">
     <div class="form-group" id="ec">
         <label class="col-xs-2">Campaña</label>
         <div class="col-xs-10">
@@ -168,7 +150,7 @@
         <label class="col-xs-2">Tipo de Cobertura</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.etipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchage="tipocobertura()", disabled=true) }}
+                {{ form_e.etipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#etipo_cobertura', '#btp')" id="btp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -181,7 +163,7 @@
         <div class="col-xs-10">
             <div class="input-group">
                 <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h4>
-                <span class="label label-primary">Agregar Cobertura
+                <span class="btn btn-info">Agregar Cobertura
                     <span class="glyphicon glyphicon-plus"></span>
                 </span></h4>
                 </a>
@@ -253,28 +235,9 @@
 <!-- Scripts al cargar el documento -->
 <script>
 pickerdate('#efecha'); validaciones('#efecha'); cargarCoberturas(); limpiaResponsables();
-
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-var id = $('#ecampania')[0].value;
 
-if($('#ccampania')[0].selectedIndex == 0){
-    $('#c_camp').show();
-    $('#e_camp').hide();
-}else{
-    $('#c_camp').hide();
-    $('#e_camp').show();
-}
-
-$('#c_camp').submit(function(){
-    if ($('#ccampania')[0].selectedIndex !== 0){
-        $('#ecampania')[0].value = $('#ccampania')[0].selectedIndex;
-
-        $.ajax({url: $SCRIPT_ROOT+'/cargar/editar', success: function(){
-            $('#c_camp').hide();
-            $('#e_camp').show();
-        }});
-    }
-});
+var id = $('#ecampania').val();
 
 
 </script>

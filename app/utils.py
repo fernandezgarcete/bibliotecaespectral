@@ -70,6 +70,7 @@ def cargar_archivo(lugar, name, tipo, archivo):
     else:
         return False
 
+
 # Crear nombre de la campaña
 def nombre_camp(loc, f):
     camps = Campania.query.all()
@@ -79,20 +80,20 @@ def nombre_camp(loc, f):
     if len(camps) == 0:
         ult_id = '001'
     elif len(camps) < 9:
-        ult_id = camps[len(camps)-1].id + 1
-        ult_id = '00'+str(ult_id)
+        ult_id = camps[len(camps) - 1].id + 1
+        ult_id = '00' + str(ult_id)
     elif len(camps) < 99:
-        ult_id = camps[len(camps)-1].id + 1
-        ult_id = '0'+str(ult_id)
+        ult_id = camps[len(camps) - 1].id + 1
+        ult_id = '0' + str(ult_id)
     # fecha
     y = str(f.year)
     m = str(f.month)
     d = str(f.day)
     if f.month < 10:
-        m = '0'+str(f.month)
+        m = '0' + str(f.month)
     if f.day < 10:
-        d = '0'+str(f.day)
-    f = y+m+d
+        d = '0' + str(f.day)
+    f = y + m + d
     # localidad
     for c in camps:
         if c.id_localidad == loc.id:
@@ -103,7 +104,8 @@ def nombre_camp(loc, f):
         for ls in locs:
             l += ls
 
-    return str(ult_id)+'-'+f+'-'+l
+    return str(ult_id) + '-' + f + '-' + l
+
 
 # Crear nombre de la muestra
 def nombre_muestra(campania, cobertura):
@@ -113,7 +115,8 @@ def nombre_muestra(campania, cobertura):
         ult_id = '1'
     if m > 0:
         ult_id = m + 1
-    return campania.nombre+'-M'+str(ult_id)+'-'+cobertura.nombre
+    return campania.nombre + '-M' + str(ult_id) + '-' + cobertura.nombre
+
 
 # Crear nombre del punto
 def nombre_punto(muestra):
@@ -123,13 +126,15 @@ def nombre_punto(muestra):
         ult_id = '1'
     if p > 0:
         ult_id = p + 1
-    return muestra.nombre+'-P'+str(ult_id)
+    return muestra.nombre + '-P' + str(ult_id)
+
 
 # Buscar archivo
 def find_file(name, path):
     for root, dirs, files in os.walk(path):
         if name in files:
             return os.path.join(root, name)
+
 
 # Buscar todos los archivos con el mismo nombre
 def find_all_files(name, path):
@@ -139,6 +144,7 @@ def find_all_files(name, path):
             result.append(os.path.join(root, name))
     return result
 
+
 # Buscar archivos con patron de nombre
 def find_pattern_files(pattern, path):
     result = []
@@ -147,6 +153,7 @@ def find_pattern_files(pattern, path):
             if fnmatch.fnmatch(name, pattern):
                 result.append(os.path.join(root, name))
     return result
+
 
 # Carga de archivo Fotometria
 def cargar_fotometria(uri, punto):
@@ -178,6 +185,7 @@ def cargar_fotometria(uri, punto):
             print(v[25:39])
     f.close()
 
+
 # Carga de archivo Radiometria
 def cargar_radiometria(uri, punto):
     file = open(uri, 'r')
@@ -192,8 +200,9 @@ def cargar_radiometria(uri, punto):
         db.session.commit()
     file.close()
 
+
 # Carga de archivo Reflectancia
-def cargar_prod_rad(ur1, ur2, ur3,  punto):
+def cargar_prod_rad(ur1, ur2, ur3, punto):
     file1 = open(ur1, 'r')
     file2 = open(ur2, 'r')
     file3 = open(ur3, 'r')
@@ -213,6 +222,7 @@ def cargar_prod_rad(ur1, ur2, ur3,  punto):
     file1.close()
     file2.close()
     file3.close()
+
 
 # Iniciar Formulario Editar Campaña
 def ini_editar_form(id):
@@ -242,6 +252,7 @@ def ini_editar_form(id):
             form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
             form.etipo_cobertura.data = cob[0].id_tipocobertura
             form.ecobertura.choices = [(cob.id, cob.nombre) for cob in cob]
+            form.ecobertura.choices.insert(0, (0, ''))
             form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
             ult = len(form.ecobertura_nueva.choices)
             form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
@@ -286,6 +297,35 @@ def ini_editar_form(id):
         form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.all()]
         return form
 
+def ini_actualizar_form(id, idtp):
+    form = EditarCampForm()
+    camp = Campania.query.filter_by(id=id).first()
+    form.ecampania.data = camp.nombre
+    form.eproyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
+    form.eproyecto.data = camp.id_proyecto
+    form.elocalidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
+    form.elocalidad.data = camp.id_localidad
+    form.efecha.data = camp.fecha
+    form.eresponsable.data = camp.responsables
+    form.eobjetivo.data = camp.objetivo
+    form.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
+    form.ecamara.choices.insert(0, (0, ''))
+    form.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
+    form.eespectralon.choices.insert(0, (0, ''))
+    form.einstrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
+    form.einstrumento.choices.insert(0, (0, ''))
+    form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
+    form.egps.choices.insert(0, (0, ''))
+    form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+    form.etipo_cobertura.choices.insert(0, (0, ''))
+    form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+    form.ecobertura.choices.insert(0, (0, ''))
+    form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in
+                                     Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
+    ult = len(form.ecobertura_nueva.choices)
+    form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
+    return form
+
 # Iniciar Formulario Nueva Campaña
 def ini_nuevo_form():
     form = NuevaCampForm()
@@ -303,6 +343,7 @@ def ini_nuevo_form():
     form.ngps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
     form.ngps.choices.insert(0, (0, ''))
     return form
+
 
 # Iniciar Formulario Consultar Campaña
 def ini_consulta_camp():
