@@ -5,11 +5,14 @@
 <head><meta charset="UTF-8"></head>
 <script>navegador('#cargar')</script>
 
-{% if form_e.errors or archivoform.errors %}
+{% if form_m.errors or form_e.errors or archivoform.errors %}
     <div class="alert alert-dismissable alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <ul>
             {% for error in form_e.errors %}
+                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% endfor %}
+            {% for error in form_m.errors %}
                 <li><span style="color:darkred;">{{ error }}</span><br></li>
             {% endfor %}
             {% for error in archivoform.errors %}
@@ -23,7 +26,7 @@
 <h1>Editar datos de campaña</h1>
 <hr>
 
-<form class="form-horizontal" action="" method="post" name="e_camp" id="e_camp">
+<form class="form-horizontal" action="" method="post" name="e_camp" id="e_camp" onsubmit="guardarCamp()">
     <div class="form-group" id="ec">
         <label class="col-xs-2">Campaña</label>
         <div class="col-xs-10">
@@ -64,7 +67,7 @@
         <label class="col-xs-2">Fecha</label>
         <div class="col-xs-10">
             <div class="input-group date">
-                {{ form_e.efecha(placeholder='dd-mm-aaaa', class="form-control", disabled=true) }}
+                {{ form_e.efecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#efecha', '#bf')" id="bf">
@@ -78,7 +81,7 @@
         <label class="col-xs-2">Responsable</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.eresponsable(placeholder="Responsable de la campaña", class="form-control", disabled=true) }}
+                {{ form_e.eresponsable(placeholder="Responsable de la Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#eresponsable', '#br')" id="br">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -90,9 +93,37 @@
         <label class="col-xs-2">Objetivo</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.eobjetivo(placeholder="Describa el objetivo de campaña", class="form-control", disabled=true) }}
+                {{ form_e.eobjetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#eobjetivo', '#bo')" id="bo">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="efp">
+        <label class="col-xs-2">Fecha de Publicación</label>
+        <div class="col-xs-10">
+            <div class="input-group date">
+                {{ form_e.efecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#efecha_pub', '#bfp')" id="bfp">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+<h1>Editar datos de Muestras</h1>
+<hr>
+    <div class="form-group" id="mmet">
+        <label class="col-xs-2">Metodología</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_m.emetodologia(placeholder="Seleccione una Metodologia", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#emetodologia', '#bm')" id="bm">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -102,19 +133,19 @@
         <label class="col-xs-2">Espectro-radiómetro</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_e.einstrumento(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
+            {{ form_m.eradiometro(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#einstrumento', '#bi')" id="bi">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#eradiometro', '#bi')" id="bi">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
         </div>
     </div>
     <div class="form-group" id="epat">
-        <label class="col-xs-2">Espectralón</label>
+        <label class="col-xs-2">Patrón</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_e.eespectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
+            {{ form_m.eespectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#eespectralon', '#besp')" id="besp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -122,11 +153,23 @@
             </div>
         </div>
     </div>
-    <div class="form-group" id="egps">
+    <div class="form-group" id="efot">
+        <label class="col-xs-2">Fotómetro</label>
+        <div class="col-xs-10">
+            <div class="input-group">
+            {{ form_m.efotometro(placeholder="Seleccione un Fotometro", class="form-control", disabled=true) }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#efotometro', '#bf')" id="bf">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" id="egp">
         <label class="col-xs-2">GPS</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_e.egps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
+            {{ form_m.egps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#egps', '#bgps')" id="bgps">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -138,7 +181,7 @@
         <label class="col-xs-2">Cámara</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_e.ecamara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
+            {{ form_m.ecamara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#ecamara', '#bcam')" id="bcam">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -150,7 +193,7 @@
         <label class="col-xs-2">Tipo de Cobertura</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.etipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
+                {{ form_m.etipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#etipo_cobertura', '#btp')" id="btp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -162,14 +205,14 @@
         <label class="col-xs-2">Cobertura</label>
         <div class="col-xs-10">
             <div class="input-group">
-                <a href="#ecobertura" id="agregar" onclick="agregarCobertura()"><h4>
+                <a href="#ecoberturastr" id="agregar" onclick="agregarCobertura()"><h4>
                 <span class="btn btn-info">Agregar Cobertura
                     <span class="glyphicon glyphicon-plus"></span>
                 </span></h4>
                 </a>
-                {{ form_e.ecobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true, style="display: none;") }}
+                {{ form_m.ecoberturastr(placeholder="Elija la Cobertura", class="form-control", style="display:none;") }}
                 <span class="input-group-btn", style="display: none;">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecobertura', '#bcob')" id="bcob">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecoberturastr', '#bcob')" id="bcob">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -213,7 +256,8 @@
         </div>
     </div>
      -->
-    {{ form_e.ecobertura_nueva(class="form-control", disabled=true, style="display:none;") }}
+    {{ form_c.ecobertura(class="form-control", disabled=true, style="display:none;") }}
+    {{ form_c.ecobertura_nueva(class="form-control", disabled=true, style="display:none;") }}
 
     <div class="form-group">
         {{ form_e.hidden_tag() }}
@@ -234,7 +278,8 @@
 
 <!-- Scripts al cargar el documento -->
 <script>
-pickerdate('#efecha'); validaciones('#efecha'); cargarCoberturas(); limpiaResponsables();
+pickerdate('#efecha'); pickerdate_pub('#efecha_pub'); validaciones('#efecha'); cargarCoberturas(); limpiaResponsables();
+validaciones('#efecha_pub');
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
 var id = $('#ecampania').val();

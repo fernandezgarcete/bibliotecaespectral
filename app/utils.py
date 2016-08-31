@@ -2,9 +2,9 @@
 import fnmatch
 import os
 from app import db
-from app.forms import EditarCampForm, NuevaCampForm, ConsultaCampForm
+from app.forms import EditarCampForm, NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm
 from app.models import Campania, Muestra, Punto, Fotometria, Radiometria, ProductoRadiancia, Proyecto, Localidad, \
-    TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps
+    TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro
 
 __author__ = 'Juanjo'
 from datetime import datetime
@@ -228,6 +228,8 @@ def cargar_prod_rad(ur1, ur2, ur3, punto):
 def ini_editar_form(id):
     if id != 0:
         form = EditarCampForm()
+        form_c = CoberturaForm()
+        form_m = MuestraForm()
         view = db.session.query(Campania, Muestra, Cobertura).join(Muestra, Cobertura).filter(Campania.id == id).all()
         if len(view) > 0:
             camp = view[0][0]
@@ -241,24 +243,28 @@ def ini_editar_form(id):
             form.efecha.data = camp.fecha
             form.eresponsable.data = camp.responsables
             form.eobjetivo.data = camp.objetivo
-            form.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
-            form.ecamara.data = mues[0].id_camara
-            form.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
-            form.eespectralon.data = mues[0].id_patron
-            form.einstrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
-            form.einstrumento.data = mues[0].id_radiometro
-            form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
-            form.egps.data = mues[0].id_gps
-            form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
-            form.etipo_cobertura.data = cob[0].id_tipocobertura
-            form.ecobertura.choices = [(cob.id, cob.nombre) for cob in cob]
-            form.ecobertura.choices.insert(0, (0, ''))
-            form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
-            ult = len(form.ecobertura_nueva.choices)
-            form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
-            return form
+            form_m.emetodologia.choices = [(met.id, met.nombre) for met in Metodologia.query.order_by('nombre')]
+            form_m.emetodologia.data = mues[0].id_metodologia
+            form_m.efotometro.choices = [(fot.id, fot.nombre) for fot in Fotometro.query.order_by('nombre')]
+            form_m.efotometro.data = mues[0].id_fotometro
+            form_m.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
+            form_m.ecamara.data = mues[0].id_camara
+            form_m.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
+            form_m.eespectralon.data = mues[0].id_patron
+            form_m.eradiometro.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
+            form_m.eradiometro.data = mues[0].id_radiometro
+            form_m.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
+            form_m.egps.data = mues[0].id_gps
+            form_m.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+            form_m.etipo_cobertura.data = cob[0].id_tipocobertura
+            form_c.ecobertura.choices = [(cob.id, cob.nombre) for cob in cob]
+            form_c.ecobertura.choices.insert(0, (0, ''))
+            form_c.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
+            form_c.ecobertura_nueva.choices.insert(0, (0, ''))
+            ult = len(form_c.ecobertura_nueva.choices)
+            form_c.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
+            return {'form': form, 'form_c': form_c, 'form_m': form_m}
         if len(view) == 0:
-            form = EditarCampForm()
             camp = Campania.query.filter_by(id=id).first()
             form.ecampania.data = camp.nombre
             form.eproyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
@@ -268,37 +274,48 @@ def ini_editar_form(id):
             form.efecha.data = camp.fecha
             form.eresponsable.data = camp.responsables
             form.eobjetivo.data = camp.objetivo
-            form.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
-            form.ecamara.choices.insert(0, (0, ''))
-            form.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
-            form.eespectralon.choices.insert(0, (0, ''))
-            form.einstrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
-            form.einstrumento.choices.insert(0, (0, ''))
-            form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
-            form.egps.choices.insert(0, (0, ''))
-            form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
-            form.etipo_cobertura.choices.insert(0, (0, ''))
-            form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
-            form.ecobertura.choices.insert(0, (0, ''))
-            form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
-            ult = len(form.ecobertura_nueva.choices)
-            form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
-            return form
+            form_m.emetodologia.choices = [(met.id, met.nombre) for met in Metodologia.query.order_by('nombre')]
+            form_m.emetodologia.choices.insert(0, (0, ''))
+            form_m.efotometro.choices = [(fot.id, fot.nombre) for fot in Fotometro.query.order_by('nombre')]
+            form_m.efotometro.choices.insert(0, (0, ''))
+            form_m.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
+            form_m.ecamara.choices.insert(0, (0, ''))
+            form_m.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
+            form_m.eespectralon.choices.insert(0, (0, ''))
+            form_m.eradiometro.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
+            form_m.eradiometro.choices.insert(0, (0, ''))
+            form_m.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
+            form_m.egps.choices.insert(0, (0, ''))
+            form_m.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+            form_m.etipo_cobertura.choices.insert(0, (0, ''))
+            form_c.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+            form_c.ecobertura.choices.insert(0, (0, ''))
+            form_c.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
+            form_c.ecobertura_nueva.choices.insert(0, (0, ''))
+            ult = len(form_c.ecobertura_nueva.choices)
+            form_c.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
+            return {'form': form, 'form_c': form_c, 'form_m': form_m}
     if id == 0:
         form = EditarCampForm()
+        form_c = CoberturaForm()
+        form_m = MuestraForm()
         form.eproyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
         form.elocalidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
-        form.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
-        form.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
-        form.einstrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
-        form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
-        form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
-        form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
-        form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.all()]
-        return form
+        form_m.emetodologia.choices = [(met.id, met.nombre) for met in Metodologia.query.order_by('nombre')]
+        form_m.efotometro.choices = [(fot.id, fot.nombre) for fot in Fotometro.query.order_by('nombre')]
+        form_m.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
+        form_m.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
+        form_m.eradiometro.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
+        form_m.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
+        form_m.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+        form_c.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+        form_c.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.all()]
+        return {'form': form, 'form_c': form_c, 'form_m': form_m}
 
 def ini_actualizar_form(id, idtp):
     form = EditarCampForm()
+    form_c = CoberturaForm()
+    form_m = MuestraForm()
     camp = Campania.query.filter_by(id=id).first()
     form.ecampania.data = camp.nombre
     form.eproyecto.choices = [(pr.id, pr.nombre) for pr in Proyecto.query.order_by('nombre')]
@@ -308,23 +325,24 @@ def ini_actualizar_form(id, idtp):
     form.efecha.data = camp.fecha
     form.eresponsable.data = camp.responsables
     form.eobjetivo.data = camp.objetivo
-    form.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
-    form.ecamara.choices.insert(0, (0, ''))
-    form.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
-    form.eespectralon.choices.insert(0, (0, ''))
-    form.einstrumento.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
-    form.einstrumento.choices.insert(0, (0, ''))
-    form.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
-    form.egps.choices.insert(0, (0, ''))
-    form.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
-    form.etipo_cobertura.choices.insert(0, (0, ''))
-    form.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
-    form.ecobertura.choices.insert(0, (0, ''))
-    form.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in
-                                     Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
-    ult = len(form.ecobertura_nueva.choices)
-    form.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
-    return form
+    form_m.ecamara.choices = [(cam.id, cam.nombre) for cam in Camara.query.order_by('nombre')]
+    form_m.ecamara.choices.insert(0, (0, ''))
+    form_m.eespectralon.choices = [(e.id, e.nombre) for e in Patron.query.order_by('nombre')]
+    form_m.eespectralon.choices.insert(0, (0, ''))
+    form_m.eradiometro.choices = [(r.id, r.nombre) for r in Radiometro.query.order_by('nombre')]
+    form_m.eradiometro.choices.insert(0, (0, ''))
+    form_m.egps.choices = [(gps.id, gps.nombre) for gps in Gps.query.order_by('nombre')]
+    form_m.egps.choices.insert(0, (0, ''))
+    form_m.etipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+    form_m.etipo_cobertura.choices.insert(0, (0, ''))
+    form_c.ecobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+    form_c.ecobertura.choices.insert(0, (0, ''))
+    form_c.ecobertura_nueva.choices = [(cn.id, cn.nombre) for cn in
+                                       Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
+    form_c.ecobertura_nueva.choices.insert(0, (0, ''))
+    ult = len(form_c.ecobertura_nueva.choices)
+    form_c.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
+    return {'form': form, 'form_c': form_c, 'form_m': form_m}
 
 # Iniciar Formulario Nueva Campaña
 def ini_nuevo_form():
@@ -351,3 +369,36 @@ def ini_consulta_camp():
     form.ccampania.choices = [(c.id, c.nombre) for c in Campania.query.order_by('nombre')]
     form.ccampania.choices.insert(0, (0, ''))
     return form
+
+def guardar_camp(form_c, form_m):
+    camp = Campania.query.filter_by(nombre=form_c.ecampania.data).first()
+    view = db.session.query(Campania, Muestra, Cobertura).join(Muestra, Cobertura).filter(Campania.id == camp.id).all()
+    if len(view) == 0:
+        camp.nombre = form_c.ecampania.data
+        camp.fecha = form_c.efecha.data
+        camp.responsables = form_c.eresponsable.data
+        camp.id_localidad = form_c.elocalidad.data
+        camp.objetivo = form_c.eobjetivo.data
+        camp.id_proyecto = form_c.eproyecto.data
+
+        mues = Muestra()
+        cobs = form_m.ecoberturastr.data.split(',')
+        for c in cobs:
+            cober = Cobertura.query.filter_by(nombre=c).first()
+            mues.nombre = nombre_muestra(camp, cober)
+            mues.operador = camp.responsables.split('"')[1]
+            mues.id_cobertura = cober.id
+            mues.id_campania = camp.id
+            mues.id_metodologia = form_m.emetodologia.data
+            mues.id_radiometro = form_m.eradiometro.data
+            mues.id_camara = form_m.ecamara.data
+            mues.id_gps = form_m.egps.data
+            mues.id_fotometro = form_m.efotometro.data
+            mues.id_patron = form_m.eespectralon.data
+            try:
+                db.session.add(mues)
+                db.commit()
+            except:
+                db.session.rollback()
+        return True
+    return False

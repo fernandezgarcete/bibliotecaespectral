@@ -252,7 +252,7 @@ function agregarCobertura(nombre){
     var j = container.childElementCount;
 
     if($('select[name=etipo_cobertura]').val() == 0){
-        var mens = 'Antes de continuar elija un Tipo de Cobertura';
+        var mens = 'Antes de agregar una Cobertura elija un Tipo de Cobertura';
         errorMensaje(j,'err',mens,container);
         return;
     }
@@ -271,7 +271,7 @@ function agregarCobertura(nombre){
     div_col.appendChild(div);
 
     var cap = document.createElement('div');
-    cap.id = 'cob'+j;
+    cap.id = 'cap'+j;
     cap.classList.add('caption');
     div.appendChild(cap);
 
@@ -301,6 +301,7 @@ function agregarCobertura(nombre){
 
     // Título
     var h = document.createElement('h4');
+    h.id = 'cob'+j;
     cap.appendChild(h);
 
     // Nombre de cobertura
@@ -425,12 +426,40 @@ function crearModalNuevaCobertura(id){
     $('#nueva-cob'+id).on('hidden.bs.modal', function(e){$('#nueva-cob'+id).remove(); $('#col'+id).remove();});
 }
 
+// Guardar Campaña
+function guardarCamp(){
+    var con = document.getElementById("container");
+    var txt = '';
+    if(con.children.length > 0){
+        for (var k=0; k < con.children.length; k++){
+            txt += document.getElementById("cob"+k).textContent;
+            if (k < con.children.length-1){
+                txt += ",";
+            }
+        }
+    }
+    $("#ecoberturastr").val(txt);
+    alert($("#ecoberturastr").val());
+}
 
 // Date-picker
 function pickerdate(item) {
     $(item).datepicker({
-        startDate: '01-01-2005',
+        startDate: '01-01-2009',
+        startView: 1,
         endDate: 'today',
+        todayBtn: true,
+        orientation: 'bottom auto',
+        format: 'dd-mm-yyyy',
+        language: 'es',
+        todayHighlight: true
+    });
+}
+
+function pickerdate_pub(item) {
+    $(item).datepicker({
+        startDate: '01-01-2009',
+        startView: 1,
         todayBtn: true,
         orientation: 'bottom auto',
         format: 'dd-mm-yyyy',

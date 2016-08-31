@@ -34,7 +34,7 @@
         <label class="col-xs-2">Fecha</label>
         <div class="col-xs-10">
             <div class="input-group date">
-                {{ form_n.nfecha(placeholder='dd-mm-aaaa', class="form-control", onchange="nombre_camp()") }}
+                {{ form_n.nfecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", onchange="nombre_camp()") }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
         </div>
@@ -55,13 +55,22 @@
     <div class="form-group" id="nres">
         <label class="col-xs-2">Responsables</label>
         <div class="col-xs-10">
-            {{ form_n.nresponsable(placeholder="Responsables de la campaña", class="form-control") }}
+            {{ form_n.nresponsable(placeholder="Responsables de la Campaña", class="form-control") }}
         </div>
     </div>
     <div class="form-group" id="no">
         <label class="col-xs-2">Objetivo</label>
         <div class="col-xs-10">
-            {{ form_n.nobjetivo(placeholder="Describa el objetivo de campaña", class="form-control") }}
+            {{ form_n.nobjetivo(placeholder="Describa el objetivo de Campaña", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group" id="nf">
+        <label class="col-xs-2">Fecha de Publicación</label>
+        <div class="col-xs-10">
+            <div class="input-group date">
+                {{ form_n.nfecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", onchange="nombre_camp()") }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
         </div>
     </div>
     <div class="form-group" id="nins">
@@ -98,7 +107,7 @@
 </form>
 
 <!-- Scripts al cargar el documento -->
-<script>pickerdate('#nfecha'); validaciones('#nfecha');
+<script>pickerdate('#nfecha'); pickerdate_pub('#nfecha_pub'); validaciones('#nfecha'); validaciones('#nfecha_pub');
 
 
 function nombre_camp(){

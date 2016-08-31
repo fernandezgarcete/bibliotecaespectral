@@ -95,6 +95,7 @@ class Campania(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80), nullable=False, unique=True)
     fecha = db.Column(db.DateTime)
+    fecha_publicacion = db.Column(db.DateTime)
     responsables = db.Column(db.String(340))
     id_localidad = db.Column(db.Integer, db.ForeignKey('localidad.id'))
     objetivo = db.Column(db.String(140))

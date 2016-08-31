@@ -16,7 +16,7 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form
+from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -425,19 +425,19 @@ def nueva():
                               'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n'+
                               'Imagen: ".png", ".jpg", ".jpeg"', 'error')
             if count_rad == 0:
-                flash('No ingresó ningún archivo de Radiancia', 'error')
+                flash('No ingresó ningún archivo de Radiancia', 'info')
             if count_radavg == 0:
-                flash('No ingresó ningún archivo de Radiancia Promedio', 'error')
+                flash('No ingresó ningún archivo de Radiancia Promedio', 'info')
             if count_radstd == 0:
-                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'error')
+                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'info')
             if count_ref == 0:
-                flash('No ingresó ningún archivo de Reflectancia', 'error')
+                flash('No ingresó ningún archivo de Reflectancia', 'info')
             if count_refavg == 0:
-                flash('No ingresó ningún archivo de Reflectancia Promedio', 'error')
+                flash('No ingresó ningún archivo de Reflectancia Promedio', 'info')
             if count_refstd == 0:
-                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'error')
+                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'info')
             if count_img == 0:
-                flash('No ingresó ningún archivo de Imagen', 'error')
+                flash('No ingresó ningún archivo de Imagen', 'info')
             if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_n.validate_on_submit():
                 render_template('resultado.html')
         else:
@@ -453,8 +453,11 @@ def actualizarcob():
     arg = request.args.get('id')
     idtp = int(request.args.get('idtp'))
     id = int(arg.split('-')[0])
-    form = ini_actualizar_form(id, idtp)
-    return render_template('actualizarcob.html', form=form)
+    forms = ini_actualizar_form(id, idtp)
+    form_e = forms['form']
+    form_c = forms['form_c']
+    return render_template('actualizarcob.html',
+                           form_e=form_e, form_c=form_c)
 
 
 @app.route('/cargar/existente', methods=['GET', 'POST'])
@@ -513,11 +516,14 @@ def nueva_cobertura():
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar(id):
-    form_e = ini_editar_form(id)
+    forms = ini_editar_form(id)
+    form_e = forms['form']
+    form_c = forms['form_c']
+    form_m = forms['form_m']
     archivoform = ArchivoForm()
     form_nc = NuevaCoberturaForm()
     if request.method == 'POST':
-        if form_e.validate_on_submit():
+        if form_e.validate_on_submit() and form_m.validate_on_submit():
             archivos = request.files.getlist('archivo')
             lugar = UPLOAD_FOLDER + re.findall("'([^']*)'", str(g.user))[0]
             count_rad=0
@@ -560,29 +566,34 @@ def editar(id):
                               'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n'+
                               'Imagen: ".png", ".jpg", ".jpeg"', 'error')
             if count_rad == 0:
-                flash('No ingresó ningún archivo de Radiancia', 'error')
+                flash('No ingresó ningún archivo de Radiancia', 'info')
             if count_radavg == 0:
-                flash('No ingresó ningún archivo de Radiancia Promedio', 'error')
+                flash('No ingresó ningún archivo de Radiancia Promedio', 'info')
             if count_radstd == 0:
-                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'error')
+                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'info')
             if count_ref == 0:
-                flash('No ingresó ningún archivo de Reflectancia', 'error')
+                flash('No ingresó ningún archivo de Reflectancia', 'info')
             if count_refavg == 0:
-                flash('No ingresó ningún archivo de Reflectancia Promedio', 'error')
+                flash('No ingresó ningún archivo de Reflectancia Promedio', 'info')
             if count_refstd == 0:
-                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'error')
+                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'info')
             if count_img == 0:
-                flash('No ingresó ningún archivo de Imagen', 'error')
-            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
-                render_template('resultado.html')
-        if not form_e.validate_on_submit():
+                flash('No ingresó ningún archivo de Imagen', 'info')
+            #if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
+            if guardar_camp(form_e, form_m):
+                flash('DATOS GUARDADOS!!!', 'success')
+        if not form_e.validate_on_submit() or form_m.validate_on_submit():
             flash('Falta Completar:', 'error')
         return render_template('editar.html',
                                form_e=form_e,
+                               form_c=form_c,
+                               form_m=form_m,
                                archivoform=archivoform,
                                form_nc=form_nc)
     return render_template('editar.html',
                            form_e=form_e,
+                           form_c=form_c,
+                           form_m=form_m,
                            archivoform=archivoform,
                            form_nc=form_nc)
 

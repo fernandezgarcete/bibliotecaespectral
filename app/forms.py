@@ -65,9 +65,10 @@ class NuevaCampForm(Form):
     ncampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
     nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
                       format='%d-%m-%Y')
-    #ninstitucion = StringField('intitucion', validators=[DataRequired(message=u'Institución requerida')])
     nresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
     nobjetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
+    nfecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato')],
+                      format='%d-%m-%Y')
     # ntipo_cobertura = SelectField('tipo_cobertura', coerce=int)
     # ncobertura = SelectField('cobertura', coerce=int)
     ninstrumento = SelectField('instrumento', coerce=int)
@@ -84,14 +85,24 @@ class EditarCampForm(Form):
                       format='%d-%m-%Y')
     eresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
     eobjetivo = TextAreaField('objetivo')
-    ecobertura_nueva = SelectField('cobertura', coerce=int)
-    einstrumento = SelectField('instrumento', coerce=int)
+    efecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato')],
+                      format='%d-%m-%Y')
+
+# Formulario de Muestra
+class MuestraForm(Form):
+    emetodologia = SelectField('metodologia', coerce=int)
+    efotometro = SelectField('fotometro', coerce=int)
+    eradiometro = SelectField('instrumento', coerce=int)
     eespectralon = SelectField('espectralon', coerce=int)
     egps = SelectField('gps', coerce=int)  # validators=[DataRequired(message=u'Describa GPS')])
     ecamara = SelectField('camara', coerce=int)  # validators=[DataRequired(message=u'Cámara utilizada')])
     etipo_cobertura = SelectField('tipo_cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese un Tipo de Cobertura')])
-    ecobertura = SelectMultipleField('cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese una Cobertura')])
+    ecoberturastr = StringField('cobertura', validators=[DataRequired(message=u'Ingrese una Cobertura')])
 
+# Formulario Auxiliar de cobertura
+class CoberturaForm(Form):
+    ecobertura = SelectMultipleField('cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese una Cobertura')])
+    ecobertura_nueva = SelectField('cobertura', coerce=int)
 
 # Formulario Consulta de Campaña
 class ConsultaCampForm(Form):
