@@ -439,7 +439,6 @@ function guardarCamp(){
         }
     }
     $("#ecoberturastr").val(txt);
-    alert($("#ecoberturastr").val());
 }
 
 // Date-picker
