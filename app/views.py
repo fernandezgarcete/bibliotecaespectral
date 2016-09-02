@@ -16,7 +16,7 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp
+from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -466,7 +466,7 @@ def consulta_existente():
     form_c = ini_consulta_camp()
     if request.method == 'POST':
         if form_c.validate_on_submit():
-            id = form_c.ccampania.data
+            id = form_c.campania.data
             return redirect(url_for('editar', id=id))
         else:
             flash('Falta Completar:', 'error')
@@ -579,10 +579,10 @@ def editar(id):
                 flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'info')
             if count_img == 0:
                 flash('No ingresó ningún archivo de Imagen', 'info')
-            #if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
-            if guardar_camp(form_e, form_m):
+            # if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
+            if guardar_camp_mues(form_e, form_m):
                 flash('DATOS GUARDADOS!!!', 'success')
-        if not form_e.validate_on_submit() or form_m.validate_on_submit():
+        if not form_e.validate_on_submit() and form_m.validate_on_submit():
             flash('Falta Completar:', 'error')
         return render_template('editar.html',
                                form_e=form_e,

@@ -8,6 +8,7 @@
 {% if form_m.errors or form_e.errors or archivoform.errors %}
     <div class="alert alert-dismissable alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <span class="glyphicon glyphicon-remove-circle"></span>
         <ul>
             {% for error in form_e.errors %}
                 <li><span style="color:darkred;">{{ error }}</span><br></li>
@@ -31,9 +32,9 @@
         <label class="col-xs-2">Campaña</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.ecampania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
+                {{ form_e.campania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecampania', '#bcamp')" id="bcamp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#campania', '#bcamp')" id="bcamp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -43,9 +44,9 @@
         <label class="col-xs-2">Proyecto</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.eproyecto(placeholder="Nombre de Proyecto", class="form-control", disabled=true) }}
+                {{ form_e.proyecto(placeholder="Nombre de Proyecto", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#eproyecto', '#bp')" id="bp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#proyecto', '#bp')" id="bp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -55,9 +56,9 @@
         <label class="col-xs-2">Localidad</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.elocalidad(placeholder="Nombre de la Localidad", class="form-control", disabled=true) }}
+                {{ form_e.localidad(placeholder="Nombre de la Localidad", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#elocalidad', '#bl')" id="bl">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#localidad', '#bl')" id="bl">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -67,10 +68,10 @@
         <label class="col-xs-2">Fecha</label>
         <div class="col-xs-10">
             <div class="input-group date">
-                {{ form_e.efecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                {{ form_e.fecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#efecha', '#bf')" id="bf">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#fecha', '#bf')" id="bf">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -81,9 +82,9 @@
         <label class="col-xs-2">Responsable</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.eresponsable(placeholder="Responsable de la Campaña", class="form-control", disabled=true) }}
+                {{ form_e.responsable(placeholder="Responsable de la Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#eresponsable', '#br')" id="br">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#responsable', '#br')" id="br">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -93,9 +94,9 @@
         <label class="col-xs-2">Objetivo</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.eobjetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true) }}
+                {{ form_e.objetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#eobjetivo', '#bo')" id="bo">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#objetivo', '#bo')" id="bo">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -105,10 +106,10 @@
         <label class="col-xs-2">Fecha de Publicación</label>
         <div class="col-xs-10">
             <div class="input-group date">
-                {{ form_e.efecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                {{ form_e.fecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#efecha_pub', '#bfp')" id="bfp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#fecha_pub', '#bfp')" id="bfp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -121,9 +122,9 @@
         <label class="col-xs-2">Metodología</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_m.emetodologia(placeholder="Seleccione una Metodologia", class="form-control", disabled=true) }}
+            {{ form_m.metodologia(placeholder="Seleccione una Metodologia", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#emetodologia', '#bm')" id="bm">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#metodologia', '#bm')" id="bm">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -133,9 +134,9 @@
         <label class="col-xs-2">Espectro-radiómetro</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_m.eradiometro(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
+            {{ form_m.radiometro(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#eradiometro', '#bi')" id="bi">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#radiometro', '#bi')" id="bi">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -145,9 +146,9 @@
         <label class="col-xs-2">Patrón</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_m.eespectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
+            {{ form_m.espectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#eespectralon', '#besp')" id="besp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#espectralon', '#besp')" id="besp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -157,9 +158,9 @@
         <label class="col-xs-2">Fotómetro</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_m.efotometro(placeholder="Seleccione un Fotometro", class="form-control", disabled=true) }}
+            {{ form_m.fotometro(placeholder="Seleccione un Fotometro", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#efotometro', '#bf')" id="bf">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#fotometro', '#bf')" id="bf">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -169,9 +170,9 @@
         <label class="col-xs-2">GPS</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_m.egps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
+            {{ form_m.gps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#egps', '#bgps')" id="bgps">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#gps', '#bgps')" id="bgps">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -181,9 +182,9 @@
         <label class="col-xs-2">Cámara</label>
         <div class="col-xs-10">
             <div class="input-group">
-            {{ form_m.ecamara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
+            {{ form_m.camara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecamara', '#bcam')" id="bcam">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#camara', '#bcam')" id="bcam">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -193,9 +194,9 @@
         <label class="col-xs-2">Tipo de Cobertura</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_m.etipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
+                {{ form_m.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#etipo_cobertura', '#btp')" id="btp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#tipo_cobertura', '#btp')" id="btp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -205,14 +206,14 @@
         <label class="col-xs-2">Cobertura</label>
         <div class="col-xs-10">
             <div class="input-group">
-                <a href="#ecoberturastr" id="agregar" onclick="agregarCobertura()"><h4>
+                <a href="#cobertura" id="agregar" onclick="agregarCobertura()"><h4>
                 <span class="btn btn-info">Agregar Cobertura
                     <span class="glyphicon glyphicon-plus"></span>
                 </span></h4>
                 </a>
-                {{ form_m.ecoberturastr(placeholder="Elija la Cobertura", class="form-control", style="display:none;") }}
+                {{ form_m.cobertura(placeholder="Elija la Cobertura", class="form-control", style="display:none;") }}
                 <span class="input-group-btn", style="display: none;">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#ecoberturastr', '#bcob')" id="bcob">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#cobertura', '#bcob')" id="bcob">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -278,11 +279,11 @@
 
 <!-- Scripts al cargar el documento -->
 <script>
-pickerdate('#efecha'); pickerdate_pub('#efecha_pub'); validaciones('#efecha'); cargarCoberturas(); limpiaResponsables();
-validaciones('#efecha_pub');
+pickerdate('#fecha'); pickerdate_pub('#fecha_pub'); validaciones('#fecha'); cargarCoberturas(); limpiaResponsables();
+validaciones('#fecha_pub');
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
-var id = $('#ecampania').val();
+var id = $('#campania').val();
 
 </script>
 {% endblock %}

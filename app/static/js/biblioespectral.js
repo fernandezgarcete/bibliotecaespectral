@@ -84,12 +84,12 @@ function replaceAll(str, find, replace) {
 }
 
 function limpiaResponsables(){
-    var r = document.getElementById('eresponsable').value;
+    var r = document.getElementById('responsable').value;
     var r1 = replaceAll(r,'"','');
     var r2 = replaceAll(r1,'{','');
     var r3 = replaceAll(r2,',',', ');
     var r4 = replaceAll(r3,'}','');
-    document.getElementById('eresponsable').value = r4;
+    document.getElementById('responsable').value = r4;
 }
 
 // Crear Mensaje de Error Generico
@@ -251,7 +251,7 @@ function agregarCobertura(nombre){
     // Nro de item actual
     var j = container.childElementCount;
 
-    if($('select[name=etipo_cobertura]').val() == 0){
+    if($('select[name=tipo_cobertura]').val() == 0){
         var mens = 'Antes de agregar una Cobertura elija un Tipo de Cobertura';
         errorMensaje(j,'err',mens,container);
         return;
@@ -403,7 +403,7 @@ function crearModalNuevaCobertura(id){
             $.each($('#nc_form').serializeArray(), function(i,field){
                 valores[field.name] = field.value;
             });
-            valores['ncid_tipocobertura'] = $('select[name=etipo_cobertura]').val();
+            valores['ncid_tipocobertura'] = $('select[name=tipo_cobertura]').val();
             $.ajax({method:'POST', url:$SCRIPT_ROOT+'/editar/nueva_cobertura', data:valores})
                 .done(function(res){
                     if(res["cob"] === "error"){
@@ -414,7 +414,7 @@ function crearModalNuevaCobertura(id){
                         setTimeout(function() {$('#nueva-cob'+id).modal('hide');}, 2500);
                         var cober = document.getElementById('ecobertura_nueva');
                         $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
-                            data:{id:$('#ecampania').val(), idtp:$('#etipo_cobertura').val()}, success: function(resp) {
+                            data:{id:$('#campania').val(), idtp:$('#tipo_cobertura').val()}, success: function(resp) {
                                 cober.innerHTML = resp;
                             }
                         });
@@ -438,7 +438,7 @@ function guardarCamp(){
             }
         }
     }
-    $("#ecoberturastr").val(txt);
+    $("#cobertura").val(txt);
 }
 
 // Date-picker
@@ -470,7 +470,7 @@ function pickerdate_pub(item) {
 function tipocobertura(){
     var cober = document.getElementById('ecobertura_nueva');
     $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
-        data:{id:$('#ecampania').val(), idtp:$('#etipo_cobertura').val()}, success: function(resp) {
+        data:{id:$('#campania').val(), idtp:$('#tipo_cobertura').val()}, success: function(resp) {
             cober.innerHTML = resp;
         }
     });
