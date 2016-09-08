@@ -262,6 +262,9 @@
 
     <div class="form-group">
         {{ form_e.hidden_tag() }}
+        {{ form_m.hidden_tag() }}
+        {{ form_c.hidden_tag() }}
+        {{ archivoform.hidden_tag() }}
     </div>
 
     <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
@@ -273,6 +276,7 @@
     {{ form_nc.ncaltura(class="form-control") }}
     {{ form_nc.ncfenologia(class="form-control") }}
     {{ form_nc.ncobservaciones(class="form-control") }}
+    {{ form_nc.hidden_tag() }}
 </form>
 
 <br>
