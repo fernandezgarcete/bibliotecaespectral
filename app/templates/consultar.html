@@ -113,6 +113,7 @@
 
 <!-- Scripts al cargar el documento -->
 <script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     validaciones('#fecha_inicio'); validaciones('#fecha_fin');
 
     $("input[type=checkbox]").change(function(){

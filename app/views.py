@@ -16,7 +16,8 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues
+from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
+    actualizar_tp
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -452,6 +453,9 @@ def nueva():
 def actualizarcob():
     arg = request.args.get('id')
     idtp = int(request.args.get('idtp'))
+    if arg is None:
+        form = actualizar_tp(idtp)
+        return render_template('actualizarcob.html', form=form)
     id = int(arg.split('-')[0])
     forms = ini_actualizar_form(id, idtp)
     form_e = forms['form']

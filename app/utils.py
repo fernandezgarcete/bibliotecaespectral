@@ -2,7 +2,7 @@
 import fnmatch
 import os
 from app import db
-from app.forms import EditarCampForm, NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm
+from app.forms import EditarCampForm, NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
 from app.models import Campania, Muestra, Punto, Fotometria, Radiometria, ProductoRadiancia, Proyecto, Localidad, \
     TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro
 
@@ -343,6 +343,13 @@ def ini_actualizar_form(id, idtp):
     ult = len(form_c.ecobertura_nueva.choices)
     form_c.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
     return {'form': form, 'form_c': form_c, 'form_m': form_m}
+
+def actualizar_tp(idtp):
+    form = ConsultarForm()
+    form.cobertura.choices = [(cn.id, cn.nombre) for cn in
+                              Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
+    form.cobertura.choices.insert(0, (0, ''))
+    return form
 
 # Iniciar Formulario Nueva Campaña
 def ini_nuevo_form():

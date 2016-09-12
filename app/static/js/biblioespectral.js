@@ -469,6 +469,9 @@ function pickerdate_pub(item) {
 
 function tipocobertura(){
     var cober = document.getElementById('ecobertura_nueva');
+    if (cober == null){
+        cober = document.getElementById('cobertura');
+    }
     $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
         data:{id:$('#campania').val(), idtp:$('#tipo_cobertura').val()}, success: function(resp) {
             cober.innerHTML = resp;
