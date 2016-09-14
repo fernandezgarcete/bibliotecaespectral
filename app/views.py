@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+import json
 import os
 import re
 import requests
@@ -22,6 +23,7 @@ from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, 
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
+import geoalchemy2.functions as geofunc
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -601,6 +603,37 @@ def editar(id):
                            archivoform=archivoform,
                            form_nc=form_nc)
 
+# mapa consulta
+@app.route('/consultar/mapa', methods=['GET', 'POST'])
+@login_required
+def mapa():
+    if request.method == 'POST':
+        nom = request.form.get('loc')
+        loc = Localidad.query.filter_by(nombre=nom).first()
+        camps = Campania.query.filter(Campania.id_localidad == loc.id).all()
+        criterios = {'Localidad': loc.nombre}
+        nombres = []
+        for c in camps:
+            nombres.append(c.nombre)
+        return resultado(nombres, criterios)
+    return render_template('consulta_map.html')
+
+# enviar localidades
+@app.route('/consultar/mapa/loc', methods=['GET'])
+@login_required
+def loc():
+    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom)))
+    gloc = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": json.loads(value),
+                "properties": {"name": key},
+            } for key, value in jloc.items()
+        ]
+    }
+    return jsonify(gloc)
 
 # Carga de archivos
 @app.route('/consultar', methods=['GET', 'POST'])

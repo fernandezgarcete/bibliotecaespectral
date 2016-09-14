@@ -2,7 +2,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<head><meta charset="UTF-8"></head>
+<head>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <meta charset="UTF-8"></head>
 <script>navegador('#docs')</script>
 
 <h1>Documentos</h1>
@@ -11,6 +13,7 @@
 
     {% for file in list %}
     <div class="row">
+        <i class="fa fa-file-pdf-o" style="font-size:24px;color:#DF0101;"></i>
         <a href="{{ url_for('show_file', filename=file) }}">{{ file }}</a>
     </div>
     <hr>
