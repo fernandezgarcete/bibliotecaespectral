@@ -9,7 +9,7 @@ $.getScript($SCRIPT_ROOT+'/static/js/biblioespectral.js');
 // pick list containing a mix of places and predicted search terms.
 
 
-var latlng = {lat: 0, lng: 0, name: ''};
+var localidad = {lat: 0, lng: 0, name: ''};
 
 function EnviarControl(controlDiv, map, markers){
     var controlUI = document.createElement('div');
@@ -34,14 +34,14 @@ function EnviarControl(controlDiv, map, markers){
     controlUI.appendChild(controlText);
 
     controlUI.addEventListener('click', function(){
-        if(latlng.lat == 0 && latlng.lng == 0){
+        if(localidad.lat == 0 && localidad.lng == 0){
             errorMensaje(0,'err',"Ingrese una Localidad antes de enviar",$('#mensaje')[0]);
             return;
         }
         $.ajax({
             url: $SCRIPT_ROOT + '/cargar/localidad',
             method: 'POST',
-            data: latlng,
+            data: localidad,
             success: function(resp){
                 if(resp.hasOwnProperty('info')){
                     infoMensaje(1,'info', resp.info + '. Localidad: ' + resp.loc, $('#mensaje')[0]);
@@ -109,9 +109,9 @@ function initAutocomplete() {
         position: place.geometry.location
       }));
 
-        latlng.lat = markers[0].getPosition().lat();
-        latlng.lng = markers[0].getPosition().lng();
-        latlng.name = markers[0].getTitle();
+        localidad.lat = markers[0].getPosition().lat();
+        localidad.lng = markers[0].getPosition().lng();
+        localidad.name = markers[0].getTitle();
 
       if (place.geometry.viewport) {
         // Only geocodes have viewport.
