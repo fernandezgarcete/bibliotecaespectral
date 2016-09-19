@@ -52,6 +52,27 @@ class Localidad(db.Model):
     def __repr__(self): # pragma: no cover
         return '<Localidad %r>' % (self.nombre)
 
+    def agregar(self, lat, lng, nombre):
+        res = db.engine.execute("SELECT b.nombre, b.nom_depto, b.nom_prov, b.the_geom FROM bahra.base b "
+                                "WHERE b.nombre LIKE (%s) AND (b.tipo LIKE 'LOCALIDAD' OR b.ubicacion LIKE 'PULOC') "
+                                "ORDER BY b.the_geom <-> ST_SetSRID(ST_MakePoint("+lat+","+lng+"),4326) LIMIT 1;", (nombre,)).fetchone()
+        if res is not None:
+            loc = Localidad.query.filter_by(geom=res[3]).first()
+            if loc is None:
+                self.nombre = res[0]
+                self.nombre_dpto = res[1]
+                self.nombre_prov = res[2]
+                self.geom = res[3]
+                db.session.add(self)
+                db.session.commit()
+                return True
+            elif loc is not None:
+                return 'Ya existe'
+            else:
+                return False
+        else:
+            return False
+
 # Tabla Proyecto
 class Proyecto(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -525,3 +525,21 @@ def guardar_camp(form):
         except:
             db.session.rollback()
             return False
+
+def utf_to_ascii(utf):
+    str = utf.encode('utf-8').decode('utf-8').upper()
+    d = {'A': 'Á', 'E': 'É', 'I': 'Í', 'O': 'Ó', 'U': 'Ú', 'U2': 'Ü'}
+    if d['A'] in str:
+        str = str.replace('Á', 'A')
+    if d['E'] in str:
+        str = str.replace('É', 'E')
+    if d['I'] in str:
+        str = str.replace('Í', 'I')
+    if d['O'] in str:
+        str = str.replace('Ó', 'O')
+    if d['U'] in str:
+        str = str.replace('Ú', 'U')
+    if d['U2'] in str:
+        str = str.replace('Ü', 'U')
+    return str
+

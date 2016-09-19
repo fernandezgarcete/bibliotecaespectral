@@ -8,8 +8,13 @@
     <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
     <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
     <link rel="stylesheet" href="/static/css/map.css" />
+    <script>navegador('#consultar')</script>
 </head>
 <body>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('consultar') }}">Consultar</a></li>
+<li class="active">Geográfica</li>
+</ol>
 
 <div id="mapid"></div>
 

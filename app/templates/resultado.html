@@ -8,14 +8,13 @@
 <a href="{{ url_for('consultar') }}"><h3><span class="label label-primary">Otra consulta</span></h3></a>
 
 <br>
-<p>
-Resultados para la búsqueda:
+<p>Resultados para la búsqueda:</p>
     <ul>
         {% for name, value in criterios.items() %}
             <li><strong>{{ name }}:</strong> {{ value }}</li>
         {% endfor %}
     </ul>
-</p>
+
 
 <h1>Campañas</h1>
 <hr>

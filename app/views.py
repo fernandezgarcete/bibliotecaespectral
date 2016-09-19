@@ -18,12 +18,13 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
     Muestra
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
-    actualizar_tp
+    actualizar_tp, utf_to_ascii
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
 import geoalchemy2.functions as geofunc
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -890,5 +891,23 @@ def resultado(campañas, criterios):
 def show_campaign(filename):
     return send_from_directory(CAMPAIGNS_FOLDER, filename)
 
+
+@app.route('/cargar/localidad', methods=['GET', 'POST'])
+@login_required
+def localidad():
+    locs = Localidad.query.order_by('nombre')
+    if request.method == 'POST':
+        lat = request.form.get('lat')
+        lng = request.form.get('lng')
+        name = request.form.get('name')
+        uname = utf_to_ascii(name.encode('utf-8').decode('utf-8').upper())
+        loc = Localidad().agregar(lat=lat, lng=lng, nombre=uname)
+        if loc is True:
+            return jsonify(json.loads('{"info":"Se agregado la localidad", "loc":"'+str(name)+'"}'))
+        if loc == 'Ya existe':
+            return jsonify(json.loads('{"info":"La localidad ya existe", "loc":"'+str(name)+'"}'))
+        else:
+            return jsonify(json.loads('{"error":"No se ha podido agregar"}'))
+    return render_template('localidad.html', locs=locs)
 
 

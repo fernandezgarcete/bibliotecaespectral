@@ -4,6 +4,11 @@
 {% block content %}
 <head><meta charset="UTF-8"></head>
 <script>navegador('#cargar')</script>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
+<li class="active">Campaña</li>
+</ol>
 
 {% if form_m.errors or form_e.errors or archivoform.errors %}
     <div class="alert alert-dismissable alert-danger">

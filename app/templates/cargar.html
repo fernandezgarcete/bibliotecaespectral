@@ -5,21 +5,184 @@
 <head><meta charset="UTF-8"></head>
 <script>navegador('#cargar')</script>
 
-<h1>Cargar datos de campaña</h1>
+<h1>Campañas</h1>
 <hr>
 
-<ul class="list-inline" name="filtro">
-    <li id="n" onclick="carga('#n')"><h1>
-        <span class="btn btn-lg btn-primary">Nueva
-            <span class="glyphicon glyphicon-plus"></span>
-        </span></h1>
-    </li>
-    <li id="e" onclick="carga('#e')"><h1>
-        <span class="btn btn-lg btn-success">Existente
-            <span class="glyphicon glyphicon-tasks"></span>
-        </span></h1>
-    </li>
-</ul>
+<div class="row">
+    <div class="col-sm-7 col-md-offset-3">
+        <div class="thumbnail">
+            <div id="camp-carousel" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#camp-carousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#camp-carousel" data-slide-to="1"></li>
+                    <li data-target="#camp-carousel" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                        <img src="/static/img/med_agro3.jpg">
+                        <div class="carousel-caption" >
+                            <h2></h2>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img src="/static/img/med_agua.jpg">
+                        <div class="carousel-caption" >
+                            <h2></h2>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img src="/static/img/med_suelo2.jpg">
+                        <div class="carousel-caption" >
+                            <h2></h2>
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <a class="left carousel-control" href="#camp-carousel" role="button" data-slide="prev">
+                    <span class="icon-prev"></span>
+                </a>
+                <a class="right carousel-control" href="#camp-carousel" role="button" data-slide="next">
+                    <span class="icon-next"></span>
+                </a>
+            </div>
+            <div class="caption">
+                <h3></h3>
+                <p>Carga de datos globales y específicos de campañas de muestreo.</p>
+                <ul class="list-inline" name="filtro">
+                    <li id="n" onclick="carga('#n')"><h1>
+                            <span class="btn btn-primary">Nueva
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </span></h1>
+                    </li>
+                    <li id="e" onclick="carga('#e')"><h1>
+                            <span class="btn btn-default">Existente
+                                <span class="glyphicon glyphicon-tasks"></span>
+                            </span></h1>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Datos Complementarios</h2>
+<hr>
+
+<div class="row">
+    <div class="col-sm-5 col-md-3">
+        <div id="loc" class="thumbnail">
+            <img src="/static/img/localidades.gif">
+            <div class="caption">
+                <h4><strong>Localidades</strong></h4>
+                <p>Carga de nuevas localidades de muestreo</p>
+                <p>
+                    <a href="{{ url_for('localidad') }}" class="btn btn-primary" role="button">Nueva</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="met" class="thumbnail">
+            <img src="/static/img/metod.png">
+            <div class="caption">
+                <h4><strong>Metodologías</strong></h4>
+                <p>Carga de metodologías de muestreo nuevas y existentes</p>
+                <p>
+                    <a href="#met" class="btn btn-primary" role="button">Nueva</a>
+                    <a href="#met" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="proy" class="thumbnail">
+            <img src="/static/img/proyecto.png">
+            <div class="caption">
+                <h4><strong>Proyectos</strong></h4>
+                <p>Carga de convenios de proyectos nuevos y existentes </p>
+                <p>
+                    <a href="#proy" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="#proy" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Intrumentos</h2>
+<hr>
+
+<div class="row">
+    <div class="col-sm-5 col-md-3">
+        <div id="rad" class="thumbnail">
+            <img src="/static/img/radiometro.jpg">
+            <div class="caption">
+                <h4><strong>Espectro-radiómetros</strong></h4>
+                <p>Carga de espectro-radiómetros nuevos y existentes </p>
+                <p>
+                    <a href="#rad" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="#rad" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="esp" class="thumbnail">
+            <img src="/static/img/spectralon.jpg">
+            <div class="caption">
+                <h4><strong>Blancos de Referencia</strong></h4>
+                <p>Carga de patrones o blancos de referencia nuevos y existentes </p>
+                <p>
+                    <a href="#esp" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="#esp" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="fot" class="thumbnail">
+            <img src="/static/img/fotometro.png">
+            <div class="caption">
+                <h4><strong>Fotómetros</strong></h4>
+                <p>Carga de fotómetros nuevos y existentes </p>
+                <p>
+                    <a href="#fot" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="#fot" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="cama" class="thumbnail">
+            <img src="/static/img/camara.jpg">
+            <div class="caption">
+                <h4><strong>Cámaras</strong></h4>
+                <p>Carga de cámaras nuevas y existentes </p>
+                <p>
+                    <a href="#cama" class="btn btn-primary" role="button">Nueva</a>
+                    <a href="#cama" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="gps" class="thumbnail">
+            <img src="/static/img/gps.png">
+            <div class="caption">
+                <h4><strong>GPS</strong></h4>
+                <p>Carga de GPS nuevos y existentes </p>
+                <p>
+                    <a href="#gps" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="#gps" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 
@@ -29,8 +192,8 @@
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 function carga(item){
-    $('#e').hide();
-    $('#n').hide();
+    //$('#e').hide();
+    //$('#n').hide();
     if ($(item)[0].id === $('#e')[0].id){
         window.location = $SCRIPT_ROOT+'/cargar/existente';
     }

@@ -1,0 +1,46 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+    <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+    <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="/static/css/map.css" />
+    <script>navegador('#cargar')</script>
+</head>
+<body>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li class="active">Localidad</li>
+</ol>
+
+<input id="pac-input" class="controls" type="text" placeholder="Buscar Localidad">
+
+<div id="mapa_loc"></div>
+<br>
+<div id="mensaje"></div>
+
+<h1>Localidades Actuales</h1>
+<p>El listado representa todas las localidades actuales de muestreo.<br>
+    Para agregar una localidad, introduzca el nombre en el buscador y envíe la nueva localidad a muestrear.
+</p>
+<hr>
+<div class="container">
+    {% for loc in locs %}
+    <div class="row">
+        {{ loc.nombre }}
+    </div>
+    <hr>
+    {% endfor %}
+</div>
+
+<script src="/static/js/mapaloc.js" charset="UTF-8"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEoMVkNH0wil08-flQPNSN9x6PT2YLPVU&libraries=places&callback=initAutocomplete"
+         async defer></script>
+
+</body>
+
+
+{% endblock %}

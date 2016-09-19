@@ -196,3 +196,4 @@ class ConsultarForm(Form):
     # reflectancia = BooleanField('reflectancia', default=False)
     # reflectancia_avg = BooleanField('reflectancia_avg', default=False)
     # reflectancia_std = BooleanField('reflectancia_std', default=False)
+

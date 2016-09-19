@@ -29,7 +29,7 @@ var calles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/til
         id: '256',
         maxZoom: 18,
         accessToken: 'pk.eyJ1IjoibXJqdWFuam8iLCJhIjoiY2lzYXFyZGVwMDAwYTJ1bTZuaGVvYjl0MiJ9.WT1_Np3aSmvenQLTw6UPZw'
-    }),
+    });/*,
     mapagris = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; ' +
@@ -37,11 +37,11 @@ var calles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/til
         id: '256',
         maxZoom: 18,
         accessToken: 'pk.eyJ1IjoibXJqdWFuam8iLCJhIjoiY2lzYXFyZGVwMDAwYTJ1bTZuaGVvYjl0MiJ9.WT1_Np3aSmvenQLTw6UPZw'
-    });
+    });*/
 
 var mapasBase = {
     'Calles': calles,
-    'Gris': mapagris,
+    //'Gris': mapagris,
     'Satelite': satellite
 };
 
@@ -138,6 +138,7 @@ function agregarCapa(url, titulo){
     });
 }
 
+// Armando el Popup que contendrá el botón de consulta
 function popupConsulta(loc){
     var c = "Campa\u00f1as ";
     return '<strong>'+loc+'</strong><br><br>' +
@@ -153,9 +154,9 @@ function consultaCamp(loc){
         method: 'POST',
         data: {loc: loc},
         success: function(resp){
-            $("#result")[0].innerHTML = "<br>" + resp.substr(resp.indexOf("<p>"));
+            console.log(resp.indexOf("footer"));
+            $("#result")[0].innerHTML = "<br>" + resp.substring(resp.indexOf("<p>"), resp.indexOf("function signOut"));
         }
     });
 }
-
 
