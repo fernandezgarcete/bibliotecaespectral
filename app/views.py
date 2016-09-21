@@ -13,9 +13,10 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
-from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm
+from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
+    MetodologiaForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
-    Muestra
+    Muestra, Metodologia
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
     actualizar_tp, utf_to_ascii
@@ -911,3 +912,33 @@ def localidad():
     return render_template('localidad.html', locs=locs)
 
 
+@app.route('/cargar/metodologia', methods=['GET', 'POST'])
+@login_required
+def metodologia():
+    form = MetodologiaForm()
+    metods = Metodologia.query.order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            m = Metodologia()
+            if m.agregar(form):
+                flash('Metodología guardada.', 'success')
+            else:
+                print('Error')
+    return render_template('metod_form.html', form=form, metods=metods, panel=panel)
+
+
+@app.route('/cargar/metodologia/borrar/<int:id>')
+@login_required
+def borrar_metod(id):
+    metod = Metodologia.query.get(id)
+    if metod is None:
+        flash('No se ha podido eliminar la metodologia', 'error')
+        return redirect(url_for('metodologia'))
+    db.session.delete(metod)
+    db.session.commit()
+    flash(gettext('La metodología ha sido borrada.'), 'success')
+    return redirect(url_for('metodologia'))

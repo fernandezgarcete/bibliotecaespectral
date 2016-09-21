@@ -90,8 +90,8 @@
                 <h4><strong>Metodologías</strong></h4>
                 <p>Carga de metodologías de muestreo nuevas y existentes</p>
                 <p>
-                    <a href="#met" class="btn btn-primary" role="button">Nueva</a>
-                    <a href="#met" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('metodologia', c='n') }}" class="btn btn-primary" role="button">Nueva</a>
+                    <a href="{{ url_for('metodologia', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>

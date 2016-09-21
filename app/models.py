@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import traceback
 from flask import current_app, url_for
 from rauth import OAuth2Service, OAuth1Service
 
@@ -18,15 +19,6 @@ else:
 
 
 ''' Tablas del Radiometro '''
-class LocalidadGral(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(140), index=True)
-    nombre_dpto = db.Column(db.String(140))
-    nombre_prov = db.Column(db.String(140))
-    geom = db.Column(Geometry(geometry_type='POINT', srid=4326))
-
-    def __repr__(self): # pragma: no cover
-        return '<Localidad %r>' % (self.nombre)
 
 # Tabla Localidad
 class Localidad(db.Model):
@@ -57,7 +49,7 @@ class Localidad(db.Model):
                                 "WHERE b.nombre LIKE (%s) AND (b.tipo LIKE 'LOCALIDAD' OR b.ubicacion LIKE 'PULOC') "
                                 "ORDER BY b.the_geom <-> ST_SetSRID(ST_MakePoint("+lat+","+lng+"),4326) LIMIT 1;", (nombre,)).fetchone()
         if res is not None:
-            loc = Localidad.query.filter_by(geom=res[3]).first()
+            loc = self.query.filter_by(geom=res[3]).first()
             if loc is None:
                 self.nombre = res[0]
                 self.nombre_dpto = res[1]
@@ -388,6 +380,30 @@ class Metodologia(db.Model):
 
     def __repr__(self): # pragma: no cover
         return '<Metodología %r>' % (self.nombre)
+
+    def agregar(self, form):
+        metod = self
+        if int(form.id.data) > 0:
+            metod = self.query.filter_by(id=int(form.id.data)).first()
+            metod.nombre = form.nombre.data
+            metod.descripcion = form.descripcion.data
+            metod.metodologia_medicion = form.medicion.data
+            metod.angulo_cenital = int(form.cenit.data)
+            metod.angulo_azimutal = int(form.azimut.data)
+        else:
+            metod.nombre = form.nombre.data
+            metod.descripcion = form.descripcion.data
+            metod.metodologia_medicion = form.medicion.data
+            metod.angulo_cenital = int(form.cenit.data)
+            metod.angulo_azimutal = int(form.azimut.data)
+        try:
+            db.session.add(metod)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
 # Tabla Punto
 class Punto(db.Model):

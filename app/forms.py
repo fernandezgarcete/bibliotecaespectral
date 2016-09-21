@@ -6,7 +6,8 @@ __author__ = 'Juanjo'
 from flask_wtf import Form
 from flask_babel import gettext
 from flask_wtf.file import FileRequired, FileAllowed
-from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField, RadioField
+from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField, \
+    RadioField, DecimalField, IntegerField
 from wtforms.validators import DataRequired, Length, NumberRange
 from app.models import User
 from config import ALLOWED_EXTENSIONS
@@ -197,3 +198,10 @@ class ConsultarForm(Form):
     # reflectancia_avg = BooleanField('reflectancia_avg', default=False)
     # reflectancia_std = BooleanField('reflectancia_std', default=False)
 
+class MetodologiaForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre')])
+    descripcion = TextAreaField('descripcion', validators=[DataRequired(message=u'Describa la descripción')])
+    medicion = TextAreaField('medicion')
+    cenit = DecimalField('angulo cenital', places=2)
+    azimut = DecimalField('angulo azimutal', places=2)

@@ -41,15 +41,14 @@ function EnviarControl(controlDiv, map, markers){
         $.ajax({
             url: $SCRIPT_ROOT + '/cargar/localidad',
             method: 'POST',
-            data: localidad,
-            success: function(resp){
-                if(resp.hasOwnProperty('info')){
-                    infoMensaje(1,'info', resp.info + '. Localidad: ' + resp.loc, $('#mensaje')[0]);
-                }
-                if(resp.hasOwnProperty('error')){
-                    var m = '. Asegurarse que sea una localidad dentro de Argentina';
-                    errorMensaje(1,'err', resp.error + m, $('#mensaje')[0]);
-                }
+            data: localidad
+        }).done(function(resp){
+            if(resp.hasOwnProperty('info')){
+                infoMensaje(1,'info', resp.info + '. Localidad: ' + resp.loc, $('#mensaje')[0]);
+            }
+            if(resp.hasOwnProperty('error')){
+                var m = '. Asegurarse que sea una localidad dentro de Argentina';
+                errorMensaje(1,'err', resp.error + m, $('#mensaje')[0]);
             }
         });
     });

@@ -1,0 +1,145 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li class="active">Metodología</li>
+</ol>
+
+<div style="display: {{ panel }};">
+
+<h1>Metodologías</h1>
+<hr>
+
+<div class="panel panel-default" id="panel">
+    <div class="panel-heading"><strong>Metodologías Existentes</strong></div>
+    <ul class="list-group">
+        {% for m in metods %}
+        <li class="list-group-item">
+        <span onclick="rellenar_metod('{{ m.nombre }}')" class="btn">{{ m.nombre }}</span>
+        <span type="button" class="badge btn" id="elim_{{ m.nombre }}">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<button type="button" class="btn btn-default" onclick="limpiar_metod()">
+    Nueva <span class="glyphicon glyphicon-plus"></span>
+</button>
+<br><br>
+</div>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for key, error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h3>Metodología</h3>
+<hr>
+
+
+<form class="form-horizontal" id="metod_form"  method="post">
+    <div class="form-group">
+        <label class="col-xs-2">Nombre</label>
+        <div class="col-xs-9">
+            {{ form.nombre(placeholder="Nombre de la metodología", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nombre', '#bnom')" id="bnom">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Descripción</label>
+        <div class="col-xs-9">
+        {{ form.descripcion(class="form-control", placeholder="Describa características de la metodología.",
+        onkeyup="contador(this,'#bdesc',600);") }}
+            <span id="bdesc" class="badge">600</span>
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#descripcion', '#bde')" id="bde">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Metodología de Medición</label>
+        <div class="col-xs-9">
+        {{ form.medicion(class="form-control", placeholder="Describa la metodología de medición si corresponde.",
+        onkeyup="contador(this,'#bmed',600);") }}
+            <span id="bmed" class="badge">600</span>
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#medicion', '#bme')" id="bme">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Ángulo Cenital</label>
+        <div class="col-xs-9">
+        {{ form.cenit(class="form-control", placeholder="Ángulo Cenital de toma en grados si corresponde. Ej.: 60.55") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#cenit', '#bcen')" id="bcen">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Ángulo Azimutal</label>
+        <div class="col-xs-9">
+        {{ form.azimut(class="form-control", placeholder="Ángulo Azimutal de toma en grados si corresponde. Ej.: 30.25") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+             <button class="btn btn-primary" type="button" onclick="habilitar('#azimut', '#bazi')" id="bazi">
+                 <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    {{ form.id(type="hidden") }}
+    {{ form.hidden_tag() }}
+    <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
+
+<br>
+<div id="mensaje"></div>
+
+<script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+validaciones('#cenit'); validaciones('#azimut'); limpiar_metod();
+
+var metods = [];
+var cen = 0.0;
+var azi = 0.0;
+
+{% for m in metods %}
+    {% if not m.angulo_cenital %}cen = 0.0;{% else %}cen = {{m.angulo_cenital}};{% endif %}
+    {% if not m.angulo_azimutal %}azi = 0.0;{% else %}azi = {{ m.angulo_azimutal }};{% endif %}
+    var metod = {
+        id:{{ m.id|default(0) }},
+        nombre:"{{ m.nombre }}",
+        descripcion:"{{ m.descripcion }}",
+        medicion:"{{ m.metodologia_medicion }}",
+        cenit:cen,
+        azimut:azi
+    };
+    metods.push(metod);
+    boton_eliminar('elim_'+metod.nombre);
+{% endfor %}
+
+$('#metod_form').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
+</script>
+{% endblock %}

@@ -11,7 +11,7 @@ function navegador(item){
 function validaciones(item){
     // Evita los caracteres invalidos
     $(item).keydown(function(e){
-        var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,189]; // numeros, guion, borrar, enter
+        var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,96,97,98,99,100,101,102,103,104,105,110,189]; // numeros, guion, borrar, enter
         if ($.inArray(e.keyCode, accepted) == -1){
             e.preventDefault();
         }
@@ -511,8 +511,78 @@ function dibujarGrafico(){
     grafico.draw(data, options);
 }
 
-// Configurar llamado a ejecucion cuando la API de visualizacion de Google esta cargada
+// Contador de caracteres para Areas de Texto
+function contador(field, counter, limit){
+    if (field.value.length > limit){
+        field.value = field.value.substring(0, limit);
+        return false;
+    } else {
+        $(counter).text(limit - field.value.length);
+    }
+}
 
+// Rellena formulario de Metodología
+function rellenar_metod(nombre){
+    for(var i=0; i<metods.length; i++){
+        if(metods[i].nombre == nombre){
+            $('#id').val(metods[i].id);
+            $('#nombre').val(metods[i].nombre);
+            $('#descripcion').val(metods[i].descripcion);
+            $('#medicion').val(metods[i].medicion);
+            $('#cenit').val(metods[i].cenit);
+            $('#azimut').val(metods[i].azimut);
+            contador(document.getElementById('descripcion'),'#bdesc',600);
+            contador(document.getElementById('medicion'),'#bmed',600);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Eliminar Metodología
+function boton_eliminar(id){
+    var boton = document.getElementById(id);
+    boton.addEventListener('click', function(){
+        var nom = this.id.substr(5);
+        var data;
+        for(var i=0;i<metods.length;i++){
+            if(metods[i].nombre == nom){
+                data = metods[i];
+                data.csrf_token = $('#csrf_token').val();
+                data.del = true;
+            }
+        }
+        crearModalBorrar(data.id, 'Eliminar Metodologia',
+            'Esta seguro de eliminar la metodologia "'+data.nombre+'"?');
+
+        $('#confirm-delete'+data.id).on('show.bs.modal', function(e){
+            var modal = $(this);
+            $(this).find('.btn-ok').on('click', function(){
+                modal.modal('hide');
+                modal.on('hidden.bs.modal', function(e){modal.remove();});
+                window.location.replace($SCRIPT_ROOT+'/cargar/metodologia/borrar/'+data.id);
+            });
+        }).modal('show');
+    });
+}
+
+// Limpia Formulario de Metodologia
+function limpiar_metod(){
+    $('#id').val(0);
+    $('#nombre').val('');
+    $('#descripcion').val('');
+    $('#medicion').val('');
+    $('#cenit').val(0.0);
+    $('#azimut').val(0.0);
+    contador(document.getElementById('descripcion'),'#bdesc',600);
+    contador(document.getElementById('medicion'),'#bmed',600);
+    $('.form-control').prop('disabled',false);
+    $('.col-xs-1').css('display','none');
+}
+
+
+
+// Configurar llamado a ejecucion cuando la API de visualizacion de Google esta cargada
 
 
 // Funcion de post.html
