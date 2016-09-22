@@ -1,0 +1,98 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#consultar')</script>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li class="active">Descargas</li>
+</ol>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for key, error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}</strong>: {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h1>Estadística de Descargas</h1>
+<hr>
+<ul class="list-inline" name="filtro">
+    <li id="to" onclick="fecha('#to')"><a href="#"><h1><span class="label label-primary">Todo</span></h1></a></li>
+    <li id="f" onclick="fecha('#f')"><a href="#"><h2><span class="label label-info">Fecha</span></h2></a></li>
+</ul>
+<br>
+<br>
+<form class="form-horizontal" action="" method="post" name="consultar">
+    <div class="form-group" id="ff" style="display: none;">
+        <label class="col-xs-2">Fechas</label>
+        <div class="col-xs-10">
+            <div class="input-group input-daterange">
+                <span class="input-group-addon">Inicio</span>
+                {{ form.fecha_inicio(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <span class="input-group-addon">Fin</span>
+                {{ form.fecha_fin(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        {{ form.hidden_tag() }}
+    </div>
+    <input type="submit" value="Consultar" class="btn btn-primary">
+</form>
+<hr>
+<br>
+<div id="resultado"></div>
+
+<!-- Scripts al cargar el documento -->
+<script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    validaciones('#fecha_inicio'); validaciones('#fecha_fin');
+
+    function fecha(item){
+        $(item).hide();
+        if ($(item)[0].id === $('#f')[0].id){
+            $('#ff').show();
+        }
+        if ($(item)[0].id === $('#to')[0].id) {
+            $('#to').show();
+            $('#f').show();
+            $('#ff').hide();
+            $('#fecha_inicio')[0].value = '';
+            $('#fecha_fin')[0].value = '';
+        }
+    }
+
+    $('.input-daterange').datepicker({
+        startDate: '01-01-2010',
+        endDate: 'today',
+        todayBtn: true,
+        orientation: 'bottom auto',
+        format: 'dd-mm-yyyy',
+        language: 'es',
+        todayHighlight: true,
+        startView: 2
+    });
+
+{% if descargas|length > 0 %}
+    var desc = {};
+    var lista = [];
+    {% for d in descargas %}
+        desc.nombre = "{{ d.nickname }}";
+        desc.fecha = "{{ d.fecha_descarga }}";
+        desc.inst="{{ d.institucion }}";
+        desc.archivo="{{ d.nombre_archivo }}";
+        desc.tamanio="{{ d.tamanio_archivo }}";
+        lista.push(desc);
+    {% endfor %}
+    listar_descargas(lista);
+{% endif %}
+</script>
+{% endblock %}

@@ -603,3 +603,44 @@ function translate(sourceLang, destLang, sourceId, destId, loadingId){
         $(destId).show();
     });
 }
+
+// Funcion listar todas las descargas
+function listar_descargas(lista){
+    var parent = document.getElementById('resultado');
+    var panel = document.createElement('div');
+    panel.classList.add('panel');
+    panel.classList.add('panel-default');
+
+    var head = document.createElement('div');
+    head.classList.add('panel-heading');
+    head.appendChild(document.createTextNode('Descargas'));
+
+    var tabla = document.createElement('table');
+    tabla.classList.add('table');
+
+    var thead = document.createElement('thead');
+    var tr = document.createElement('tr');
+    var th1 = document.createElement('th');
+    th1.appendChild(document.createTextNode('CONAE'));
+    var th2 = document.createElement('th');
+    th2.appendChild(document.createTextNode('OTROS'));
+    var th3 = document.createElement('th');
+    th3.appendChild(document.createTextNode('Total'));
+    tr.appendChild(th1);
+    tr.appendChild(th2);
+    tr.appendChild(th3);
+    thead.appendChild(tr);
+    tabla.appendChild(thead);
+
+    var tbody = document.createElement('tbody');
+    for(var i=0;i<lista.length;i++){
+        var trb = document.createElement('tr');
+        var td = document.createElement('td');
+        td.appendChild(document.createTextNode(lista[i].nombre+' '+lista[i].inst+' '+lista[i].fecha+' '+lista[i].archivo+' '+lista[i].tamanio));
+        trb.appendChild(td);
+        tbody.appendChild(trb);
+    }
+    tabla.appendChild(tbody);
+    panel.appendChild(tabla);
+    parent.appendChild(panel);
+}

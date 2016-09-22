@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+import os
 import traceback
 from flask import current_app, url_for
 from rauth import OAuth2Service, OAuth1Service
@@ -632,7 +634,19 @@ class Descarga(db.Model):
     fecha_descarga = db.Column(db.DateTime)
     nombre_archivo = db.Column(db.String(120))
     tamanio_archivo = db.Column(db.DECIMAL(precision=30, scale=3))
-    descarga_completa = db.Column(db.Boolean)
+
+    def agregar(self, email, folder, filename):
+        self.id_usuario = User.query.filter_by(email=email).first().id
+        self.institucion = email.split('@')[1].split('.')[0].upper()
+        self.fecha_descarga = datetime.utcnow()
+        self.nombre_archivo = filename
+        self.tamanio_archivo = os.path.getsize(os.path.join(folder, filename))
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except:
+            traceback.print_exc()
+            db.session.rollback()
 
     def __repr__(self):
         return '<Descarga %r>' % (self.id)

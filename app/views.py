@@ -14,9 +14,9 @@ from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
-    MetodologiaForm
+    MetodologiaForm, DescargaForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
-    Muestra, Metodologia
+    Muestra, Metodologia, Descarga
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
     actualizar_tp, utf_to_ascii
@@ -637,7 +637,7 @@ def loc():
     }
     return jsonify(gloc)
 
-# Carga de archivos
+# Consulta de datos
 @app.route('/consultar', methods=['GET', 'POST'])
 @login_required
 def consultar():
@@ -833,6 +833,26 @@ def consultar():
     return render_template('consultar.html', form=form)
 
 
+# Consultar Descargas
+@app.route('/consultar/descargas', methods=['GET', 'POST'])
+@login_required
+def descargas():
+    form = DescargaForm()
+    descargas = []
+    if request.method == 'POST':
+        fi = form.fecha_inicio.data
+        ff = form.fecha_fin.data
+        descargas = []
+        if fi is None and ff is None:
+            descargas = Descarga.query.join(User).all()
+        if fi is None and ff is not None:
+            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga <= ff).all()
+        if fi is not None and ff is None:
+            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi).all()
+        if fi is not None and ff is not None:
+            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi, Descarga.fecha_descarga <= ff).all()
+    return render_template('consultar_descargas.html', form=form, descargas=descargas)
+
 # Vista del Foro
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/foro', methods=['GET', 'POST'])
@@ -890,6 +910,8 @@ def resultado(campañas, criterios):
 # Muestra archivo de campaña
 @app.route('/resultado/<filename>')
 def show_campaign(filename):
+    d = Descarga()  # Registrar la descarga
+    d.agregar(g.user.email, CAMPAIGNS_FOLDER, filename)
     return send_from_directory(CAMPAIGNS_FOLDER, filename)
 
 

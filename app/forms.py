@@ -198,6 +198,7 @@ class ConsultarForm(Form):
     # reflectancia_avg = BooleanField('reflectancia_avg', default=False)
     # reflectancia_std = BooleanField('reflectancia_std', default=False)
 
+# Formulario de Metodologias
 class MetodologiaForm(Form):
     id = StringField('id', validators=[DataRequired(message=u'Falta id')])
     nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre')])
@@ -205,3 +206,8 @@ class MetodologiaForm(Form):
     medicion = TextAreaField('medicion')
     cenit = DecimalField('angulo cenital', places=2)
     azimut = DecimalField('angulo azimutal', places=2)
+
+# Formulario de Consulta de Descargas
+class DescargaForm(Form):
+    fecha_inicio = DateField(u'fecha_inicio', format='%d-%m-%Y')
+    fecha_fin = DateField(u'fecha_fin',  format='%d-%m-%Y')
