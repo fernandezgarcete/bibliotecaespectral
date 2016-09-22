@@ -47,7 +47,7 @@
                         <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
                         <li id="docs" class=""><a href="/docs">Documentos</a></li>
-                        <li id="cargar" class=""><a href="/cargar">Cargar</a></li>
+                        {% if g.user.editar %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>{% endif %}
                         <li id="consultar" class=""><a href="/consultar">Consultar</a></li>
 
                     </ul>
