@@ -47,7 +47,7 @@
                         <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
                         <li id="docs" class=""><a href="/docs">Documentos</a></li>
-                        {% if g.user.editar %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>{% endif %}
+                        {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>{% endif %}
                         <li id="consultar" class=""><a href="/consultar">Consultar</a></li>
 
                     </ul>
@@ -113,14 +113,13 @@
     {% block content %}{% endblock %}
 </div>
 
-
 <div class='footer'>
     <div class='container'>
         <div class='row main well-lg'>
             <div class='col-md-offset-1'><br>
                 <br>
                 Av. Paseo Colón 751, 1063 Ciudad de Buenos Aires, Argentina - Tel: +54 11 4331-0074 -
-                <a id='anchor_foot' href='mailto:udae@conae.gov.ar'>udae@conae.gov.ar</a>
+                <a id='anchor_foot' href='mailto:ssu.atencionusuarios@conae.gov.ar'>ssu.atencionusuarios@conae.gov.ar</a>
             </div>
         </div>
     </div>

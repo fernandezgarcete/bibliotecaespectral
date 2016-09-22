@@ -581,6 +581,10 @@ class User(db.Model):
         return True
 
     @property
+    def is_editable(self):
+        return self.editar
+
+    @property
     def is_active(self):
         return True
 
