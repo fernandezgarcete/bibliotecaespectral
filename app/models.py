@@ -550,6 +550,7 @@ class User(db.Model):
     nickname = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    descargas = db.relationship('Descarga', backref='descarga', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
     editar = db.Column(db.Boolean)
@@ -622,6 +623,19 @@ class User(db.Model):
 
     def __repr__(self): # pragma: no cover
         return '<User %r>' % (self.nickname)
+
+# Entidad Descarga para control de informacion
+class Descarga(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_usuario = db.Column(db.Integer, db.ForeignKey('user.id'))
+    institucion = db.Column(db.String(120))
+    fecha_descarga = db.Column(db.DateTime)
+    nombre_archivo = db.Column(db.String(120))
+    tamanio_archivo = db.Column(db.DECIMAL(precision=30, scale=3))
+    descarga_completa = db.Column(db.Boolean)
+
+    def __repr__(self):
+        return '<Descarga %r>' % (self.id)
 
 
 class Post(db.Model):
