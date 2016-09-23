@@ -2,40 +2,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Edici&oacuten de perfil</h1>
-    <table>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+<li class="active">Editar</li>
+</ol>
 
-    </table>
-    <form action="" method="post" name="edit">
+<h1>Edici&oacuten de perfil</h1>
+    <hr>
+<form action="" method="post" name="edit" class="form-horizontal">
         {{ form.hidden_tag() }}
-        <table>
-            <tr>
-                <td>Avatar:</td>
-                <td>
-                    <a href="https://es.gravatar.com/" target="_blank">
-                        <img src="{{ g.user.avatar(128) }}">
-                    </a>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Tu nombre:</td>
-                <td>
+    <div class="form-group">
+        <label class="col-xs-2">Avatar</label>
+        <div class="col-xs-10">
+            <a href="https://es.gravatar.com/" target="_blank">
+                <img src="{{ g.user.avatar(128) }}">
+            </a>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Tu nombre</label>
+        <div class="col-xs-10">
+                    {{ form.nombre }}
+                    {% for error in form.errors.nickname %}
+                    <br><span style="color:darkred;">{{ error}}</span>
+                    {% endfor %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Nickname</label>
+        <div class="col-xs-10">
                     {{ form.nickname(size=24) }}
                     {% for error in form.errors.nickname %}
                     <br><span style="color:darkred;">{{ error}}</span>
                     {% endfor %}
-                </td>
-            </tr>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Email</label>
+        <div class="col-xs-10">
+                    {{ g.user.email }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Sobre vos</label>
+        <div class="col-xs-10">
+            {{ form.about_me(cols=32, rows=4) }}
+        </div>
+    </div>
 
-            <tr>
-                <td>Sobre vos:</td>
-                <td>{{ form.about_me(cols=32, rows=4) }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="submit" value="Guardar" class="btn btn-primary"></td>
-            </tr>
-        </table>
-    </form>
+    <input type="submit" value="Guardar" class="btn btn-primary">
+
+</form>
 {% endblock %}

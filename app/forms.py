@@ -27,11 +27,13 @@ class LoginConaeForm(Form):
 # Formulario de edición de perfil de usuario
 class EditForm(Form):
     nickname = StringField('nickname', validators=[DataRequired(message=u'Este dato es requerido')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Este dato es requerido')])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
 
-    def __init__(self, original_nickname, *args, **kwargs):
+    def __init__(self, original_nickname, orig_nombre, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
         self.original_nickname = original_nickname
+        self.orig_nombre = orig_nombre
 
     def validate(self):
         if not Form.validate(self):

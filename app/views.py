@@ -139,7 +139,8 @@ def conae_after_login(datos):
         nickname = User.make_valid_nickname(nickname)   # Validaciones previas a la aceptacion del nickname.
         nickname = User.make_unique_nickname(nickname)  # No aceptar duplicados.
         uid = User.query.order_by(User.id.desc()).first().id + 1
-        user = User(social_id='sinredsocial'+str(uid), nickname=nickname, email=datos['email'])# Obtenidos los datos, creamos User con el nickname y email
+        nombre = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", nickname)  # Separar CamelCase con espacios
+        user = User(social_id='sinredsocial'+str(uid), nickname=nickname, email=datos['email'], nombre=nombre)# Obtenidos los datos, creamos User con el nickname y email
         db.session.add(user)        # Agregamos a la sesión de la Base de Datos
         db.session.commit()         # Confirmamos la persistencia del nuevo Usuario en la BD.
         ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
@@ -242,7 +243,7 @@ def user(nickname, page=1):
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = EditForm(g.user.nickname)   # Cargamos un formulario del tipo EditForm
+    form = EditForm(g.user.nickname, g.user.nombre)   # Cargamos un formulario del tipo EditForm
     if form.validate_on_submit():               # Si el formulario es válido
         g.user.nickname = form.nickname.data    # cargamos el valor del nombre en nickname global
         g.user.about_me = form.about_me.data    # y la descripción personal correspondiente.
@@ -253,6 +254,7 @@ def edit():
     else:   # caso contrario
         form.nickname.data = g.user.nickname    # se dejan los datos como están en la sesión actual
         form.about_me.data = g.user.about_me
+        form.nombre.data = g.user.nombre
     return render_template('edit.html', form=form)  # Finalmente se redirige a la pag de edición con el formulario
 
 
@@ -379,6 +381,11 @@ def resp():
 def cargar():
     return render_template('cargar.html')
 
+# Gestiones Administrativas
+@app.route('/administrativo', methods=['GET'])
+@login_required
+def administrativo():
+    return render_template('administrativo.html')
 
 # Carga de archivos paso 1
 @app.route('/cargar/nueva', methods=['GET', 'POST'])

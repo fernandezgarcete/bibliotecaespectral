@@ -156,6 +156,7 @@ function consultaCamp(loc){
         success: function(resp){
             console.log(resp.indexOf("footer"));
             $("#result")[0].innerHTML = "<br>" + resp.substring(resp.indexOf("<p>"), resp.indexOf("footer"));
+            window.location.href = '#result';
         }
     });
 }

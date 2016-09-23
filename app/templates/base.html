@@ -8,7 +8,7 @@
     <link href="/static/css/bootstrap-datepicker.css" rel="stylesheet">
     <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
     <script src="/static/js/bootstrap.js"></script>
-    <script src="/static/js/moment-with-locales.min.js"></script>
+    <script src="/static/js/moment.min.js"></script>
     <script src="/static/js/bootstrap-datepicker.js"></script>
     <script src="/static/locales/bootstrap-datepicker.es.min.js" charset="UTF-8"></script>
     <script src="/static/js/bootstrap-confirmation.js"></script>
@@ -47,14 +47,23 @@
                         <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
                         <li id="docs" class=""><a href="/docs">Documentos</a></li>
-                        {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>{% endif %}
+                        {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>
+                        <li id="admin" class=""><a href="/administrativo">Administrativo</a></li>{% endif %}
                         <li id="consultar" class=""><a href="/consultar">Consultar</a></li>
-
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
+                        <li id="user_menu" class="dropdown">
+                            <a href="#" id="d_user" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ g.user.nombre }}
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="d_user">
+                                <!-- li id="perfil" class=""><a href="{#  #} url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+                                <li role="separator" class="divider"></li-->
+                                <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
+                            </ul>
+                        </li>
                         {% endif %}
                     </ul>
                 </div>

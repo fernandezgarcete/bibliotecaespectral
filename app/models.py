@@ -551,6 +551,7 @@ class User(db.Model):
     social_id = db.Column(db.String(64), nullable=False, unique=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
+    nombre = db.Column(db.String(180))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     descargas = db.relationship('Descarga', backref='descarga', lazy='dynamic')
     about_me = db.Column(db.String(140))
@@ -577,7 +578,7 @@ class User(db.Model):
 
     @staticmethod
     def make_valid_nickname(nickname):
-        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
+        return re.sub('[^a-zA-Z0-9_\.\s]', '', nickname)
 
     @property
     def is_authenticated(self):
