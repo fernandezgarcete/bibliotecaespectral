@@ -31,6 +31,13 @@ class Localidad(db.Model):
     geom = db.Column(Geometry(geometry_type='POINT', srid=4326))
     campanias = db.relationship('Campania', backref='localidad_campania', lazy='dynamic',
                                 cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_campania(self, campania):
         return self.campanias.filter(campania.id_localidad == self.id).count() > 0
@@ -71,11 +78,12 @@ class Localidad(db.Model):
 class Proyecto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(140), nullable=False, unique=True)
-    descripcion = db.Column(db.String(140))
+    descripcion = db.Column(db.String(600))
     responsables = db.Column(db.String(340))
     status = db.Column(db.Boolean)
     campanias = db.relationship('Campania', backref='proyecto_campania', lazy='dynamic',
                                 cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
 
     @property
     def start(self):
@@ -91,6 +99,12 @@ class Proyecto(db.Model):
             return True
         return False
 
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+
     def has_campania(self, campania):
         return self.campanias.filter(campania.id_proyecto == self.id).count() > 0
 
@@ -101,6 +115,28 @@ class Proyecto(db.Model):
 
     def get_campanias(self):
         return Campania.query.filter(Campania.id_proyecto == self.id).order_by(Campania.fecha.desc()).all()
+
+    def agregar(self, form):
+        proyecto = self
+        if int(form.id.data) > 0:
+            proyecto = self.query.filter_by(id=int(form.id.data)).first()
+            proyecto.nombre = form.nombre.data
+            proyecto.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
+            proyecto.responsables = form.responsables.data
+            proyecto.status = bool(form.status.data)
+        else:
+            proyecto.nombre = form.nombre.data
+            proyecto.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
+            proyecto.responsables = form.responsables.data
+            proyecto.status = bool(form.status.data)
+        try:
+            db.session.add(proyecto)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
     def __repr__(self): # pragma: no cover
         return '<Proyecto %r>' % (self.nombre)
@@ -117,6 +153,13 @@ class Campania(db.Model):
     id_proyecto = db.Column(db.Integer, db.ForeignKey('proyecto.id'))
     muestras = db.relationship('Muestra', backref='campania_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_campania == self.id).count() > 0
@@ -142,6 +185,13 @@ class TipoCobertura(db.Model):
     nombre = db.Column(db.String(80), nullable=False, unique=True)
     coberturas = db.relationship('Cobertura', backref='cobertura', lazy='dynamic',
                                  cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_cobertura(self, cobertura):
         return self.coberturas.filter(cobertura.id_tipocobertura == self.id).count() > 0
@@ -167,6 +217,13 @@ class Cobertura(db.Model):
     observaciones = db.Column(db.String(140))
     muestras = db.relationship('Muestra', backref='cobertura_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_cobertura == self.id).count() > 0
@@ -198,6 +255,13 @@ class Muestra(db.Model):
     id_patron = db.Column(db.Integer, db.ForeignKey('patron.id'))
     puntos = db.relationship('Punto', backref='punto', lazy='dynamic',
                              cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_punto(self, punto):
         return self.coberturas.filter(punto.id_muestra == self.id).count() > 0
@@ -224,6 +288,13 @@ class Camara(db.Model):
     accesorio = db.Column(db.String(340))
     muestras = db.relationship('Muestra', backref='camara_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_camara == self.id).count() > 0
@@ -250,6 +321,13 @@ class Gps(db.Model):
     accesorio = db.Column(db.String(340))
     muestras = db.relationship('Muestra', backref='gps_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_gps == self.id).count() > 0
@@ -276,6 +354,13 @@ class Fotometro(db.Model):
     accesorio = db.Column(db.String(340))
     muestras = db.relationship('Muestra', backref='fotometro_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_fotometro == self.id).count() > 0
@@ -302,6 +387,13 @@ class Patron(db.Model):
     accesorio = db.Column(db.String(340))
     muestras = db.relationship('Muestra', backref='patron_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_patron == self.id).count() > 0
@@ -343,6 +435,13 @@ class Radiometro(db.Model):
     accesorio = db.Column(db.String(340))
     muestras = db.relationship('Muestra', backref='radiometro_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_radiometro == self.id).count() > 0
@@ -368,6 +467,13 @@ class Metodologia(db.Model):
     angulo_azimutal = db.Column(db.DECIMAL(precision=5, scale=2))
     muestras = db.relationship('Muestra', backref='metodo_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_metodologia == self.id).count() > 0
@@ -388,14 +494,14 @@ class Metodologia(db.Model):
         if int(form.id.data) > 0:
             metod = self.query.filter_by(id=int(form.id.data)).first()
             metod.nombre = form.nombre.data
-            metod.descripcion = form.descripcion.data
-            metod.metodologia_medicion = form.medicion.data
+            metod.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
+            metod.metodologia_medicion = str(form.medicion.data).replace('\r\n', ' ')
             metod.angulo_cenital = int(form.cenit.data)
             metod.angulo_azimutal = int(form.azimut.data)
         else:
             metod.nombre = form.nombre.data
-            metod.descripcion = form.descripcion.data
-            metod.metodologia_medicion = form.medicion.data
+            metod.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
+            metod.metodologia_medicion = str(form.medicion.data).replace('\r\n', ' ')
             metod.angulo_cenital = int(form.cenit.data)
             metod.angulo_azimutal = int(form.azimut.data)
         try:
@@ -431,6 +537,13 @@ class Punto(db.Model):
                                   cascade="save-update, merge, delete")
     productos_radiancias = db.relationship('ProductoRadiancia', backref='producto_radiancia_punto', lazy='dynamic',
                                            cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_radiometria(self, radiometria):
         return self.radiometrias.filter(radiometria.id_punto == self.id).count() > 0
@@ -487,6 +600,13 @@ class Fotometria(db.Model):
     r870 = db.Column(db.DECIMAL(precision=12, scale=7))
     r1020 = db.Column(db.DECIMAL(precision=12, scale=7))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def __repr__(self): # pragma: no cover
         return '<Fotometria %r>' % (str(self.id))
@@ -499,6 +619,13 @@ class ProductoRadiancia(db.Model):
     radiancia_avg = db.Column(db.DECIMAL(precision=20, scale=15))
     radiancia_std = db.Column(db.DECIMAL(precision=20, scale=15))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def __repr__(self): # pragma: no cover
         return '<Producto Radiancia %r>' % (str(self.id))
@@ -511,6 +638,13 @@ class Radiometria(db.Model):
     toma = db.Column(db.Integer)
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
     id_superficie = db.Column(db.Integer, db.ForeignKey('superficie.id'))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def __repr__(self): # pragma: no cover
         return '<Radiometria %r>' % (str(self.id))
@@ -521,6 +655,13 @@ class Superficie(db.Model):
     nombre = db.Column(db.String(50), nullable=False, unique=True)
     radiometrias = db.relationship('Radiometria', backref='superficie_radiometria', lazy='dynamic',
                                    cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
 
     def has_radiometria(self, radiometria):
         return self.radiometrias.filter(radiometria.id_superficie == self.id).count() > 0

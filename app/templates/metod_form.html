@@ -16,16 +16,16 @@
 
 <div class="panel panel-default" id="panel">
     <div class="panel-heading"><strong>Metodologías Existentes</strong></div>
-    <ul class="list-group">
+    <div class="list-group">
         {% for m in metods %}
-        <li class="list-group-item">
-        <span onclick="rellenar_metod('{{ m.nombre }}')" class="btn">{{ m.nombre }}</span>
+        <a href="#metod_form" class="list-group-item" onclick="rellenar_metod('{{ m.nombre }}')">
+        <span >{{ m.nombre }}</span>
         <span type="button" class="badge btn" id="elim_{{ m.nombre }}">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
-        </li>
+        </a>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 
 <button type="button" class="btn btn-default" onclick="limpiar_metod()">
@@ -126,13 +126,14 @@ var azi = 0.0;
     var metod = {
         id:{{ m.id|default(0) }},
         nombre:"{{ m.nombre }}",
-        descripcion:"{{ m.descripcion }}",
-        medicion:"{{ m.metodologia_medicion }}",
+        descripcion:"{{ m.descripcion }}".toString(),
+        medicion:"{{ m.metodologia_medicion }}".toString(),
         cenit:cen,
         azimut:azi
     };
     metods.push(metod);
-    boton_eliminar('elim_'+metod.nombre);
+    btn_eliminar_item('elim_'+metod.nombre, metods, 'Eliminar Metodología',
+            'Está seguro de eliminar la metodología "', '/cargar/metodologia/borrar/');
 {% endfor %}
 
 $('#metod_form').submit(function(e){

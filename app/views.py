@@ -14,7 +14,7 @@ from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
-    MetodologiaForm, DescargaForm
+    MetodologiaForm, DescargaForm, ProyectoForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra, Metodologia, Descarga
 from .translate import microsoft_translate
@@ -618,8 +618,8 @@ def editar(id):
 def mapa():
     if request.method == 'POST':
         nom = request.form.get('loc')
-        loc = Localidad.query.filter_by(nombre=nom).first()
-        camps = Campania.query.filter(Campania.id_localidad == loc.id).all()
+        loc = Localidad.query.filter_by(nombre=nom, deleted=False).first()
+        camps = Campania.query.filter(Campania.id_localidad == loc.id, deleted=False).all()
         criterios = {'Localidad': loc.nombre}
         nombres = []
         for c in camps:
@@ -631,7 +631,7 @@ def mapa():
 @app.route('/consultar/mapa/loc', methods=['GET'])
 @login_required
 def loc():
-    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom)))
+    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom), deleted=False))
     gloc = {
         "type": "FeatureCollection",
         "features": [
@@ -649,13 +649,13 @@ def loc():
 @login_required
 def consultar():
     form = ConsultarForm()
-    form.proyecto.choices = [(p.id, p.nombre) for p in Proyecto.query.order_by('nombre')]
+    form.proyecto.choices = [(p.id, p.nombre) for p in Proyecto.query.filter_by(deleted=False).order_by('nombre')]
     form.proyecto.choices.insert(0, (0, ''))
-    form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.order_by('nombre')]
+    form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.cobertura.choices.insert(0, (0, ''))
-    form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.order_by('nombre')]
+    form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.filter_by(deleted=False).order_by('nombre')]
     form.localidad.choices.insert(0, (0, ''))
-    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
     if request.method == 'POST':
         proy = form.proyecto.data
@@ -667,33 +667,38 @@ def consultar():
         camps = []
         criterios = {}
         if loc == 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.all()
+            camps = Campania.query.filter_by(deleted=False).all()
         if loc > 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter(Campania.id_localidad == loc).all()
+            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.deleted is False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if loc > 0 and fi is not None and ff is not None and proy == 0 and cob == 0 and tp == 0:
-            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.fecha >= fi, Campania.fecha <= ff).all()
+            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.fecha >= fi, Campania.fecha <= ff,
+                                          Campania.deleted is False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
         if loc > 0 and tp > 0 and proy == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
+                                                                   Campania.deleted is False, Cobertura.deleted is False,
                                                                    Cobertura.id_tipocobertura == tp).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if loc > 0 and cob > 0 and proy == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra).filter(Campania.id_localidad == loc, Muestra.id_cobertura == cob).all()
+            camps = Campania.query.join(Muestra).filter(Campania.id_localidad == loc, Campania.deleted is False,
+                                                        Muestra.id_cobertura == cob).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if proy > 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter(Campania.id_proyecto == proy).all()
+            camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.deleted is False).all()
             criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
         if proy > 0 and loc > 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.id_localidad == loc).all()
+            camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.id_localidad == loc,
+                                          Campania.deleted is False).all()
             criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if proy > 0 and fi is not None and ff is not None and loc == 0 and cob == 0 and tp == 0:
-            camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.fecha >= fi, Campania.fecha <= ff).all()
+            camps = Campania.query.filter(Campania.id_proyecto == proy, Campania.fecha >= fi, Campania.fecha <= ff,
+                                          Campania.deleted is False).all()
             criterios['Proyecto'] = Proyecto.query.filter_by(id=proy).first().nombre
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
@@ -967,7 +972,41 @@ def borrar_metod(id):
     if metod is None:
         flash('No se ha podido eliminar la metodologia', 'error')
         return redirect(url_for('metodologia'))
-    db.session.delete(metod)
+    metod.deleted = True
+    db.session.add(metod)
     db.session.commit()
     flash(gettext('La metodología ha sido borrada.'), 'success')
     return redirect(url_for('metodologia'))
+
+
+@app.route('/cargar/proyecto', methods=['GET', 'POST'])
+@login_required
+def proyecto():
+    form = ProyectoForm()
+    proyectos = Proyecto.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            p = Proyecto()
+            if p.agregar(form):
+                flash('Proyecto guardado.', 'success')
+            else:
+                print('Error')
+    return render_template('proyecto_form.html', form=form, proyectos=proyectos, panel=panel)
+
+
+@app.route('/cargar/proyecto/borrar/<int:id>')
+@login_required
+def borrar_proyecto(id):
+    proyecto = Proyecto.query.get(id)
+    if proyecto is None:
+        flash('No se ha podido eliminar el Proyecto', 'error')
+        return redirect(url_for('proyecto'))
+    proyecto.deleted = True
+    db.session.add(proyecto)
+    db.session.commit()
+    flash(gettext('El Proyecto ha sido borrado.'), 'success')
+    return redirect(url_for('proyecto'))

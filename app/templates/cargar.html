@@ -103,8 +103,8 @@
                 <h4><strong>Proyectos</strong></h4>
                 <p>Carga de convenios de proyectos nuevos y existentes </p>
                 <p>
-                    <a href="#proy" class="btn btn-primary" role="button">Nuevo</a>
-                    <a href="#proy" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('proyecto', c='n') }}" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="{{ url_for('proyecto', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>

@@ -203,11 +203,19 @@ class ConsultarForm(Form):
 # Formulario de Metodologias
 class MetodologiaForm(Form):
     id = StringField('id', validators=[DataRequired(message=u'Falta id')])
-    nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre de metodología')])
     descripcion = TextAreaField('descripcion', validators=[DataRequired(message=u'Describa la descripción')])
     medicion = TextAreaField('medicion')
     cenit = DecimalField('angulo cenital', places=2)
     azimut = DecimalField('angulo azimutal', places=2)
+
+# Formulario de Metodologias
+class ProyectoForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre al proyecto')])
+    descripcion = TextAreaField('descripcion')
+    responsables = StringField('responsables')
+    status = BooleanField('status', default=False)
 
 # Formulario de Consulta de Descargas
 class DescargaForm(Form):

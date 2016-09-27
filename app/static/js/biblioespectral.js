@@ -539,32 +539,49 @@ function rellenar_metod(nombre){
     }
 }
 
-// Eliminar Metodología
-function boton_eliminar(id){
+// Rellena formulario de Proyecto
+function rellenar_proyecto(nombre){
+    for(var i=0; i<proyectos.length; i++){
+        if(proyectos[i].nombre == nombre){
+            $('#id').val(proyectos[i].id);
+            $('#nombre').val(proyectos[i].nombre);
+            $('#descripcion').val(proyectos[i].descripcion);
+            $('#responsables').val(proyectos[i].responsables);
+            $('#status').val(proyectos[i].status);
+            document.getElementById('status').checked = proyectos[i].status;
+            contador(document.getElementById('descripcion'),'#bdesc',600);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Eliminar item de Entidades
+function btn_eliminar_item(id, lista_entidad, titulo, mensaje, url){
     var boton = document.getElementById(id);
     boton.addEventListener('click', function(){
         var nom = this.id.substr(5);
         var data;
-        for(var i=0;i<metods.length;i++){
-            if(metods[i].nombre == nom){
-                data = metods[i];
+        for(var i=0;i<lista_entidad.length;i++){
+            if(lista_entidad[i].nombre == nom){
+                data = lista_entidad[i];
                 data.csrf_token = $('#csrf_token').val();
                 data.del = true;
             }
         }
-        crearModalBorrar(data.id, 'Eliminar Metodologia',
-            'Esta seguro de eliminar la metodologia "'+data.nombre+'"?');
+        crearModalBorrar(data.id, titulo, mensaje+data.nombre+'"?');
 
         $('#confirm-delete'+data.id).on('show.bs.modal', function(e){
             var modal = $(this);
             $(this).find('.btn-ok').on('click', function(){
                 modal.modal('hide');
                 modal.on('hidden.bs.modal', function(e){modal.remove();});
-                window.location.replace($SCRIPT_ROOT+'/cargar/metodologia/borrar/'+data.id);
+                window.location.replace($SCRIPT_ROOT+ url +data.id);
             });
         }).modal('show');
     });
 }
+
 
 // Limpia Formulario de Metodologia
 function limpiar_metod(){
@@ -580,6 +597,18 @@ function limpiar_metod(){
     $('.col-xs-1').css('display','none');
 }
 
+// Limpia Formulario de Metodologia
+function limpiar_proyecto(){
+    $('#id').val(0);
+    $('#nombre').val('');
+    $('#descripcion').val('');
+    $('#responsables').val('');
+    $('#status').val(false);
+    document.getElementById('status').checked = false;
+    contador(document.getElementById('descripcion'),'#bdesc',600);
+    $('.form-control').prop('disabled',false);
+    $('.col-xs-1').css('display','none');
+}
 
 
 // Configurar llamado a ejecucion cuando la API de visualizacion de Google esta cargada

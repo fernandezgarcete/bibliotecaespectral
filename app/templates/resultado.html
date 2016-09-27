@@ -22,7 +22,9 @@
 {% if list|length > 0 %}
     {% for file in list %}
     <div class="row">
-        <a href="{{ url_for('show_campaign', filename=file) }}">{{ file }}</a>
+        <a href="{{ url_for('show_campaign', filename=file) }}">
+            <i class="glyphicon glyphicon-download-alt"></i>  {{ file }}
+        </a>
     </div>
     <hr>
     {% endfor %}
