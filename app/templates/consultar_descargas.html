@@ -49,7 +49,36 @@
 </form>
 <hr>
 <br>
-<div id="resultado"></div>
+
+<div id="resultado">
+    <div class="panel panel-default">
+        <div class="panel-heading">Listado de Descargas</div>
+        <table class="table">
+            <thead>
+                <th></th>
+                <th>CONAE</th>
+                <th>OTROS</th>
+                <th>TOTAL</th>
+            </thead>
+            <tbody>
+            {% for t in tabla %}
+                <tr>
+                    <th>Descargas</th>
+                    <td>{{ t.institucion }}</td>
+                    <td>{{ t.fecha }}</td>
+                    <td>{{ t.mb }}</td>
+                </tr>
+                <tr>
+                    <th>Megabytes</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <!-- Scripts al cargar el documento -->
 <script>
@@ -81,18 +110,6 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         startView: 2
     });
 
-{% if descargas|length > 0 %}
-    var desc = {};
-    var lista = [];
-    {% for d in descargas %}
-        desc.nombre = "{{ d.nickname }}";
-        desc.fecha = "{{ d.fecha_descarga }}";
-        desc.inst="{{ d.institucion }}";
-        desc.archivo="{{ d.nombre_archivo }}";
-        desc.tamanio="{{ d.tamanio_archivo }}";
-        lista.push(desc);
-    {% endfor %}
-    listar_descargas(lista);
-{% endif %}
+
 </script>
 {% endblock %}

@@ -779,7 +779,7 @@ class Descarga(db.Model):
 
     def agregar(self, email, folder, filename):
         self.id_usuario = User.query.filter_by(email=email).first().id
-        self.institucion = email.split('@')[1].split('.')[0].upper()
+        self.institucion = email.split('@')[1].upper()
         self.fecha_descarga = datetime.utcnow()
         self.nombre_archivo = filename
         self.tamanio_archivo = os.path.getsize(os.path.join(folder, filename))

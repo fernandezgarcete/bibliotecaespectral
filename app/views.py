@@ -19,7 +19,7 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
     Muestra, Metodologia, Descarga
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
-    actualizar_tp, utf_to_ascii
+    actualizar_tp, utf_to_ascii, tabular_descargas
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -619,7 +619,7 @@ def mapa():
     if request.method == 'POST':
         nom = request.form.get('loc')
         loc = Localidad.query.filter_by(nombre=nom, deleted=False).first()
-        camps = Campania.query.filter(Campania.id_localidad == loc.id, deleted=False).all()
+        camps = Campania.query.filter(Campania.id_localidad == loc.id, Campania.deleted == False).all()
         criterios = {'Localidad': loc.nombre}
         nombres = []
         for c in camps:
@@ -631,7 +631,8 @@ def mapa():
 @app.route('/consultar/mapa/loc', methods=['GET'])
 @login_required
 def loc():
-    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom), deleted=False))
+    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom)).filter_by(deleted=False).all())
+    print(jloc)
     gloc = {
         "type": "FeatureCollection",
         "features": [
@@ -863,7 +864,8 @@ def descargas():
             descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi).all()
         if fi is not None and ff is not None:
             descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi, Descarga.fecha_descarga <= ff).all()
-    return render_template('consultar_descargas.html', form=form, descargas=descargas)
+        tabla = tabular_descargas(descargas)
+    return render_template('consultar_descargas.html', form=form, descargas=descargas, tabla=tabla)
 
 # Vista del Foro
 @app.route('/', methods=['GET', 'POST'])

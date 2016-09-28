@@ -544,3 +544,23 @@ def utf_to_ascii(utf):
         str = str.replace('Ü', 'U')
     return str
 
+
+def tabular_descargas(descargas):
+    tabla = {}
+    tablas = []
+    year = [{'1': 1, 'byte': 0, 'y': 0}, {'2': 2, 'byte': 0, 'y': 0}, {'3': 3, 'byte': 0, 'y': 0},
+            {'4': 4, 'byte': 0, 'y': 0}, {'5': 5, 'byte': 0, 'y': 0}, {'6': 6, 'byte': 0, 'y': 0},
+            {'7': 7, 'byte': 0, 'y': 0}, {'8': 8, 'byte': 0, 'y': 0}, {'9': 9, 'byte': 0, 'y': 0},
+            {'10': 10, 'byte': 0, 'y': 0}, {'11': 11, 'byte': 0, 'y': 0}, {'12': 12, 'byte': 0, 'y': 0}]
+    for d in descargas:
+        #for m in year:
+            #if d.fecha_descarga.year in m['y']:
+            #print('tiene año')
+        print(d.fecha_descarga.date())
+        print(d.fecha_descarga.year)
+        print(round(d.tamanio_archivo/1024/1024, 2))
+        tabla['institucion'] = d.institucion
+        tabla['fecha'] = d.fecha_descarga.date()
+        tabla['mb'] = round(d.tamanio_archivo/1024/1024, 2)
+        tablas.append(tabla)
+    return tablas
