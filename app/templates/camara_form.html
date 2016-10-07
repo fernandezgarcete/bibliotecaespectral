@@ -19,9 +19,9 @@
     <img src="/static/img/camara.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
         {% for c in camaras %}
-        <a href="#camara_form" class="list-group-item" onclick="rellenar_cam('{{ c.nombre }}')">
+        <a href="#camara_form" class="list-group-item" onclick="rellenar_cam('{{ c.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         <span >{{ c.nombre }}</span>
-        <span type="button" class="badge btn" id="elim_{{ c.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ c.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

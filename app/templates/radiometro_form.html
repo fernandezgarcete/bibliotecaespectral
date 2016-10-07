@@ -19,9 +19,9 @@
     <img src="/static/img/radiometro.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
         {% for r in radiometros %}
-        <a href="#rad_form" class="list-group-item" onclick="rellenar_rad('{{ r.nombre }}')">
+        <a href="#rad_form" class="list-group-item" onclick="rellenar_rad('{{ r.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         <span >{{ r.nombre }}</span>
-        <span type="button" class="badge btn" id="elim_{{ r.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ r.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

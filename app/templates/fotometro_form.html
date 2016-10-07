@@ -19,9 +19,9 @@
     <img src="/static/img/fotometro.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
         {% for f in fotometros %}
-        <a href="#fotometro_form" class="list-group-item" onclick="rellenar_fot('{{ f.nombre }}')">
+        <a href="#fotometro_form" class="list-group-item" onclick="rellenar_fot('{{ f.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         <span >{{ f.nombre }}</span>
-        <span type="button" class="badge btn" id="elim_{{ f.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ f.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

@@ -20,9 +20,9 @@
     </div>
     <div class="list-group">
         {% for c in coberturas %}
-        <a href="#cobertura_form" class="list-group-item" onclick="rellenar_cob('{{ c.nombre }}')">
+        <a href="#cobertura_form" class="list-group-item" onclick="rellenar_cob('{{ c.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ c.nombre }}
-        <span type="button" class="badge btn" id="elim_{{ c.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ c.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

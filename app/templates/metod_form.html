@@ -19,9 +19,9 @@
     <img src="/static/img/metod.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
         {% for m in metods %}
-        <a href="#metod_form" class="list-group-item" onclick="rellenar_metod('{{ m.nombre }}')">
+        <a href="#metod_form" class="list-group-item" onclick="rellenar_metod('{{ m.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         <span >{{ m.nombre }}</span>
-        <span type="button" class="badge btn" id="elim_{{ m.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ m.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

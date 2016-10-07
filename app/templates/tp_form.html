@@ -20,9 +20,9 @@
     </div>
     <div class="list-group">
         {% for tp in tps %}
-        <a href="#tp_form" class="list-group-item" onclick="rellenar_tp('{{ tp.nombre }}')">
+        <a href="#tp_form" class="list-group-item" onclick="rellenar_tp('{{ tp.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ tp.nombre }}
-        <span type="button" class="badge btn" id="elim_{{ tp.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ tp.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

@@ -19,9 +19,9 @@
     <img src="/static/img/gps.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
         {% for g in gpses %}
-        <a href="#gps_form" class="list-group-item" onclick="rellenar_gps('{{ g.nombre }}')">
+        <a href="#gps_form" class="list-group-item" onclick="rellenar_gps('{{ g.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         <span >{{ g.nombre }}</span>
-        <span type="button" class="badge btn" id="elim_{{ g.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ g.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>

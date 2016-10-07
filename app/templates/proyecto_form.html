@@ -20,9 +20,9 @@
     </div>
     <div class="list-group">
         {% for p in proyectos %}
-        <a href="#proyecto_form" class="list-group-item" onclick="rellenar_proyecto('{{ p.nombre }}')">
+        <a href="#proyecto_form" class="list-group-item" onclick="rellenar_proyecto('{{ p.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ p.nombre }}
-        <span type="button" class="badge btn" id="elim_{{ p.nombre }}">
+        <span type="button" class="badge btn" id="elim_{{ p.nombre }}"  data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>
