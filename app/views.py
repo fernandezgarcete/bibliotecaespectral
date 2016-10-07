@@ -1055,10 +1055,11 @@ def borrar_tp(id):
 
 # Carga de Coberturas Nuevas
 @app.route('/cargar/cobertura', methods=['GET', 'POST'])
+@app.route('/cargar/cobertura/<int:page>', methods=['GET', 'POST'])
 @login_required
-def cobertura():
+def cobertura(page=1):
     form = CobForm()
-    coberturas = Cobertura.query.filter_by(deleted=False).order_by('nombre')
+    coberturas = Cobertura.query.filter_by(deleted=False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
     form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
     if request.args.get('c') == 'n':

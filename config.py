@@ -73,7 +73,7 @@ MAIL_PASSWORD = 'Ep$ilon1'
 ADMINS = ['jjfernandez@conae.gov.ar']
 
 # pagination
-POST_PER_PAGE = 3
+POST_PER_PAGE = 5
 
 # Full text Search
 MAX_SEARCH_RESULTS = 50

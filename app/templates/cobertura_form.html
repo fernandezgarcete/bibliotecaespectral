@@ -19,7 +19,7 @@
     <img src="/static/img/cobertura.png" style="width: 50px;height: 50px;">
     </div>
     <div class="list-group">
-        {% for c in coberturas %}
+        {% for c in coberturas.items %}
         <a href="#cobertura_form" class="list-group-item" onclick="rellenar_cob('{{ c.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ c.nombre }}
         <span type="button" class="badge btn" id="elim_{{ c.nombre }}" data-toggle="tooltip" title="Eliminar Item">
@@ -29,6 +29,8 @@
         {% endfor %}
     </div>
 </div>
+{% if coberturas.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('cobertura', page=coberturas.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if coberturas.has_next %}<li><a href="{{ url_for('cobertura', page=coberturas.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
 
 <button type="button" class="btn btn-default" onclick="limpiar_cob()">
     Nueva <span class="glyphicon glyphicon-plus"></span>
@@ -120,7 +122,7 @@ validaciones('#altura'); limpiar_cob();
 
 var coberturas = [];
 
-{% for c in coberturas %}
+{% for c in coberturas.items %}
     var cobertura = {
         id:{{ c.id|default(0) }},
         nombre:"{{ c.nombre }}",
