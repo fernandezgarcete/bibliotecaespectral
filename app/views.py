@@ -14,9 +14,10 @@ from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
-    MetodologiaForm, DescargaForm, ProyectoForm
+    MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
+    GPSForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
-    Muestra, Metodologia, Descarga
+    Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
     actualizar_tp, utf_to_ascii, tabular_descargas
@@ -632,7 +633,6 @@ def mapa():
 @login_required
 def loc():
     jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom)).filter_by(deleted=False).all())
-    print(jloc)
     gloc = {
         "type": "FeatureCollection",
         "features": [
@@ -670,18 +670,19 @@ def consultar():
         if loc == 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.filter_by(deleted=False).all()
         if loc > 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.deleted is False).all()
+            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if loc > 0 and fi is not None and ff is not None and proy == 0 and cob == 0 and tp == 0:
             camps = Campania.query.filter(Campania.id_localidad == loc, Campania.fecha >= fi, Campania.fecha <= ff,
-                                          Campania.deleted is False).all()
+                                          Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
         if loc > 0 and tp > 0 and proy == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
-                                                                   Campania.deleted is False, Cobertura.deleted is False,
+                                                                   #Campania.deleted == False, Cobertura.deleted == False,
                                                                    Cobertura.id_tipocobertura == tp).all()
+            print(camps)
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if loc > 0 and cob > 0 and proy == 0 and tp == 0 and fi is None and ff is None:
@@ -865,7 +866,8 @@ def descargas():
         if fi is not None and ff is not None:
             descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi, Descarga.fecha_descarga <= ff).all()
         tabla = tabular_descargas(descargas)
-    return render_template('consultar_descargas.html', form=form, descargas=descargas, tabla=tabla)
+        return render_template('consultar_descargas.html', form=form, descargas=descargas, tabla=tabla)
+    return render_template('consultar_descargas.html', form=form, descargas=descargas)
 
 # Vista del Foro
 @app.route('/', methods=['GET', 'POST'])
@@ -929,6 +931,7 @@ def show_campaign(filename):
     return send_from_directory(CAMPAIGNS_FOLDER, filename)
 
 
+# Carga de Localidades nuevas
 @app.route('/cargar/localidad', methods=['GET', 'POST'])
 @login_required
 def localidad():
@@ -948,6 +951,7 @@ def localidad():
     return render_template('localidad.html', locs=locs)
 
 
+# Carga de Metodologias Nuevas
 @app.route('/cargar/metodologia', methods=['GET', 'POST'])
 @login_required
 def metodologia():
@@ -966,7 +970,7 @@ def metodologia():
                 print('Error')
     return render_template('metod_form.html', form=form, metods=metods, panel=panel)
 
-
+# Borrar una metodologia existente
 @app.route('/cargar/metodologia/borrar/<int:id>')
 @login_required
 def borrar_metod(id):
@@ -981,6 +985,7 @@ def borrar_metod(id):
     return redirect(url_for('metodologia'))
 
 
+# Carga de Proyectos Nuevos
 @app.route('/cargar/proyecto', methods=['GET', 'POST'])
 @login_required
 def proyecto():
@@ -999,7 +1004,7 @@ def proyecto():
                 print('Error')
     return render_template('proyecto_form.html', form=form, proyectos=proyectos, panel=panel)
 
-
+# Borrar un proyecto existente
 @app.route('/cargar/proyecto/borrar/<int:id>')
 @login_required
 def borrar_proyecto(id):
@@ -1012,3 +1017,243 @@ def borrar_proyecto(id):
     db.session.commit()
     flash(gettext('El Proyecto ha sido borrado.'), 'success')
     return redirect(url_for('proyecto'))
+
+
+# Carga de Tipos de Coberturas Nuevas
+@app.route('/cargar/tp', methods=['GET', 'POST'])
+@login_required
+def tp():
+    form = TPForm()
+    tps = TipoCobertura.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            tp = TipoCobertura()
+            if tp.agregar(form):
+                flash('Tipo de cobertura guardada.', 'success')
+            else:
+                print('Error')
+    return render_template('tp_form.html', form=form, tps=tps, panel=panel)
+
+# Borrar un tipo de cobertura existente
+@app.route('/cargar/tp/borrar/<int:id>')
+@login_required
+def borrar_tp(id):
+    tp = TipoCobertura.query.get(id)
+    if tp is None:
+        flash('No se ha podido eliminar el tipo de Cobertura', 'error')
+        return redirect(url_for('tp'))
+    tp.deleted = True
+    db.session.add(tp)
+    db.session.commit()
+    flash(gettext('El Tipo de Cobertura ha sido borrado.'), 'success')
+    return redirect(url_for('tp'))
+
+
+# Carga de Coberturas Nuevas
+@app.route('/cargar/cobertura', methods=['GET', 'POST'])
+@login_required
+def cobertura():
+    form = CobForm()
+    coberturas = Cobertura.query.filter_by(deleted=False).order_by('nombre')
+    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
+    form.tipo_cobertura.choices.insert(0, (0, ''))
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            cob = Cobertura()
+            if cob.agregar(form):
+                flash('Cobertura guardada.', 'success')
+            else:
+                print('Error')
+    return render_template('cobertura_form.html', form=form, coberturas=coberturas, panel=panel)
+
+# Borrar una cobertura existente
+@app.route('/cargar/cobertura/borrar/<int:id>')
+@login_required
+def borrar_cobertura(id):
+    cob = Cobertura.query.get(id)
+    if cob is None:
+        flash('No se ha podido eliminar la Cobertura', 'error')
+        return redirect(url_for('cobertura'))
+    cob.deleted = True
+    db.session.add(cob)
+    db.session.commit()
+    flash(gettext('La Cobertura ha sido borrada.'), 'success')
+    return redirect(url_for('cobertura'))
+
+
+# Carga de Radiometros Nuevos
+@app.route('/cargar/radiometro', methods=['GET', 'POST'])
+@login_required
+def radiometro():
+    form = RadiometroForm()
+    radiometros = Radiometro.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            rad = Radiometro()
+            if rad.agregar(form):
+                flash('Espectro-radiómetro guardado.', 'success')
+            else:
+                print('Error')
+    return render_template('radiometro_form.html', form=form, radiometros=radiometros, panel=panel)
+
+# Borrar un radiometro existente
+@app.route('/cargar/radiometro/borrar/<int:id>')
+@login_required
+def borrar_radiometro(id):
+    rad = Radiometro.query.get(id)
+    if rad is None:
+        flash('No se ha podido eliminar el Espectro-radiómerto', 'error')
+        return redirect(url_for('radiometro'))
+    rad.deleted = True
+    db.session.add(rad)
+    db.session.commit()
+    flash(gettext('El Espectro-radiómetro ha sido borrado.'), 'success')
+    return redirect(url_for('radiometro'))
+
+
+# Carga de Espectralones Nuevos
+@app.route('/cargar/patron', methods=['GET', 'POST'])
+@login_required
+def patron():
+    form = PatronForm()
+    patrones = Patron.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            patron = Patron()
+            if patron.agregar(form):
+                flash('Patrón guardado.', 'success')
+            else:
+                print('Error')
+    return render_template('patron_form.html', form=form, patrones=patrones, panel=panel)
+
+# Borrar un Espectralon existente
+@app.route('/cargar/patron/borrar/<int:id>')
+@login_required
+def borrar_patron(id):
+    patron = Patron.query.get(id)
+    if patron is None:
+        flash('No se ha podido eliminar el Patrón', 'error')
+        return redirect(url_for('patron'))
+    patron.deleted = True
+    db.session.add(patron)
+    db.session.commit()
+    flash(gettext('El Patrón ha sido borrado.'), 'success')
+    return redirect(url_for('patron'))
+
+
+# Carga de Fotometros Nuevos
+@app.route('/cargar/fotometro', methods=['GET', 'POST'])
+@login_required
+def fotometro():
+    form = FotometroForm()
+    fotometros = Fotometro.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            fotometro = Fotometro()
+            if fotometro.agregar(form):
+                flash('Fotómetro guardado.', 'success')
+            else:
+                print('Error')
+    return render_template('fotometro_form.html', form=form, fotometros=fotometros, panel=panel)
+
+# Borrar un Fotometro existente
+@app.route('/cargar/fotometro/borrar/<int:id>')
+@login_required
+def borrar_fotometro(id):
+    fotometro = Fotometro.query.get(id)
+    if fotometro is None:
+        flash('No se ha podido eliminar el Fotómetro', 'error')
+        return redirect(url_for('fotometro'))
+    fotometro.deleted = True
+    db.session.add(fotometro)
+    db.session.commit()
+    flash(gettext('El Fotómetro ha sido borrado.'), 'success')
+    return redirect(url_for('fotometro'))
+
+
+# Carga de Camaras Nuevas
+@app.route('/cargar/camara', methods=['GET', 'POST'])
+@login_required
+def camara():
+    form = CamaraForm()
+    camaras = Camara.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            camara = Camara()
+            if camara.agregar(form):
+                flash('Cámara guardada.', 'success')
+            else:
+                print('Error')
+    return render_template('camara_form.html', form=form, camaras=camaras, panel=panel)
+
+# Borrar una Cámara existente
+@app.route('/cargar/camara/borrar/<int:id>')
+@login_required
+def borrar_camara(id):
+    camara = Camara.query.get(id)
+    if camara is None:
+        flash('No se ha podido eliminar la Cámara', 'error')
+        return redirect(url_for('camara'))
+    camara.deleted = True
+    db.session.add(camara)
+    db.session.commit()
+    flash(gettext('La Cámara ha sido borrada.'), 'success')
+    return redirect(url_for('camara'))
+
+
+# Carga de GPS Nuevos
+@app.route('/cargar/gps', methods=['GET', 'POST'])
+@login_required
+def gps():
+    form = GPSForm()
+    gpses = Gps.query.filter_by(deleted=False).order_by('nombre')
+    if request.args.get('c') == 'n':
+        panel = 'none'
+    else:
+        panel = 'block'
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            gps = Gps()
+            if gps.agregar(form):
+                flash('GPS guardado.', 'success')
+            else:
+                print('Error')
+    return render_template('gps_form.html', form=form, gpses=gpses, panel=panel)
+
+# Borrar un Fotometro existente
+@app.route('/cargar/gps/borrar/<int:id>')
+@login_required
+def borrar_gps(id):
+    gps = Gps.query.get(id)
+    if gps is None:
+        flash('No se ha podido eliminar el GPS', 'error')
+        return redirect(url_for('gps'))
+    gps.deleted = True
+    db.session.add(gps)
+    db.session.commit()
+    flash(gettext('El GPS ha sido borrado.'), 'success')
+    return redirect(url_for('gps'))

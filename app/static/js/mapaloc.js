@@ -24,13 +24,13 @@ function EnviarControl(controlDiv, map, markers){
     controlDiv.appendChild(controlUI);
 
     var controlText = document.createElement('div');
-    controlText.style.color = 'rgb(25,25,25)';
+    controlText.style.color = 'rgb(66,139,202)';
     controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
     controlText.style.fontSize = '16px';
     controlText.style.lineHeight = '38px';
     controlText.style.paddingLeft = '5px';
     controlText.style.paddingRight = '5px';
-    controlText.innerHTML = 'Enviar';
+    controlText.innerHTML = 'Enviar <i class="glyphicon glyphicon-send"></i>';
     controlUI.appendChild(controlText);
 
     controlUI.addEventListener('click', function(){

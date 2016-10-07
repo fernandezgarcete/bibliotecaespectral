@@ -109,34 +109,60 @@
             </div>
         </div>
     </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="tp" class="thumbnail">
+            <img src="/static/img/tp.png">
+            <div class="caption">
+                <h4><strong>Tipos de Coberturas</strong></h4>
+                <p>Carga de tipos de coberturas nuevas y existentes </p>
+                <p>
+                    <a href="{{ url_for('tp', c='n') }}" class="btn btn-primary" role="button">Nueva</a>
+                    <a href="{{ url_for('tp', c='e') }}" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5 col-md-3">
+        <div id="cob" class="thumbnail">
+            <img src="/static/img/cobertura.png">
+            <div class="caption">
+                <h4><strong>Coberturas</strong></h4>
+                <p>Carga de coberturas nuevas y existentes </p>
+                <p>
+                    <a href="{{ url_for('cobertura', c='n') }}" class="btn btn-primary" role="button">Nueva</a>
+                    <a href="{{ url_for('cobertura', c='e') }}" class="btn btn-default" role="button">Existente</a>
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<h2>Intrumentos</h2>
+<h2>Instrumentos</h2>
 <hr>
 
 <div class="row">
     <div class="col-sm-5 col-md-3">
         <div id="rad" class="thumbnail">
-            <img src="/static/img/radiometro.jpg">
+            <img src="/static/img/radiometro.png">
             <div class="caption">
                 <h4><strong>Espectro-radiómetros</strong></h4>
                 <p>Carga de espectro-radiómetros nuevos y existentes </p>
                 <p>
-                    <a href="#rad" class="btn btn-primary" role="button">Nuevo</a>
-                    <a href="#rad" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('radiometro', c='n') }}" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="{{ url_for('radiometro', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>
     </div>
     <div class="col-sm-5 col-md-3">
         <div id="esp" class="thumbnail">
-            <img src="/static/img/spectralon.jpg">
+            <img src="/static/img/spectralon.png">
             <div class="caption">
                 <h4><strong>Blancos de Referencia</strong></h4>
                 <p>Carga de patrones o blancos de referencia nuevos y existentes </p>
                 <p>
-                    <a href="#esp" class="btn btn-primary" role="button">Nuevo</a>
-                    <a href="#esp" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('patron', c='n') }}" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="{{ url_for('patron', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>
@@ -148,21 +174,21 @@
                 <h4><strong>Fotómetros</strong></h4>
                 <p>Carga de fotómetros nuevos y existentes </p>
                 <p>
-                    <a href="#fot" class="btn btn-primary" role="button">Nuevo</a>
-                    <a href="#fot" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('fotometro', c='n') }}" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="{{ url_for('fotometro', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>
     </div>
     <div class="col-sm-5 col-md-3">
         <div id="cama" class="thumbnail">
-            <img src="/static/img/camara.jpg">
+            <img src="/static/img/camara.png">
             <div class="caption">
                 <h4><strong>Cámaras</strong></h4>
                 <p>Carga de cámaras nuevas y existentes </p>
                 <p>
-                    <a href="#cama" class="btn btn-primary" role="button">Nueva</a>
-                    <a href="#cama" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('camara', c='n') }}" class="btn btn-primary" role="button">Nueva</a>
+                    <a href="{{ url_for('camara', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>
@@ -174,8 +200,8 @@
                 <h4><strong>GPS</strong></h4>
                 <p>Carga de GPS nuevos y existentes </p>
                 <p>
-                    <a href="#gps" class="btn btn-primary" role="button">Nuevo</a>
-                    <a href="#gps" class="btn btn-default" role="button">Existente</a>
+                    <a href="{{ url_for('gps', c='n') }}" class="btn btn-primary" role="button">Nuevo</a>
+                    <a href="{{ url_for('gps', c='e') }}" class="btn btn-default" role="button">Existente</a>
                 </p>
             </div>
         </div>

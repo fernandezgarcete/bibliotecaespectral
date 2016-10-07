@@ -521,8 +521,16 @@ function contador(field, counter, limit){
     }
 }
 
+Object.size = function(obj){
+    var size = 0, key;
+    for(key in obj){
+        if(obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
 // Rellena formulario de Metodología
-function rellenar_metod(nombre){
+function rellenar_form(nombre){
     for(var i=0; i<metods.length; i++){
         if(metods[i].nombre == nombre){
             $('#id').val(metods[i].id);
@@ -550,6 +558,141 @@ function rellenar_proyecto(nombre){
             $('#status').val(proyectos[i].status);
             document.getElementById('status').checked = proyectos[i].status;
             contador(document.getElementById('descripcion'),'#bdesc',600);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario de Proyecto
+function rellenar_cob(nombre){
+    for(var i=0; i<coberturas.length; i++){
+        if(coberturas[i].nombre == nombre){
+            $('#id').val(coberturas[i].id);
+            $('#nombre').val(coberturas[i].nombre);
+            $('#tipo_cobertura').val(coberturas[i].id_tp);
+            $('#altura').val(coberturas[i].altura);
+            $('#fenologia').val(coberturas[i].fenologia);
+            $('#observaciones').val(coberturas[i].observaciones);
+            contador(document.getElementById('fenologia'),'#bdesc',140);
+            contador(document.getElementById('observaciones'),'#bobse',140);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario de Radiometro
+function rellenar_rad(nombre){
+    for(var i=0; i<radiometros.length; i++){
+        if(radiometros[i].nombre == nombre){
+            $('#id').val(radiometros[i].id);
+            $('#codigo').val(radiometros[i].codigo);
+            $('#nombre').val(radiometros[i].nombre);
+            $('#marca').val(radiometros[i].marca);
+            $('#modelo').val(radiometros[i].modelo);
+            $('#nro_serie').val(radiometros[i].nro_serie);
+            $('#rango_espectral').val(radiometros[i].rango_espectral);
+            $('#resolucion_espectral').val(radiometros[i].resolucion);
+            $('#ancho_banda').val(radiometros[i].ancho_banda);
+            $('#tiempo_escaneo').val(radiometros[i].tiempo_escaneo);
+            $('#reproducibilidad').val(radiometros[i].reproducibilidad);
+            $('#exactitud').val(radiometros[i].exactitud);
+            $('#detector_vnir').val(radiometros[i].detector_vnir);
+            $('#detector_swir1').val(radiometros[i].detector_swir1);
+            $('#detector_swir2').val(radiometros[i].detector_swir2);
+            $('#noise_vnir').val(radiometros[i].noise_vnir);
+            $('#noise_swir1').val(radiometros[i].noise_swir1);
+            $('#noise_swir2').val(radiometros[i].noise_swir2);
+            $('#largo_fibra').val(radiometros[i].largo_fibra);
+            $('#fov').val(radiometros[i].fov);
+            $('#fov_cosenoidal').val(radiometros[i].fov_cosenoidal);
+            $('#accesorio').val(radiometros[i].accesorio);
+            contador(document.getElementById('accesorio'),'#bdesc',340);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario de Tipo de Cobertura
+function rellenar_tp(nombre){
+    for(var i=0;i<tps.length;i++){
+        if(tps[i].nombre == nombre){
+            $('#id').val(tps[i].id);
+            $('#nombre').val(tps[i].nombre);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario Patron
+function rellenar_pat(nombre){
+    for(var i=0; i<patrones.length; i++){
+        if(patrones[i].nombre == nombre){
+            $('#id').val(patrones[i].id);
+            $('#codigo').val(patrones[i].codigo);
+            $('#nombre').val(patrones[i].nombre);
+            $('#marca').val(patrones[i].marca);
+            $('#modelo').val(patrones[i].modelo);
+            $('#nro_serie').val(patrones[i].nro_serie);
+            $('#accesorio').val(patrones[i].accesorio);
+            contador(document.getElementById('accesorio'),'#bdesc',340);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario Fotometro
+function rellenar_fot(nombre){
+    for(var i=0; i<fotometros.length; i++){
+        if(fotometros[i].nombre == nombre){
+            $('#id').val(fotometros[i].id);
+            $('#codigo').val(fotometros[i].codigo);
+            $('#nombre').val(fotometros[i].nombre);
+            $('#marca').val(fotometros[i].marca);
+            $('#modelo').val(fotometros[i].modelo);
+            $('#nro_serie').val(fotometros[i].nro_serie);
+            $('#accesorio').val(fotometros[i].accesorio);
+            contador(document.getElementById('accesorio'),'#bdesc',340);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario Fotometro
+function rellenar_cam(nombre){
+    for(var i=0; i<camaras.length; i++){
+        if(camaras[i].nombre == nombre){
+            $('#id').val(camaras[i].id);
+            $('#codigo').val(camaras[i].codigo);
+            $('#nombre').val(camaras[i].nombre);
+            $('#marca').val(camaras[i].marca);
+            $('#modelo').val(camaras[i].modelo);
+            $('#nro_serie').val(camaras[i].nro_serie);
+            $('#accesorio').val(camaras[i].accesorio);
+            contador(document.getElementById('accesorio'),'#bdesc',340);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario GPS
+function rellenar_gps(nombre){
+    for(var i=0; i<gpses.length; i++){
+        if(gpses[i].nombre == nombre){
+            $('#id').val(gpses[i].id);
+            $('#codigo').val(gpses[i].codigo);
+            $('#nombre').val(gpses[i].nombre);
+            $('#marca').val(gpses[i].marca);
+            $('#modelo').val(gpses[i].modelo);
+            $('#nro_serie').val(gpses[i].nro_serie);
+            $('#accesorio').val(gpses[i].accesorio);
+            contador(document.getElementById('accesorio'),'#bdesc',340);
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
         }
@@ -610,6 +753,112 @@ function limpiar_proyecto(){
     $('.col-xs-1').css('display','none');
 }
 
+// Limpia Formulario de Metodologia
+function limpiar_cob(){
+    $('#id').val(0);
+    $('#nombre').val('');
+    $('#tipo_cobertura').val(0);
+    $('#altura').val(0);
+    $('#fenologia').val('');
+    $('#observaciones').val('');
+    contador(document.getElementById('fenologia'),'#bdesc',140);
+    contador(document.getElementById('observaciones'),'#bobse',140);
+    $('.form-control').prop('disabled',false);
+    $('.col-xs-1').css('display','none');
+}
+
+// Limpia Formulario de Radiometro
+function limpiar_rad() {
+    $('#id').val(0);
+    $('#codigo').val('');
+    $('#nombre').val('');
+    $('#marca').val('');
+    $('#modelo').val('');
+    $('#nro_serie').val('');
+    $('#rango_espectral').val('');
+    $('#resolucion_espectral').val('');
+    $('#ancho_banda').val('');
+    $('#tiempo_escaneo').val(0);
+    $('#reproducibilidad').val(0);
+    $('#exactitud').val(0);
+    $('#detector_vnir').val('');
+    $('#detector_swir1').val('');
+    $('#detector_swir2').val('');
+    $('#noise_vnir').val('');
+    $('#noise_swir1').val('');
+    $('#noise_swir2').val('');
+    $('#largo_fibra').val(0);
+    $('#fov').val(0);
+    $('#fov_cosenoidal').val('');
+    $('#accesorio').val('');
+    contador(document.getElementById('accesorio'), '#bdesc', 340);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpiar Formulario Tipo de Cobertura
+function limpiar_tp(){
+    $('#id').val(0);
+    $('#nombre').val('');
+    $('.form-control').prop('disabled',false);
+    $('.col-xs-1').css('display','none');
+}
+
+// Limpia Formulario de Patron
+function limpiar_pat() {
+    $('#id').val(0);
+    $('#codigo').val('');
+    $('#nombre').val('');
+    $('#marca').val('');
+    $('#modelo').val('');
+    $('#nro_serie').val('');
+    $('#accesorio').val('');
+    contador(document.getElementById('accesorio'), '#bdesc', 340);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpia Formulario de Fotometro
+function limpiar_fot() {
+    $('#id').val(0);
+    $('#codigo').val('');
+    $('#nombre').val('');
+    $('#marca').val('');
+    $('#modelo').val('');
+    $('#nro_serie').val('');
+    $('#accesorio').val('');
+    contador(document.getElementById('accesorio'), '#bdesc', 340);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpia Formulario de Camara
+function limpiar_cam() {
+    $('#id').val(0);
+    $('#codigo').val('');
+    $('#nombre').val('');
+    $('#marca').val('');
+    $('#modelo').val('');
+    $('#nro_serie').val('');
+    $('#accesorio').val('');
+    contador(document.getElementById('accesorio'), '#bdesc', 340);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpia Formulario de Camara
+function limpiar_gps() {
+    $('#id').val(0);
+    $('#codigo').val('');
+    $('#nombre').val('');
+    $('#marca').val('');
+    $('#modelo').val('');
+    $('#nro_serie').val('');
+    $('#accesorio').val('');
+    contador(document.getElementById('accesorio'), '#bdesc', 340);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
 
 // Configurar llamado a ejecucion cuando la API de visualizacion de Google esta cargada
 

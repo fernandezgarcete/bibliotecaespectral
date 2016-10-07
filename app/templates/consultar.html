@@ -5,10 +5,7 @@
 <head><meta charset="UTF-8"></head>
 <script>navegador('#consultar')</script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(dibujarGrafico);
-</script>
+
 
 {% if form.errors %}
     <div class="alert alert-dismissable alert-danger">

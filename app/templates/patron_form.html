@@ -1,0 +1,152 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li class="active">Patrón</li>
+</ol>
+
+<div style="display: {{ panel }};">
+
+<h1>Patrones</h1>
+<hr>
+
+<div class="panel panel-default" id="panel">
+    <div class="panel-heading"><strong>Patrones Existentes</strong>
+    <img src="/static/img/spectralon.png" style="width: 30px;height: 30px;"></div>
+    <div class="list-group">
+        {% for p in patrones %}
+        <a href="#patron_form" class="list-group-item" onclick="rellenar_pat('{{ p.nombre }}')">
+        <span >{{ p.nombre }}</span>
+        <span type="button" class="badge btn" id="elim_{{ p.nombre }}">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<button type="button" class="btn btn-default" onclick="limpiar_pat()">
+    Nuevo <span class="glyphicon glyphicon-plus"></span>
+</button>
+<br><br>
+</div>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for key, error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h3><img src="/static/img/spectralon.png" style="width: 30px;height: 30px;"> Patrón</h3>
+<hr>
+
+
+<form class="form-horizontal" id="patron_form"  method="post">
+    <div class="form-group">
+        <label class="col-xs-2">Código</label>
+        <div class="col-xs-9">
+            {{ form.codigo(placeholder="Codificación interna del Patrón", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#codigo', '#bcod')" id="bcod">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Nombre</label>
+        <div class="col-xs-9">
+            {{ form.nombre(placeholder="Nombre a asignar al Patrón", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nombre', '#bnom')" id="bnom">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Marca</label>
+        <div class="col-xs-9">
+            {{ form.marca(placeholder="Marca del Patrón", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#marca', '#bmar')" id="bmar">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Modelo</label>
+        <div class="col-xs-9">
+            {{ form.modelo(placeholder="Modelo del Patrón", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#modelo', '#bmod')" id="bmod">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Número de Serie</label>
+        <div class="col-xs-9">
+            {{ form.nro_serie(placeholder="Número de serie del Patrón", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nro_serie', '#bserie')" id="bserie">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Accesorios</label>
+        <div class="col-xs-9">
+        {{ form.accesorio(class="form-control", placeholder="Describa los accesorios del Patrón si posee.",
+        onkeyup="contador(this,'#bdesc',340);") }}
+            <span id="bdesc" class="badge">340</span>
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#accesorio', '#bacc')" id="bacc">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    {{ form.id(type="hidden") }}
+    {{ form.hidden_tag() }}
+    <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
+
+<br>
+<div id="mensaje"></div>
+
+<script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+limpiar_pat();
+
+var patrones = [];
+
+{% for p in patrones %}
+    var patron = {
+        id:{{ p.id|default(0) }},
+        codigo:"{{ p.codigo }}",
+        nombre:"{{ p.nombre }}",
+        marca:"{{ p.marca }}",
+        modelo:"{{ p.modelo }}",
+        nro_serie:"{{ p.nro_serie }}",
+        accesorio:"{{ p.accesorio }}".toString()
+    };
+    patrones.push(patron);
+    btn_eliminar_item('elim_'+patron.nombre, patrones, 'Eliminar Patrón',
+            'Está seguro de eliminar el Patrón "', '/cargar/patron/borrar/');
+{% endfor %}
+
+$('#patron_form').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
+</script>
+{% endblock %}

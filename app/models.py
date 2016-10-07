@@ -192,6 +192,22 @@ class TipoCobertura(db.Model):
         if self.deleted is True:
             return True
         return False
+    
+    def agregar(self, form):
+        tp = self
+        if int(form.id.data) > 0:
+            tp = self.query.filter_by(id=int(form.id.data)).first()
+            tp.nombre = form.nombre.data
+        else:
+            tp.nombre = form.nombre.data
+        try:
+            db.session.add(tp)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
     def has_cobertura(self, cobertura):
         return self.coberturas.filter(cobertura.id_tipocobertura == self.id).count() > 0
@@ -224,6 +240,30 @@ class Cobertura(db.Model):
         if self.deleted is True:
             return True
         return False
+    
+    def agregar(self, form):
+        cob = self
+        if int(form.id.data) > 0:
+            cob = self.query.filter_by(id=int(form.id.data)).first()
+            cob.nombre = form.nombre.data
+            cob.id_tipocobertura = int(form.tipo_cobertura.data)
+            cob.altura = float(form.altura.data)
+            cob.fenologia = str(form.fenologia.data).replace('\r\n', ' ')
+            cob.observaciones = str(form.observaciones.data).replace('\r\n', ' ')
+        else:
+            cob.nombre = form.nombre.data
+            cob.id_tipocobertura = int(form.tipo_cobertura.data)
+            cob.altura = float(form.altura.data)
+            cob.fenologia = str(form.fenologia.data).replace('\r\n', ' ')
+            cob.observaciones = str(form.observaciones.data).replace('\r\n', ' ')
+        try:
+            db.session.add(cob)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_cobertura == self.id).count() > 0
@@ -290,6 +330,32 @@ class Camara(db.Model):
                                           cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
 
+    def agregar(self, form):
+        camara = self
+        if int(form.id.data) > 0:
+            camara = self.query.filter_by(id=int(form.id.data)).first()
+            camara.codigo = form.codigo.data
+            camara.nombre = form.nombre.data
+            camara.marca = form.marca.data
+            camara.modelo = form.modelo.data
+            camara.nro_serie = form.nro_serie.data
+            camara.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        else:
+            camara.codigo = form.codigo.data
+            camara.nombre = form.nombre.data
+            camara.marca = form.marca.data
+            camara.modelo = form.modelo.data
+            camara.nro_serie = form.nro_serie.data
+            camara.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        try:
+            db.session.add(camara)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
+        
     @property
     def is_deleted(self):
         if self.deleted is True:
@@ -322,7 +388,39 @@ class Gps(db.Model):
     muestras = db.relationship('Muestra', backref='gps_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
-
+    
+    def agregar(self, form):
+        gps = self
+        if int(form.id.data) > 0:
+            gps = self.query.filter_by(id=int(form.id.data)).first()
+            gps.codigo = form.codigo.data
+            gps.nombre = form.nombre.data
+            gps.marca = form.marca.data
+            gps.modelo = form.modelo.data
+            gps.nro_serie = form.nro_serie.data
+            gps.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        else:
+            gps.codigo = form.codigo.data
+            gps.nombre = form.nombre.data
+            gps.marca = form.marca.data
+            gps.modelo = form.modelo.data
+            gps.nro_serie = form.nro_serie.data
+            gps.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        try:
+            db.session.add(gps)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
+        
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+    
     @property
     def is_deleted(self):
         if self.deleted is True:
@@ -355,7 +453,33 @@ class Fotometro(db.Model):
     muestras = db.relationship('Muestra', backref='fotometro_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
-
+    
+    def agregar(self, form):
+        fotometro = self
+        if int(form.id.data) > 0:
+            fotometro = self.query.filter_by(id=int(form.id.data)).first()
+            fotometro.codigo = form.codigo.data
+            fotometro.nombre = form.nombre.data
+            fotometro.marca = form.marca.data
+            fotometro.modelo = form.modelo.data
+            fotometro.nro_serie = form.nro_serie.data
+            fotometro.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        else:
+            fotometro.codigo = form.codigo.data
+            fotometro.nombre = form.nombre.data
+            fotometro.marca = form.marca.data
+            fotometro.modelo = form.modelo.data
+            fotometro.nro_serie = form.nro_serie.data
+            fotometro.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        try:
+            db.session.add(fotometro)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
+        
     @property
     def is_deleted(self):
         if self.deleted is True:
@@ -388,6 +512,32 @@ class Patron(db.Model):
     muestras = db.relationship('Muestra', backref='patron_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
+
+    def agregar(self, form):
+        patron = self
+        if int(form.id.data) > 0:
+            patron = self.query.filter_by(id=int(form.id.data)).first()
+            patron.codigo = form.codigo.data
+            patron.nombre = form.nombre.data
+            patron.marca = form.marca.data
+            patron.modelo = form.modelo.data
+            patron.nro_serie = form.nro_serie.data
+            patron.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        else:
+            patron.codigo = form.codigo.data
+            patron.nombre = form.nombre.data
+            patron.marca = form.marca.data
+            patron.modelo = form.modelo.data
+            patron.nro_serie = form.nro_serie.data
+            patron.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        try:
+            db.session.add(patron)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
     @property
     def is_deleted(self):
@@ -426,9 +576,9 @@ class Radiometro(db.Model):
     detector_vnir = db.Column(db.String(120))
     detector_swir1 = db.Column(db.String(120))
     detector_swir2 = db.Column(db.String(120))
-    noice_equivalence_radiance_vnir = db.Column(db.String(120))
-    noice_equivalence_radiance_swir1 = db.Column(db.String(120))
-    noice_equivalence_radiance_swir2 = db.Column(db.String(120))
+    noise_equivalence_radiance_vnir = db.Column(db.String(120))
+    noise_equivalence_radiance_swir1 = db.Column(db.String(120))
+    noise_equivalence_radiance_swir2 = db.Column(db.String(120))
     largo_fibra_optica = db.Column(db.DECIMAL(precision=5, scale=2))
     fov = db.Column(db.DECIMAL(precision=5, scale=2))
     fov_cosenoidal = db.Column(db.String(80))
@@ -442,6 +592,62 @@ class Radiometro(db.Model):
         if self.deleted is True:
             return True
         return False
+
+    def agregar(self, form):
+        rad = self
+        if int(form.id.data) > 0:
+            rad = self.query.filter_by(id=int(form.id.data)).first()
+            rad.codigo = form.codigo.data
+            rad.nombre = form.nombre.data
+            rad.marca = form.marca.data
+            rad.modelo = form.modelo.data
+            rad.nro_serie = form.nro_serie.data
+            rad.rango_espectral = form.rango_espectral.data
+            rad.resolucion_espectral = form.resolucion_espectral.data
+            rad.ancho_banda = form.ancho_banda.data
+            rad.tiempo_escaneo = float(form.tiempo_escaneo.data)
+            rad.reproducibilidad_ancho_banda = float(form.reproducibilidad.data)
+            rad.exactitud_ancho_banda = float(form.exactitud.data)
+            rad.detector_vnir = form.detector_vnir.data
+            rad.detector_swir1 = form.detector_swir1.data
+            rad.detector_swir2 = form.detector_swir2.data
+            rad.noise_equivalence_radiance_vnir = form.noise_vnir.data
+            rad.noise_equivalence_radiance_swir1 = form.noise_swir1.data
+            rad.noise_equivalence_radiance_swir2 = form.noise_swir2.data
+            rad.largo_fibra_optica = float(form.largo_fibra.data)
+            rad.fov = float(form.fov.data)
+            rad.fov_cosenoidal = form.fov_cosenoidal.data
+            rad.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        else:
+            rad.codigo = form.codigo.data
+            rad.nombre = form.nombre.data
+            rad.marca = form.marca.data
+            rad.modelo = form.modelo.data
+            rad.nro_serie = form.nro_serie.data
+            rad.rango_espectral = form.rango_espectral.data
+            rad.resolucion_espectral = form.resolucion_espectral.data
+            rad.ancho_banda = form.ancho_banda.data
+            rad.tiempo_escaneo = float(form.tiempo_escaneo.data)
+            rad.reproducibilidad_ancho_banda = float(form.reproducibilidad.data)
+            rad.exactitud_ancho_banda = float(form.exactitud.data)
+            rad.detector_vnir = form.detector_vnir.data
+            rad.detector_swir1 = form.detector_swir1.data
+            rad.detector_swir2 = form.detector_swir2.data
+            rad.noise_equivalence_radiance_vnir = form.noise_vnir.data
+            rad.noise_equivalence_radiance_swir1 = form.noise_swir1.data
+            rad.noise_equivalence_radiance_swir2 = form.noise_swir2.data
+            rad.largo_fibra_optica = float(form.largo_fibra.data)
+            rad.fov = float(form.fov.data)
+            rad.fov_cosenoidal = form.fov_cosenoidal.data
+            rad.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
+        try:
+            db.session.add(rad)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_radiometro == self.id).count() > 0

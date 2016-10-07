@@ -15,7 +15,8 @@
 <hr>
 
 <div class="panel panel-default" id="panel">
-    <div class="panel-heading"><strong>Metodologías Existentes</strong></div>
+    <div class="panel-heading"><strong>Metodologías Existentes</strong>
+    <img src="/static/img/metod.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
         {% for m in metods %}
         <a href="#metod_form" class="list-group-item" onclick="rellenar_metod('{{ m.nombre }}')">
@@ -45,7 +46,7 @@
     </div>
 {% endif %}
 
-<h3>Metodología</h3>
+<h3><img src="/static/img/metod.png" style="width: 30px;height: 30px;"> Metodología</h3>
 <hr>
 
 

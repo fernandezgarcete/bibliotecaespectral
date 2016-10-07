@@ -1,0 +1,152 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li class="active">Cámara</li>
+</ol>
+
+<div style="display: {{ panel }};">
+
+<h1>Cámaras</h1>
+<hr>
+
+<div class="panel panel-default" id="panel">
+    <div class="panel-heading"><strong>Cámaras Existentes</strong>
+    <img src="/static/img/camara.png" style="width: 30px;height: 30px;"></div>
+    <div class="list-group">
+        {% for c in camaras %}
+        <a href="#camara_form" class="list-group-item" onclick="rellenar_cam('{{ c.nombre }}')">
+        <span >{{ c.nombre }}</span>
+        <span type="button" class="badge btn" id="elim_{{ c.nombre }}">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<button type="button" class="btn btn-default" onclick="limpiar_cam()">
+    Nueva <span class="glyphicon glyphicon-plus"></span>
+</button>
+<br><br>
+</div>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for key, error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h3><img src="/static/img/camara.png" style="width: 30px;height: 30px;"> Cámaras</h3>
+<hr>
+
+
+<form class="form-horizontal" id="camara_form"  method="post">
+    <div class="form-group">
+        <label class="col-xs-2">Código</label>
+        <div class="col-xs-9">
+            {{ form.codigo(placeholder="Codificación interna de la Cámara", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#codigo', '#bcod')" id="bcod">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Nombre</label>
+        <div class="col-xs-9">
+            {{ form.nombre(placeholder="Nombre a asignar a la Cámara", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nombre', '#bnom')" id="bnom">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Marca</label>
+        <div class="col-xs-9">
+            {{ form.marca(placeholder="Marca de la Cámara", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#marca', '#bmar')" id="bmar">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Modelo</label>
+        <div class="col-xs-9">
+            {{ form.modelo(placeholder="Modelo de la Cámara", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#modelo', '#bmod')" id="bmod">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Número de Serie</label>
+        <div class="col-xs-9">
+            {{ form.nro_serie(placeholder="Número de serie de la Cámara", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nro_serie', '#bserie')" id="bserie">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Accesorios</label>
+        <div class="col-xs-9">
+        {{ form.accesorio(class="form-control", placeholder="Describa los accesorios de la Cámara si posee.",
+        onkeyup="contador(this,'#bdesc',340);") }}
+            <span id="bdesc" class="badge">340</span>
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#accesorio', '#bacc')" id="bacc">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    {{ form.id(type="hidden") }}
+    {{ form.hidden_tag() }}
+    <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
+
+<br>
+<div id="mensaje"></div>
+
+<script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+limpiar_cam();
+
+var camaras = [];
+
+{% for c in camaras %}
+    var camara = {
+        id:{{ c.id|default(0) }},
+        codigo:"{{ c.codigo }}",
+        nombre:"{{ c.nombre }}",
+        marca:"{{ c.marca }}",
+        modelo:"{{ c.modelo }}",
+        nro_serie:"{{ c.nro_serie }}",
+        accesorio:"{{ c.accesorio }}".toString()
+    };
+    camaras.push(camara);
+    btn_eliminar_item('elim_'+camara.nombre, camaras, 'Eliminar Cámara',
+            'Está seguro de eliminar la Cámara "', '/cargar/camara/borrar/');
+{% endfor %}
+
+$('#camara_form').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
+</script>
+{% endblock %}

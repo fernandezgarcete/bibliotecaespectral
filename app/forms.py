@@ -221,3 +221,82 @@ class ProyectoForm(Form):
 class DescargaForm(Form):
     fecha_inicio = DateField(u'fecha_inicio', format='%d-%m-%Y')
     fecha_fin = DateField(u'fecha_fin',  format='%d-%m-%Y')
+
+# Formulario de Tipo Cobertura
+class TPForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre al tipo de cobertura')])
+
+# Formulario de Tipo Cobertura
+class CobForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre a la cobertura')])
+    tipo_cobertura = SelectField('cobertura', coerce=int, validators=[DataRequired(message=u'Seleccione un tipo de cobertura')])
+    altura = StringField('altura')
+    fenologia = StringField('fenologia')
+    observaciones = TextAreaField('observaciones')
+
+# Formualario de Radiometro
+class RadiometroForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    codigo = StringField('codigo', validators=[DataRequired(message=u'Falta código')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Falta nombre')])
+    marca = StringField('marca', validators=[DataRequired(message=u'Falta marca')])
+    modelo = StringField('modelo', validators=[DataRequired(message=u'Falta modelo')])
+    nro_serie = StringField('nro_serie', validators=[DataRequired(message=u'Falta el número de serie')])
+    rango_espectral = StringField('rango_espectral', validators=[DataRequired(message=u'Falta el rango espectral')])
+    resolucion_espectral = StringField('resolucion_espectral', validators=[DataRequired(message=u'Falta la resolucion espectral')])
+    ancho_banda = StringField('ancho_banda', validators=[DataRequired(message=u'Falta el ancho de banda')])
+    tiempo_escaneo = StringField('tiempo_escaneo', validators=[DataRequired(message=u'Falta tiempo de escaneo')])
+    reproducibilidad = StringField('reproducibilidad', validators=[DataRequired(message=u'Falta reproducibilidad de ancho de banda')])
+    exactitud = StringField('exactitud', validators=[DataRequired(message=u'Falta exactitud de ancho de banda')])
+    detector_vnir = StringField('detector_vnir', validators=[DataRequired(message=u'Falta detector VNIR')])
+    detector_swir1 = StringField('detector_swir1')
+    detector_swir2 = StringField('detector_swir2')
+    noise_vnir = StringField('noise_vnir', validators=[DataRequired(message=u'Falta el noise equivalence radiance en VNIR')])
+    noise_swir1 = StringField('noise_swir1')
+    noise_swir2 = StringField('noise_swir2')
+    largo_fibra = StringField('largo_fibra', validators=[DataRequired(message=u'Falta el largo de fibra optica')])
+    fov = StringField('fov', validators=[DataRequired(message=u'Falta el FOV')])
+    fov_cosenoidal = StringField('fov_cosenoidal')
+    accesorio = TextAreaField('accesorio')
+
+# Formulario de Espectralon
+class PatronForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    codigo = StringField('codigo', validators=[DataRequired(message=u'Falta código')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Falta nombre')])
+    marca = StringField('marca', validators=[DataRequired(message=u'Falta marca')])
+    modelo = StringField('modelo', validators=[DataRequired(message=u'Falta modelo')])
+    nro_serie = StringField('nro_serie', validators=[DataRequired(message=u'Falta el número de serie')])
+    accesorio = TextAreaField('accesorio')
+
+# Formulario de Fotometro
+class FotometroForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    codigo = StringField('codigo', validators=[DataRequired(message=u'Falta código')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Falta nombre')])
+    marca = StringField('marca', validators=[DataRequired(message=u'Falta marca')])
+    modelo = StringField('modelo', validators=[DataRequired(message=u'Falta modelo')])
+    nro_serie = StringField('nro_serie', validators=[DataRequired(message=u'Falta el número de serie')])
+    accesorio = TextAreaField('accesorio')
+
+# Formulario de Fotometro
+class CamaraForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    codigo = StringField('codigo', validators=[DataRequired(message=u'Falta código')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Falta nombre')])
+    marca = StringField('marca', validators=[DataRequired(message=u'Falta marca')])
+    modelo = StringField('modelo', validators=[DataRequired(message=u'Falta modelo')])
+    nro_serie = StringField('nro_serie', validators=[DataRequired(message=u'Falta el número de serie')])
+    accesorio = TextAreaField('accesorio')
+
+# Formulario de GPS
+class GPSForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    codigo = StringField('codigo', validators=[DataRequired(message=u'Falta código')])
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Falta nombre')])
+    marca = StringField('marca', validators=[DataRequired(message=u'Falta marca')])
+    modelo = StringField('modelo', validators=[DataRequired(message=u'Falta modelo')])
+    nro_serie = StringField('nro_serie', validators=[DataRequired(message=u'Falta el número de serie')])
+    accesorio = TextAreaField('accesorio')

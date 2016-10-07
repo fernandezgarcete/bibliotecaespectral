@@ -1,0 +1,320 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li class="active">Espectro-radiómetro</li>
+</ol>
+
+<div style="display: {{ panel }};">
+
+<h1>Espectro-radiómetros</h1>
+<hr>
+
+<div class="panel panel-default" id="panel">
+    <div class="panel-heading"><strong>Espectro-radiómetros Existentes</strong>
+    <img src="/static/img/radiometro.png" style="width: 30px;height: 30px;"></div>
+    <div class="list-group">
+        {% for r in radiometros %}
+        <a href="#rad_form" class="list-group-item" onclick="rellenar_rad('{{ r.nombre }}')">
+        <span >{{ r.nombre }}</span>
+        <span type="button" class="badge btn" id="elim_{{ r.nombre }}">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<button type="button" class="btn btn-default" onclick="limpiar_rad()">
+    Nuevo <span class="glyphicon glyphicon-plus"></span>
+</button>
+<br><br>
+</div>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for key, error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h3><img src="/static/img/radiometro.png" style="width: 30px;height: 30px;"> Espectro-radiómetro</h3>
+<hr>
+
+
+<form class="form-horizontal" id="rad_form"  method="post">
+    <div class="form-group">
+        <label class="col-xs-2">Código</label>
+        <div class="col-xs-9">
+            {{ form.codigo(placeholder="Codificación interna del espectro-radiómetro", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#codigo', '#bcod')" id="bcod">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Nombre</label>
+        <div class="col-xs-9">
+            {{ form.nombre(placeholder="Nombre a asignar al espectro-radiómetro", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nombre', '#bnom')" id="bnom">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Marca</label>
+        <div class="col-xs-9">
+            {{ form.marca(placeholder="Marca del espectro-radiómetro", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#marca', '#bmar')" id="bmar">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Modelo</label>
+        <div class="col-xs-9">
+            {{ form.modelo(placeholder="Modelo del espectro-radiómetro", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#modelo', '#bmod')" id="bmod">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Número de Serie</label>
+        <div class="col-xs-9">
+            {{ form.nro_serie(placeholder="Número de serie del espectro-radiómetro", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nro_serie', '#bserie')" id="bserie">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Rango Espectral</label>
+        <div class="col-xs-9">
+            {{ form.rango_espectral(placeholder="Rango espectral que abarca el espectro-radiómetro. Ej.: 0-2800 nm", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#rango_espectral', '#brang')" id="brang">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Resolución Espectral</label>
+        <div class="col-xs-9">
+            {{ form.resolucion_espectral(placeholder="Resolución espectral del espectro-radiómetro. Ej.: 1 nm @ 700 nm - 8nm @ 1400/2800 nm", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#resolucion_espectral', '#bresol')" id="bresol">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Ancho de Banda</label>
+        <div class="col-xs-9">
+            {{ form.ancho_banda(placeholder="Ancho de banda del espectro-radiómetro. Ej.: 1.4 nm @ 0-1000 nm - 1.1 nm @ 1001/2800 nm", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#ancho_banda', '#bancho')" id="bancho">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Tiempo de Escaneo</label>
+        <div class="col-xs-9">
+            {{ form.tiempo_escaneo(placeholder="Cantidad de tiempo de escaneo del espectro-radiómetro. Ej.: 0.10", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#tiempo_escaneo', '#btiemp')" id="btiemp">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Reproducibilidad de Ancho de Banda</label>
+        <div class="col-xs-9">
+            {{ form.reproducibilidad(placeholder="Reproducibilidad del ancho de banda del espectro-radiómetro. Ej.: 0.10", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#reproducibilidad', '#brepro')" id="brepro">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Exactitud del Ancho de Banda</label>
+        <div class="col-xs-9">
+            {{ form.exactitud(placeholder="Exactitud del ancho de banda del espectro-radiómetro. Ej.: 0.50", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#resolucion_espectral', '#bresol')" id="bresol">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Detector VNIR</label>
+        <div class="col-xs-9">
+            {{ form.detector_vnir(placeholder="Detector VNIR del espectro-radiómetro.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#detector_vnir', '#bdvnir')" id="bdvnir">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Detector SWIR 1</label>
+        <div class="col-xs-9">
+            {{ form.detector_swir1(placeholder="Detector SWIR 1 del espectro-radiómetro si posee.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#detector_swir1', '#bdswir1')" id="bdswir1">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Detector SWIR 2</label>
+        <div class="col-xs-9">
+            {{ form.detector_swir2(placeholder="Detector SWIR 2 del espectro-radiómetro si posee.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#detector_swir2', '#bdswir2')" id="bdswir2">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Noise Equivalence Radiance en VNIR</label>
+        <div class="col-xs-9">
+            {{ form.noise_vnir(placeholder="Describa el Noise Equivalence Radiance en VNIR del espectro-radiómetro.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#noise_vnir', '#bnvnir')" id="bnvnir">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Noise Equivalence Radiance en SWIR 1</label>
+        <div class="col-xs-9">
+            {{ form.noise_swir1(placeholder="Describa el Noise Equivalence Radiance en SWIR 1 del espectro-radiómetro si posee.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#noise_swir1', '#bnswir1')" id="bnswir1">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Noise Equivalence Radiance en SWIR 2</label>
+        <div class="col-xs-9">
+            {{ form.noise_swir2(placeholder="Describa el Noise Equivalence Radiance en SWIR 2 del espectro-radiómetro si posee.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#noise_swri2', '#bnswir2')" id="bnswir2">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Largo de Fibra de Óptica</label>
+        <div class="col-xs-9">
+            {{ form.largo_fibra(placeholder="Largo de la fibra óptica del espectro-radiómetro en mts. Ej.: 1.50", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#largo_fibra', '#blarg')" id="blarg">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">FOV</label>
+        <div class="col-xs-9">
+            {{ form.fov(placeholder="Valor de FOV del espectro-radiómetro en grados. Ej.: 3.15", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#fov', '#bfov')" id="bfov">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">FOV Cosenoidal</label>
+        <div class="col-xs-9">
+            {{ form.fov_cosenoidal(placeholder="Describa el FOV cosenoidal del espectro-radiómetro si posee.", class="form-control") }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#fov_cosenoidal', '#bfovc')" id="bfovc">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Accesorios</label>
+        <div class="col-xs-9">
+        {{ form.accesorio(class="form-control", placeholder="Describa los accesorios del espectro-radiómetro si posee.",
+        onkeyup="contador(this,'#bdesc',340);") }}
+            <span id="bdesc" class="badge">340</span>
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#accesorio', '#bacc')" id="bacc">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    {{ form.id(type="hidden") }}
+    {{ form.hidden_tag() }}
+    <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
+
+<br>
+<div id="mensaje"></div>
+
+<script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+validaciones('#fov'); validaciones('#largo_fibra'); validaciones('#exactitud'); validaciones('#reproducibilidad');
+validaciones('#tiempo_escaneo'); limpiar_rad();
+
+var radiometros = [];
+var cen = 0.0;
+var azi = 0.0;
+
+{% for r in radiometros %}
+    var radiometro = {
+        id:{{ r.id|default(0) }},
+        codigo:"{{ r.codigo }}",
+        nombre:"{{ r.nombre }}",
+        marca:"{{ r.marca }}",
+        modelo:"{{ r.modelo }}",
+        nro_serie:"{{ r.nro_serie }}",
+        rango_espectral:"{{ r.rango_espectral }}",
+        resolucion:"{{ r.resolucion_espectral }}",
+        ancho_banda:"{{ r.ancho_banda }}",
+        tiempo_escaneo:"{{ r.tiempo_escaneo }}",
+        reproducibilidad:"{{ r.reproducibilidad_ancho_banda }}",
+        exactitud:"{{ r.exactitud_ancho_banda }}",
+        detector_vnir:"{{ r.detector_vnir }}",
+        detector_swir1:"{{ r.detector_swir1 }}",
+        detector_swir2:"{{ r.detector_swir2 }}",
+        noise_vnir:"{{ r.noise_equivalence_radiance_vnir }}",
+        noise_swir1:"{{ r.noise_equivalence_radiance_swir1 }}",
+        noise_swir2:"{{ r.noise_equivalence_radiance_swir2 }}",
+        largo_fibra:"{{ r.largo_fibra_optica }}",
+        fov:"{{ r.fov }}",
+        fov_cosenoidal: "{{ r.fov_cosenoidal }}",
+        accesorio:"{{ r.accesorio }}".toString()
+    };
+    radiometros.push(radiometro);
+    btn_eliminar_item('elim_'+radiometro.nombre, radiometros, 'Eliminar Espectro-radiómetro',
+            'Está seguro de eliminar el Espectro-radiómetro "', '/cargar/radiometro/borrar/');
+{% endfor %}
+
+$('#rad_form').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
+</script>
+{% endblock %}

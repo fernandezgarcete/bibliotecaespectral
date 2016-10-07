@@ -15,7 +15,9 @@
 <hr>
 
 <div class="panel panel-default" id="panel">
-    <div class="panel-heading"><strong>Proyectos Existentes</strong></div>
+    <div class="panel-heading"><strong>Proyectos Existentes</strong>
+    <img src="/static/img/proyecto2.png" style="width: 40px;height: 40px;">
+    </div>
     <div class="list-group">
         {% for p in proyectos %}
         <a href="#proyecto_form" class="list-group-item" onclick="rellenar_proyecto('{{ p.nombre }}')">
@@ -45,7 +47,7 @@
     </div>
 {% endif %}
 
-<h3>Proyecto</h3>
+<h3><img src="/static/img/proyecto2.png" style="width: 40px;height: 40px;"> Proyecto</h3>
 <hr>
 
 
@@ -100,7 +102,7 @@
 
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-validaciones('#cenit'); validaciones('#azimut'); limpiar_proyecto();
+limpiar_proyecto();
 
 var proyectos = [];
 

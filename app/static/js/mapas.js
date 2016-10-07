@@ -142,13 +142,15 @@ function agregarCapa(url, titulo){
 function popupConsulta(loc){
     var c = "Campa\u00f1as ";
     return '<strong>'+loc+'</strong><br><br>' +
-        '<span class="btn btn-info" onclick="consultaCamp(\''+loc+'\')">'+ c +
+        '<span id="lupa" class="btn btn-info" onclick="consultaCamp(\''+loc+'\',\'#loading\',\'#lupa\')">'+ c +
         '<span class="glyphicon glyphicon-search"></span>' +
-        '</span>';
+        '</span><img id="loading" style="display: none" src="/static/img/loading.gif">';
 }
 
 // Consultar campañas de la localidad
-function consultaCamp(loc){
+function consultaCamp(loc, loading, btn){
+    $(btn).hide();
+    $(loading).show();
     $.ajax({
         url: $SCRIPT_ROOT+'/consultar/mapa',
         method: 'POST',
@@ -156,6 +158,8 @@ function consultaCamp(loc){
         success: function(resp){
             $("#result")[0].innerHTML = "<br>" + resp.substring(resp.indexOf("<p>"), resp.indexOf("footer"));
             window.location.href = '#result';
+            $(btn).show();
+            $(loading).hide();
         }
     });
 }
