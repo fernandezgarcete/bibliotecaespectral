@@ -530,7 +530,7 @@ Object.size = function(obj){
 };
 
 // Rellena formulario de Metodología
-function rellenar_form(nombre){
+function rellenar_metod(nombre){
     for(var i=0; i<metods.length; i++){
         if(metods[i].nombre == nombre){
             $('#id').val(metods[i].id);
