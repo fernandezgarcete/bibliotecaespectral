@@ -214,8 +214,6 @@
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 function carga(item){
-    //$('#e').hide();
-    //$('#n').hide();
     if ($(item)[0].id === $('#e')[0].id){
         window.location = $SCRIPT_ROOT+'/cargar/existente';
     }

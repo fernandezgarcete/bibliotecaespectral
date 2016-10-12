@@ -866,8 +866,8 @@ def descargas():
         if fi is not None and ff is not None:
             descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi, Descarga.fecha_descarga <= ff).all()
         tabla = tabular_descargas(descargas)
-        return render_template('consultar_descargas.html', form=form, descargas=descargas, tabla=tabla)
-    return render_template('consultar_descargas.html', form=form, descargas=descargas)
+        return render_template('consultar_descargas.html', form=form, tabla=tabla)
+    return render_template('consultar_descargas.html', form=form)
 
 # Vista del Foro
 @app.route('/', methods=['GET', 'POST'])

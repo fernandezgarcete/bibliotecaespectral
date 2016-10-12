@@ -61,20 +61,42 @@
                 <th>TOTAL</th>
             </thead>
             <tbody>
-            {% for t in tabla %}
-                <tr>
-                    <th>Descargas</th>
-                    <td>{{ t.institucion }}</td>
-                    <td>{{ t.fecha }}</td>
-                    <td>{{ t.mb }}</td>
-                </tr>
-                <tr>
-                    <th>Megabytes</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            {% endfor %}
+            {% if tabla is defined %}
+                {% for key, val in tabla.items() %}
+                    <tr class="info">
+                        <th>PERIODO</th>
+                        <td colspan="3"><strong>{{ val[0].year }}-{{ key }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Descargas</th>
+                        {% if val|length == 1 %}
+                        <td>{% if val[0].inst == 'conae' %}{{ val[0].cant }}{% endif %}</td>
+                        <td>{% if val[0].inst == 'otros' %}{{ val[0].cant }}{% endif %}</td>
+                        <td>{{ val[0].cant }}</td>
+                        {% else %}
+                        {% if val[0].inst == 'conae' %}<td>{{ val[0].cant }}</td>{% endif %}
+                        {% if val[1].inst == 'conae' %}<td>{{ val[1].cant }}</td>{% endif %}
+                        {% if val[0].inst == 'otros' %}<td>{{ val[0].cant }}</td>{% endif %}
+                        {% if val[1].inst == 'otros' %}<td>{{ val[1].cant }}</td>{% endif %}
+                        <td>{{ val[0].cant + val[1].cant }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Megabytes</th>
+                        {% if val|length == 1 %}
+                        <td>{% if val[0].inst == 'conae' %}{{ val[0].mb }} MB{% endif %}</td>
+                        <td>{% if val[0].inst == 'otros' %}{{ val[0].mb }} MB{% endif %}</td>
+                        <td>{{ val[0].mb }} MB</td>
+                        {% else %}
+                        {% if val[0].inst == 'conae' %}<td>{{ val[0].mb }} MB</td>{% endif %}
+                        {% if val[1].inst == 'conae' %}<td>{{ val[1].mb }} MB</td>{% endif %}
+                        {% if val[0].inst == 'otros' %}<td>{{ val[0].mb }} MB</td>{% endif %}
+                        {% if val[1].inst == 'otros' %}<td>{{ val[1].mb }} MB</td>{% endif %}
+                        <td>{{ val[0].mb + val[1].mb }} MB</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            {% endif %}
             </tbody>
         </table>
     </div>

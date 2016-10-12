@@ -1,5 +1,8 @@
 import json
 import traceback
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.poolmanager import PoolManager
+import ssl
 from config import TOKEN, LOGUEO, DATOS
 import requests
 
@@ -112,12 +115,14 @@ class TwitterSignIn(OAuthSignIn):
 class ConaeSignIn():
     def login(self, form):
         s = requests.Session()
+        s.mount('https://', AdaptadorSSL())
         rt = s.get(TOKEN)
         session['userid'] = requests.utils.dict_from_cookiejar(rt.cookies)['PHPSESSID']
         data = {'username': form.username.data, 'password': form.password.data, 'userId': session['userid']}
         try:
             s.post(LOGUEO + session['userid'], data=data)
         except:
+            print(traceback.print_exc())
             pass
         rd = s.get(DATOS + session['userid'])
         if rd.content == b'false':
@@ -137,3 +142,11 @@ class ConaeSignIn():
                 return True
         else:
             return False
+
+
+class AdaptadorSSL(HTTPAdapter):
+    def ini_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = PoolManager(num_pools=connections,
+                                       maxsize=maxsize,
+                                       block=block,
+                                       ssl_version=ssl.PROTOCOL_TLSv1)
