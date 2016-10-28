@@ -19,8 +19,8 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_editar_form, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
-    actualizar_tp, utf_to_ascii, tabular_descargas
+from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
+    actualizar_tp, utf_to_ascii, tabular_descargas, nombre_camp, ini_muestra_form, limpia_responsables, nombre_muestra
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -388,78 +388,63 @@ def cargar():
 def administrativo():
     return render_template('administrativo.html')
 
-# Carga de archivos paso 1
+# Carga de campaña paso 1
 @app.route('/cargar/nueva', methods=['GET', 'POST'])
 @login_required
 def nueva():
     form_n = ini_nuevo_form()
-    archivoform = ArchivoForm()
     if request.method == 'POST':
+        form_n.id.data = 0
         if form_n.validate_on_submit():
-            archivos = request.files.getlist('archivo')
-            lugar = UPLOAD_FOLDER + re.findall("'([^']*)'", str(g.user))[0]
-            count_rad=0
-            count_radavg=0
-            count_radstd=0
-            count_ref=0
-            count_refavg=0
-            count_refstd=0
-            count_img=0
-            for a in archivos:
-                file_name = secure_filename(a.filename)
-                if len(file_name) > 0:
-                    tipo = archivoform.validate_archivo(file_name)
-                    if tipo:
-                        verif = cargar_archivo(lugar, file_name, tipo, a)
-                        if verif == 1:
-                            flash('Archivo Radiancia cargado: '+file_name, 'success')
-                            count_rad +=1
-                        elif verif == 2:
-                            flash('Archivo Radiancia Promedio cargado: '+file_name, 'success')
-                            count_radavg +=1
-                        elif verif == 3:
-                            flash('Archivo Radiancia Desviación Estándar cargado: '+file_name, 'success')
-                            count_radstd +=1
-                        elif verif == 4:
-                            flash('Archivo Reflectancia cargado: '+file_name, 'success')
-                            count_ref +=1
-                        elif verif == 5:
-                            flash('Archivo Reflectancia Promerdio cargado: '+file_name, 'success')
-                            count_refavg += 1
-                        elif verif == 6:
-                            flash('Archivo Reflectancia Desviación Estándar cargado: '+file_name, 'success')
-                            count_refstd +=1
-                        elif verif == 7:
-                            flash('Archivo Imagen cargado: '+file_name, 'success')
-                            count_img += 1
-                    else:
-                        flash('El archivo: '+file_name+' no es archivo de Radiancia, Reflectancia o Imagen válido.\n'+
-                              'Radiancia: ".rad.txt", ".md.txt", ".st.txt"\n'+
-                              'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n'+
-                              'Imagen: ".png", ".jpg", ".jpeg"', 'error')
-            if count_rad == 0:
-                flash('No ingresó ningún archivo de Radiancia', 'info')
-            if count_radavg == 0:
-                flash('No ingresó ningún archivo de Radiancia Promedio', 'info')
-            if count_radstd == 0:
-                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'info')
-            if count_ref == 0:
-                flash('No ingresó ningún archivo de Reflectancia', 'info')
-            if count_refavg == 0:
-                flash('No ingresó ningún archivo de Reflectancia Promedio', 'info')
-            if count_refstd == 0:
-                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'info')
-            if count_img == 0:
-                flash('No ingresó ningún archivo de Imagen', 'info')
-            if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_n.validate_on_submit():
-                render_template('resultado.html')
-        else:
-            flash('Falta Completar:', 'error')
+            c = Campania()
+            loc = Localidad.query.filter_by(id=form_n.nlocalidad.data).first()
+            form_n.ncampania.data = nombre_camp(loc, form_n.nfecha.data)
+            if c.agregar(form_n):
+                flash('Campaña guardada.', 'success')
+            else:
+                print('Error')
     return render_template('cargar_n.html',
-                           form_n=form_n,
-                           archivoform=archivoform)
+                           form_n=form_n)
 
 
+# Carga de Muestras
+@app.route('/cargar/campania/muestra', methods=['GET', 'POST'])
+@login_required
+def muestra(page=1):
+    print(request.args)
+    id = int(request.args.get('id').split('-')[0])
+    form = ini_muestra_form(id)
+    muestras = Muestra.query.join(Cobertura,TipoCobertura).filter(Muestra.id_campania==id, Muestra.deleted==False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==id).first()
+    camp.responsables = limpia_responsables(camp.responsables)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            m = Muestra()
+            cob = Cobertura.query.filter_by(id=form.cobertura.data).first()
+            form.nombre.data = nombre_muestra(camp, cob)
+            form.operador.data = camp.responsables
+            if m.agregar(form):
+                flash('Campaña guardada.', 'success')
+            else:
+                print('Error')
+    return render_template('muestra.html', form=form, muestras=muestras, camp=camp)
+
+
+# Borrar una muestra existente
+@app.route('/cargar/campania/muestra/borrar/<int:id>')
+@login_required
+def borrar_muestra(id):
+    muestra = Muestra.query.get(id)
+    if muestra is None:
+        flash('No se ha podido eliminar la muestra', 'error')
+        return redirect(url_for('muestra', id=muestra.id_campania))
+    muestra.deleted = True
+    db.session.add(muestra)
+    db.session.commit()
+    flash(gettext('La muestra ha sido borrada.'), 'success')
+    return redirect(url_for('muestra', id=muestra.id_campania))
+
+# Actualizar la cobertura
 @app.route('/cargar/actualizarcob')
 @login_required
 def actualizarcob():
@@ -492,54 +477,12 @@ def consulta_existente():
                            form_c=form_c)
 
 
-@app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
+@app.route('/editar/punto', methods=['GET', 'POST'])
 @login_required
-def nueva_cobertura():
-    form = NuevaCoberturaForm()
-    if request.method == 'POST':
-        nombre = form.ncnombre.data
-        id_tipocobertura = int(form.ncid_tipocobertura.data)
-        try:
-            altura = float(form.ncaltura.data)
-        except:
-            altura = 0.0
-        fenologia = form.ncfenologia.data
-        observaciones = form.ncobservaciones.data
-        if id_tipocobertura == 0:
-            return jsonify({'cob': 'error', 'error': 'Antes de crear la Cobertura, cierre esta ventana \n '
-                                                     'y elija un Tipo de Cobertura desde formulario anterior.'})
-        if nombre is None or nombre == '':
-            return jsonify({'cob': 'error', 'error': 'Ingrese un nombre para la Cobertura'})
-        try:
-            cob = Cobertura(nombre=nombre.upper(),
-                            id_tipocobertura=id_tipocobertura,
-                            altura=altura,
-                            fenologia=fenologia,
-                            observaciones=observaciones)
-
-            db.session.add(cob)
-            db.session.commit()
-            return jsonify({'cob': cob.nombre})
-        except:
-            traceback.print_exc()
-            db.session.rollback()
-            return jsonify({'cob': 'error',
-                            'error': 'Datos invalidos.'})
-
-    return render_template('nc_form.html', form=form)
-
-
-@app.route('/editar/<int:id>', methods=['GET', 'POST'])
-@login_required
-def editar(id):
-    forms = ini_editar_form(id)
-    form_e = forms['form']
-    form_c = forms['form_c']
-    form_m = forms['form_m']
+def punto_form():
     archivoform = ArchivoForm()
-    form_nc = NuevaCoberturaForm()
     if request.method == 'POST':
-        if form_e.validate_on_submit() and form_m.validate_on_submit():
+        if archivoform.validate_on_submit():
             archivos = request.files.getlist('archivo')
             lugar = UPLOAD_FOLDER + re.findall("'([^']*)'", str(g.user))[0]
             count_rad=0
@@ -596,22 +539,67 @@ def editar(id):
             if count_img == 0:
                 flash('No ingresó ningún archivo de Imagen', 'info')
             # if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
-            if guardar_camp_mues(form_e, form_m):
-                flash('DATOS GUARDADOS!!!', 'success')
-        if not form_e.validate_on_submit() and form_m.validate_on_submit():
+        if not archivoform.validate_on_submit():
             flash('Falta Completar:', 'error')
-        return render_template('editar.html',
-                               form_e=form_e,
-                               form_c=form_c,
-                               form_m=form_m,
-                               archivoform=archivoform,
-                               form_nc=form_nc)
-    return render_template('editar.html',
-                           form_e=form_e,
-                           form_c=form_c,
-                           form_m=form_m,
-                           archivoform=archivoform,
-                           form_nc=form_nc)
+    return render_template('punto_form.html', archivoform=archivoform)
+
+
+@app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
+@login_required
+def nueva_cobertura():
+    form = NuevaCoberturaForm()
+    if request.method == 'POST':
+        nombre = form.ncnombre.data
+        id_tipocobertura = int(form.ncid_tipocobertura.data)
+        try:
+            altura = float(form.ncaltura.data)
+        except:
+            altura = 0.0
+        fenologia = form.ncfenologia.data
+        observaciones = form.ncobservaciones.data
+        if id_tipocobertura == 0:
+            return jsonify({'cob': 'error', 'error': 'Antes de crear la Cobertura, cierre esta ventana \n '
+                                                     'y elija un Tipo de Cobertura desde formulario anterior.'})
+        if nombre is None or nombre == '':
+            return jsonify({'cob': 'error', 'error': 'Ingrese un nombre para la Cobertura'})
+        try:
+            cob = Cobertura(nombre=nombre.upper(),
+                            id_tipocobertura=id_tipocobertura,
+                            altura=altura,
+                            fenologia=fenologia,
+                            observaciones=observaciones)
+
+            db.session.add(cob)
+            db.session.commit()
+            return jsonify({'cob': cob.nombre})
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return jsonify({'cob': 'error',
+                            'error': 'Datos invalidos.'})
+
+    return render_template('nc_form.html', form=form)
+
+
+@app.route('/editar/<int:id>', methods=['GET', 'POST'])
+@app.route('/editar/<int:id>/<int:page>', methods=['GET', 'POST'])
+@login_required
+def editar(id, page=1):
+    form_e = ini_nuevo_form()
+    camps = Campania.query.filter_by(deleted=False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    if request.method == 'POST':
+        form_e.id.data = id
+        form_e.ncampania.data = form_e.ncampania.raw_data[0]
+        form_e.nfecha.data = datetime.strptime(form_e.nfecha.raw_data[0], '%Y-%m-%d').date()
+        form_e.nfecha_pub.data = datetime.strptime(form_e.nfecha_pub.raw_data[0], '%Y-%m-%d').date()
+        if form_e.validate_on_submit():
+            c = Campania()
+            if c.agregar(form_e):
+                flash('Campaña guardada.', 'success')
+            else:
+                print('Error')
+        return render_template('editar.html', form_e=form_e, camps=camps)
+    return render_template('editar.html', form_e=form_e, camps=camps)
 
 # mapa consulta
 @app.route('/consultar/mapa', methods=['GET', 'POST'])

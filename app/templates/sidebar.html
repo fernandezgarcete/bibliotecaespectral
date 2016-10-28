@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="row">
+<div class="col-sm-3 col-lg-2 sidebar">
+<ul class="nav navbar-nav">
+    <li class="panel panel-default">
+        <a data-toggle="collapse" class="collapse" href="#down-camp">Campañas <span class="caret"></span></a>
+        <div id="down-camp" class="collapse panel-collapse">
+            <div class="panel-body">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('nueva') }}">Nueva</a></li>
+                    <li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+    <li class="panel panel-default">
+        <a data-toggle="collapse" class="collapse" href="#down-comp">Datos Complementarios <span class="caret"></span></a>
+        <div id="down-comp" class="collapse panel-collapse">
+            <div class="panel-body">
+                <ul class="nav navbar-nav">
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-loc">Localidades <span class="caret"></span></a>
+                        <div id="down-loc" class="collapse panel-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('localidad') }}">Nueva</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-met">Metodologías <span class="caret"></span></a>
+                        <div id="down-met" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('metodologia', c='n') }}">Nueva</a></li>
+                                <li><a href="{{ url_for('metodologia', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-proy">Proyectos <span class="caret"></span></a>
+                        <div id="down-proy" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('proyecto', c='n') }}">Nuevo</a></li>
+                                <li><a href="{{ url_for('proyecto', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-tp">Tipos de Coberturas <span class="caret"></span></a>
+                        <div id="down-tp" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('tp', c='n') }}">Nueva</a></li>
+                                <li><a href="{{ url_for('tp', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-cob">Coberturas <span class="caret"></span></a>
+                        <div id="down-cob" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('cobertura', c='n') }}">Nueva</a></li>
+                                <li><a href="{{ url_for('cobertura', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+    <li class="panel panel-default">
+        <a data-toggle="collapse" class="collapse" href="#down-inst">Instrumentos <span class="caret"></span></a>
+        <div id="down-inst" class="collapse">
+            <div class="panel-body">
+                <ul class="nav navbar-nav">
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-rad">Espectro-radiómetro <span class="caret"></span></a>
+                        <div id="down-rad" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('radiometro', c='n') }}">Nuevo</a></li>
+                                <li><a href="{{ url_for('radiometro', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-pat">Blancos de Referencia <span class="caret"></span></a>
+                        <div id="down-pat" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('patron', c='n') }}">Nuevo</a></li>
+                                <li><a href="{{ url_for('patron', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-fot">Fotómetro <span class="caret"></span></a>
+                        <div id="down-pat" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('fotometro', c='n') }}">Nuevo</a></li>
+                                <li><a href="{{ url_for('fotometro', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-cam">Cámaras <span class="caret"></span></a>
+                        <div id="down-cam" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('camara', c='n') }}">Nueva</a></li>
+                                <li><a href="{{ url_for('camara', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="panel panel-default">
+                        <a data-toggle="collapse" class="collapse" href="#down-gps">GPS <span class="caret"></span></a>
+                        <div id="down-gps" class="collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('gps', c='n') }}">Nuevo</a></li>
+                                <li><a href="{{ url_for('gps', c='e') }}">Existente</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>
+</div>
+
+<div class="col-sm-9 col-lg-10 main">
+    </div>
+    </div>
+</body>
+</html>

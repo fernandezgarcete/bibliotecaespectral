@@ -8,7 +8,7 @@ from flask_babel import gettext
 from flask_wtf.file import FileRequired, FileAllowed
 from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField, \
     RadioField, DecimalField, IntegerField
-from wtforms.validators import DataRequired, Length, NumberRange
+from wtforms.validators import DataRequired, Length, NumberRange, regexp
 from app.models import User
 from config import ALLOWED_EXTENSIONS
 
@@ -63,37 +63,24 @@ class SearchForm(Form):
 
 # Formulario carga de Campaña
 class NuevaCampForm(Form):
-    nproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
-    nlocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
+    id = StringField('id')
+    nproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Seleccione un Proyecto')])
+    nlocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Seleccione una Localidad')])
     ncampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
-    nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
-                      format='%d-%m-%Y')
+    nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de la campaña')],
+                      format='%Y-%m-%d')
     nresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
-    nobjetivo = TextAreaField('objetivo', validators=[DataRequired(message=u'Ingrese un objetivo')])
+    nobjetivo = TextAreaField('objetivo')#, validators=[DataRequired(message=u'Ingrese un objetivo')])
     nfecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato')],
-                      format='%d-%m-%Y')
-    # ntipo_cobertura = SelectField('tipo_cobertura', coerce=int)
-    # ncobertura = SelectField('cobertura', coerce=int)
-    ninstrumento = SelectField('instrumento', coerce=int)
-    nespectralon = SelectField('espectralon', coerce=int)
-    ngps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Describa GPS')])
-    ncamara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Cámara utilizada')])
+                      format='%Y-%m-%d')
 
-# Formulario Editar Campaña
-class EditarCampForm(Form):
-    campania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
-    proyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Proyecto requerido')])
-    localidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Localidad requerida')])
-    fecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha')],
-                      format='%d-%m-%Y')
-    responsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
-    objetivo = TextAreaField('objetivo')
-    fecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato')],
-                      format='%d-%m-%Y')
 
 # Formulario de Muestra
 class MuestraForm(Form):
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    operador = StringField('operador')
     nombre = StringField('nombre')
+    campania = StringField('campania')
     metodologia = SelectField('metodologia', coerce=int)
     fotometro = SelectField('fotometro', coerce=int)
     radiometro = SelectField('instrumento', coerce=int)
@@ -101,7 +88,7 @@ class MuestraForm(Form):
     gps = SelectField('gps', coerce=int)  # validators=[DataRequired(message=u'Describa GPS')])
     camara = SelectField('camara', coerce=int)  # validators=[DataRequired(message=u'Cámara utilizada')])
     tipo_cobertura = SelectField('tipo_cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese un Tipo de Cobertura')])
-    cobertura = StringField('cobertura', validators=[DataRequired(message=u'Ingrese una Cobertura')])
+    cobertura = SelectField('cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese una Cobertura')])
 
 # Formulario Auxiliar de cobertura
 class CoberturaForm(Form):
@@ -124,7 +111,14 @@ class NuevaCoberturaForm(Form):
 
 # Formulario de archivo
 class ArchivoForm(Form):
-    archivo = FileField('archivo', validators=[FileRequired()])
+    radiancias = FileField('radiancias', validators=[FileRequired(), regexp(r'^[^/\\]\.rad.txt$')])
+    rads_avg = FileField('rads_avg', validators=[FileRequired(), regexp(r'^[^/\\]\.md.txt$')])
+    rads_st = FileField('rads_st', validators=[FileRequired(), regexp(r'^[^/\\]\.st.txt$')])
+    reflectancias = FileField('reflectancias', validators=[FileRequired(), regexp(r'^[^/\\]\.rts.txt$')])
+    refs_avg = FileField('refs_avg', validators=[FileRequired(), regexp(r'^[^/\\]\.md.rts.txt$')])
+    refs_st = FileField('refs_st', validators=[FileRequired(), regexp(r'^[^/\\]\.st.rts.txt$')])
+    fotos = FileField('fotos', validators=[FileRequired()])
+    fotometrias = FileField('fotometrias', validators=[FileRequired(), regexp(r'^[^/\\]\-FOT.txt$')])
 
     def validate_archivo(self, filename):
         if self.validate_img(filename):

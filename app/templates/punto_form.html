@@ -1,0 +1,38 @@
+<head><meta charset="UTF-8"></head>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Radiancias</div>
+    <div class="panel-body">
+        <div class="panel-group">
+            <label>Radiancia TXT</label>
+            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+        </div>
+        <div class="panel-group">
+            <label>Radiancia Promedio y Desviación Estándar TXT</label>
+            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Reflectancias</div>
+    <div class="panel-body">
+        <div class="panel-group">
+            <label>Reflectancia TXT</label>
+            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+        </div>
+        <div class="panel-group">
+            <label>Reflectancia Promedio y Desviación Estándar TXT</label>
+            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Fotos</div>
+    <div class="panel-body">
+        <div class="panel-group">
+            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+        </div>
+    </div>
+</div>

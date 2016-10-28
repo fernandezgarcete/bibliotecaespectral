@@ -4,42 +4,57 @@
 {% block content %}
 <head><meta charset="UTF-8"></head>
 <script>navegador('#cargar')</script>
+
+
+
 <ol class="breadcrumb">
 <li><a href="{{ url_for('cargar') }}">Cargar</a></li>
 <li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
 <li class="active">Campaña</li>
 </ol>
 
-{% if form_m.errors or form_e.errors or archivoform.errors %}
+
+<div class="panel panel-default" id="panel">
+    <div class="panel-heading"><strong>Campañas Existentes</strong>
+    <!--img src="/static/img/cobertura.png" style="width: 50px;height: 50px;"-->
+    </div>
+    <div class="list-group">
+        {% for c in camps.items %}
+        <a href="#e_camp" class="list-group-item" onclick="rellenar_camp('{{ c.nombre }}')" data-toggle="tooltip" title="Modificar Item">
+        {{ c.nombre }}
+        <span type="button" class="badge btn">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% if camps.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('editar', page=camps.prev_num, id=form_e.id.data) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if camps.has_next %}<li><a href="{{ url_for('editar', page=camps.next_num, id=form_e.id.data) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+
+
+<h1>Editar datos de campaña</h1>
+<hr>
+{% if form_e.errors %}
     <div class="alert alert-dismissable alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <span class="glyphicon glyphicon-remove-circle"></span>
         <ul>
-            {% for error in form_e.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
-            {% endfor %}
-            {% for error in form_m.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
-            {% endfor %}
-            {% for error in archivoform.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
+            {% for key,error in form_e.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
             {% endfor %}
         </ul>
     </div>
 {% endif %}
 
-
-<h1>Editar datos de campaña</h1>
-<hr>
-
-<form class="form-horizontal" action="" method="post" name="e_camp" id="e_camp" onsubmit="guardarCamp()">
+<form class="form-horizontal" action="" method="post" id="e_camp">
     <div class="form-group" id="ec">
         <label class="col-xs-2">Campaña</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.campania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
+                {{ form_e.ncampania(placeholder="Nombre de Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#campania', '#bcamp')" id="bcamp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#ncampania', '#bcamp')" id="bcamp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -49,9 +64,9 @@
         <label class="col-xs-2">Proyecto</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.proyecto(placeholder="Nombre de Proyecto", class="form-control", disabled=true) }}
+                {{ form_e.nproyecto(placeholder="Nombre de Proyecto", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#proyecto', '#bp')" id="bp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#nproyecto', '#bp')" id="bp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -61,9 +76,9 @@
         <label class="col-xs-2">Localidad</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.localidad(placeholder="Nombre de la Localidad", class="form-control", disabled=true) }}
+                {{ form_e.nlocalidad(placeholder="Nombre de la Localidad", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#localidad', '#bl')" id="bl">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#nlocalidad', '#bl')" id="bl">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -73,10 +88,10 @@
         <label class="col-xs-2">Fecha</label>
         <div class="col-xs-10">
             <div class="input-group date">
-                {{ form_e.fecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                {{ form_e.nfecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#fecha', '#bf')" id="bf">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#nfecha', '#bf')" id="bf">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -87,9 +102,9 @@
         <label class="col-xs-2">Responsable</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.responsable(placeholder="Responsable de la Campaña", class="form-control", disabled=true) }}
+                {{ form_e.nresponsable(placeholder="Responsable de la Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#responsable', '#br')" id="br">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#nresponsable', '#br')" id="br">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -99,9 +114,9 @@
         <label class="col-xs-2">Objetivo</label>
         <div class="col-xs-10">
             <div class="input-group">
-                {{ form_e.objetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true) }}
+                {{ form_e.nobjetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true) }}
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#objetivo', '#bo')" id="bo">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#nobjetivo', '#bo')" id="bo">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
@@ -111,188 +126,66 @@
         <label class="col-xs-2">Fecha de Publicación</label>
         <div class="col-xs-10">
             <div class="input-group date">
-                {{ form_e.fecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                {{ form_e.nfecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#fecha_pub', '#bfp')" id="bfp">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#nfecha_pub', '#bfp')" id="bfp">
                         <i class="glyphicon glyphicon-pencil"></i></button>
                 </span>
             </div>
         </div>
     </div>
 
-<h1>Editar datos de Muestras</h1>
-<hr>
-    <div class="form-group" id="mmet">
-        <label class="col-xs-2">Metodología</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-            {{ form_m.metodologia(placeholder="Seleccione una Metodologia", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#metodologia', '#bm')" id="bm">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="eins">
-        <label class="col-xs-2">Espectro-radiómetro</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-            {{ form_m.radiometro(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#radiometro', '#bi')" id="bi">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="epat">
-        <label class="col-xs-2">Patrón</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-            {{ form_m.espectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#espectralon', '#besp')" id="besp">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="efot">
-        <label class="col-xs-2">Fotómetro</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-            {{ form_m.fotometro(placeholder="Seleccione un Fotometro", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#fotometro', '#bf')" id="bf">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="egp">
-        <label class="col-xs-2">GPS</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-            {{ form_m.gps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#gps', '#bgps')" id="bgps">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="ecam">
-        <label class="col-xs-2">Cámara</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-            {{ form_m.camara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#camara', '#bcam')" id="bcam">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="etp">
-        <label class="col-xs-2">Tipo de Cobertura</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-                {{ form_m.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#tipo_cobertura', '#btp')" id="btp">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="ecob">
-        <label class="col-xs-2">Cobertura</label>
-        <div class="col-xs-10">
-            <div class="input-group">
-                <a href="#cobertura" id="agregar" onclick="agregarCobertura()"><h4>
-                <span class="btn btn-info">Agregar Cobertura
-                    <span class="glyphicon glyphicon-plus"></span>
-                </span></h4>
-                </a>
-                {{ form_m.cobertura(placeholder="Elija la Cobertura", class="form-control", style="display:none;") }}
-                <span class="input-group-btn", style="display: none;">
-                    <button class="btn btn-primary" type="button" onclick="habilitar('#cobertura', '#bcob')" id="bcob">
-                        <i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </div>
-        </div>
-    </div>
-
+    {{ form_e.id(type="hidden") }}
     <div id="container">
 
     </div>
 
-    <!-- div class="form-group" id="erad">
-        <label class="col-xs-2">Radiancias</label>
-        <div class="col-xs-10">
-            <div class="panel-group">
-                <label>Radiancia TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
-            </div>
-            <div class="panel-group">
-                <label>Radiancia Promedio y Desviación Estándar TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="eref">
-        <label class="col-xs-2">Reflectancias</label>
-        <div class="col-xs-10">
-            <div class="panel-group">
-                <label>Reflectancia TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
-            </div>
-            <div class="panel-group">
-                <label>Reflectancia Promedio y Desviación Estándar TXT</label>
-                {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="efot">
-        <label class="col-xs-2">Fotos</label>
-        <div class="col-xs-10">
-            {{ archivoform.archivo(class="form-control", multiple="multiple", disabled=true) }}
-        </div>
-    </div>
-     -->
-    {{ form_c.ecobertura(class="form-control", disabled=true, style="display:none;") }}
-    {{ form_c.ecobertura_nueva(class="form-control", disabled=true, style="display:none;") }}
-
     <div class="form-group">
         {{ form_e.hidden_tag() }}
-        {{ form_m.hidden_tag() }}
-        {{ form_c.hidden_tag() }}
-        {{ archivoform.hidden_tag() }}
     </div>
 
     <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
 </form>
 
-<form id="form_nc" style="display:none;">
-    {{ form_nc.ncnombre(class="form-control") }}
-    {{ form_nc.ncid_tipocobertura(class="form-control") }}
-    {{ form_nc.ncaltura(class="form-control") }}
-    {{ form_nc.ncfenologia(class="form-control") }}
-    {{ form_nc.ncobservaciones(class="form-control") }}
-    {{ form_nc.hidden_tag() }}
-</form>
 
 <br>
 
+<h3><span class="label label-info btn" onclick="editar_muestra()">Editar datos de Muestras</span></h3>
+
+
+
 <!-- Scripts al cargar el documento -->
 <script>
-pickerdate('#fecha'); pickerdate_pub('#fecha_pub'); validaciones('#fecha'); cargarCoberturas(); limpiaResponsables();
+pickerdate('#fecha'); pickerdate_pub('#fecha_pub'); validaciones('#fecha'); limpiaResponsables();
 validaciones('#fecha_pub');
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
-var id = $('#campania').val();
+var camps = [];
 
+{% for c in camps.items %}
+    var camp = {
+        id:{{ c.id|default(0) }},
+        nombre:"{{ c.nombre }}",
+        id_loc:"{{ c.id_localidad }}",
+        id_pro:"{{ c.id_proyecto }}",
+        fecha:"{{ c.fecha.date() }}",
+        fecha_pub:"{{ c.fecha_publicacion.date() }}",
+        obj:"{{ c.objetivo }}",
+        resp:"{{ c.responsables }}"
+    };
+    camps.push(camp);
+{% endfor %}
+
+function editar_muestra(){
+    window.location.replace("/cargar/campania/muestra?id="+$('#id').val());
+}
+
+$('#e_camp').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
 </script>
 {% endblock %}

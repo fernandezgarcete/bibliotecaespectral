@@ -1,0 +1,219 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+    
+
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
+<li><a href="{{ url_for('editar', id=camp.id) }}">Campaña</a></li>
+<li class="active">Muestras</li>
+</ol>
+
+<div class="panel panel-default" id="pcamp">
+    <div class="panel-heading"><h4>
+        <a data-toggle="collapse" href="#down-camp">Campaña &nbsp; {{ camp.nombre }}</a></h4>
+    </div>
+    <div id="down-camp" class="collapse panel-collapse">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Localidad</th>
+                <td>{{ camp.localidad_campania.nombre }}</td>
+                <th scope="row">Proyecto</th>
+                <td>{{ camp.proyecto_campania.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Fecha</th>
+                <td>{{ camp.fecha.date() }}</td>
+                <th scope="row">Fecha Publicación</th>
+                <td>{{ camp.fecha_publicacion.date() }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Responsables</th>
+                <td colspan="2">{{ camp.responsables }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">Objetivo</th>
+                <td colspan="2">{{ camp.objetivo }}</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="panel panel-info" id="panel">
+    <div class="panel-heading"><strong>Muestras Existentes</strong>
+    <!--img src="/static/img/cobertura.png" style="width: 50px;height: 50px;"-->
+    </div>
+    <div class="list-group">
+        {% for m in muestras.items %}
+        <a href="#form_muestra" class="list-group-item" onclick="rellenar_mues('{{ m.nombre }}')" data-toggle="tooltip" title="Modificar Item">
+        {{ m.nombre }}
+        <span type="button" class="badge btn" id="elim_{{ m.nombre }}" data-toggle="tooltip" title="Eliminar Item">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% if muestras.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('muestra', page=muestras.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if muestras.has_next %}<li><a href="{{ url_for('muestra', page=muestras.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+
+<button type="button" class="btn btn-info" onclick="limpiar_mues()">
+    Nueva <span class="glyphicon glyphicon-plus"></span>
+</button>
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <span class="glyphicon glyphicon-remove-circle"></span>
+        <ul>
+            {% for key,error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
+
+<h1>Editar datos de Muestras</h1>
+<hr>
+<form class="form-horizontal" action="" method="post" id="form_muestra">
+    <div class="form-group" id="mmet">
+        <label class="col-xs-2">Metodología</label>
+        <div class="col-xs-9">
+            {{ form.metodologia(placeholder="Seleccione una Metodologia", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#metodologia', '#bm')" id="bm">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="eins">
+        <label class="col-xs-2">Espectro-radiómetro</label>
+        <div class="col-xs-9">
+            {{ form.radiometro(placeholder="Seleccione un Instrumento", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#radiometro', '#bi')" id="bi">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="epat">
+        <label class="col-xs-2">Patrón</label>
+        <div class="col-xs-9">
+            {{ form.espectralon(placeholder="Seleccione el espectralon", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#espectralon', '#besp')" id="besp">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="efot">
+        <label class="col-xs-2">Fotómetro</label>
+        <div class="col-xs-9">
+            {{ form.fotometro(placeholder="Seleccione un Fotometro", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#fotometro', '#bfot')" id="bfot">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="egp">
+        <label class="col-xs-2">GPS</label>
+        <div class="col-xs-9">
+            {{ form.gps(placeholder="GPS utilizado", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#gps', '#bgps')" id="bgps">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="ecam">
+        <label class="col-xs-2">Cámara</label>
+        <div class="col-xs-9">
+            {{ form.camara(placeholder="Cámara utilzada", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#camara', '#bcam')" id="bcam">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="etp">
+        <label class="col-xs-2">Tipo de Cobertura</label>
+        <div class="col-xs-9">
+            {{ form.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#tipo_cobertura', '#btp')" id="btp">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="ecob">
+        <label class="col-xs-2">Cobertura</label>
+        <div class="col-xs-9">
+            {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#cobertura', '#bcob')" id="bcob">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    {{ form.id(type="hidden") }}
+    <div id="container">
+
+    </div>
+
+    <div class="form-group">
+        {{ form.hidden_tag() }}
+    </div>
+
+    <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
+</form>
+
+
+<br>
+
+<h3><span class="label label-info btn" onclick="editar_punto()">Editar datos de Puntos</span></h3>
+
+<!-- Scripts al cargar el documento -->
+<script>
+//cargarCoberturas();
+limpiar_mues();
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+var mues = [];
+
+{% for m in muestras.items %}
+    var muestra = {
+        id:{{ m.id|default(0) }},
+        nombre:"{{ m.nombre }}",
+        operador:"{{ m.operador }}",
+        id_tp:"{{ m.cobertura_muestra.id_tipocobertura }}",
+        id_cob:"{{ m.id_cobertura }}",
+        id_camp:"{{ m.id_campania }}",
+        id_met:"{{ m.id_metodologia }}",
+        id_rad:"{{ m.id_radiometro }}",
+        id_cam:"{{ m.id_camara }}",
+        id_gps:"{{ m.id_gps }}",
+        id_fot:"{{ m.id_fotometro }}",
+        id_pat:"{{ m.id_patron }}"
+    };
+    mues.push(muestra);
+    btn_eliminar_item('elim_'+muestra.nombre, mues, 'Eliminar Muestra',
+            'Está seguro de eliminar la muestra "', '/cargar/campania/muestra/borrar/');
+{% endfor %}
+
+function editar_punto(){
+    window.location.replace("/cargar/campania/muestra/punto?id="+id);
+}
+
+</script>
+{% endblock %}

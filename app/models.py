@@ -155,6 +155,34 @@ class Campania(db.Model):
                                           cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
 
+    def agregar(self, form):
+        camp = self
+        if int(form.id.data) > 0:
+            camp = self.query.filter_by(id=int(form.id.data)).first()
+            camp.nombre = form.ncampania.data
+            camp.fecha = form.nfecha.data
+            camp.fecha_publicacion = form.nfecha_pub.data
+            camp.responsables = form.nresponsable.data
+            camp.id_localidad = form.nlocalidad.data
+            camp.objetivo = str(form.nobjetivo.data).replace('\r\n', ' ')
+            camp.id_proyecto = form.nproyecto.data
+        else:
+            camp.nombre = form.ncampania.data
+            camp.fecha = form.nfecha.data
+            camp.fecha_publicacion = form.nfecha_pub.data
+            camp.responsables = form.nresponsable.data
+            camp.id_localidad = form.nlocalidad.data
+            camp.objetivo = str(form.nobjetivo.data).replace('\r\n', ' ')
+            camp.id_proyecto = form.nproyecto.data
+        try:
+            db.session.add(camp)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
+
     @property
     def is_deleted(self):
         if self.deleted is True:
@@ -296,6 +324,40 @@ class Muestra(db.Model):
     puntos = db.relationship('Punto', backref='punto', lazy='dynamic',
                              cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
+
+    def agregar(self, form):
+        muestra = self
+        if int(form.id.data) > 0:
+            muestra = self.query.filter_by(id=int(form.id.data)).first()
+            muestra.nombre = form.nombre.data
+            muestra.operador = form.operador.data
+            muestra.id_cobertura = int(form.cobertura.data)
+            muestra.id_campania = int(form.campania.data)
+            muestra.id_metodologia = int(form.metodologia.data)
+            muestra.id_radiometro = int(form.radiometro.data)
+            muestra.id_camara = int(form.camara.data)
+            muestra.id_gps = int(form.gps.data)
+            muestra.id_fotometro = int(form.fotometro.data)
+            muestra.id_patron = int(form.espectralon.data)
+        else:
+            muestra.nombre = form.nombre.data
+            muestra.operador = form.operador.data
+            muestra.id_cobertura = int(form.cobertura.data)
+            muestra.id_campania = int(form.campania.data)
+            muestra.id_metodologia = int(form.metodologia.data)
+            muestra.id_radiometro = int(form.radiometro.data)
+            muestra.id_camara = int(form.camara.data)
+            muestra.id_gps = int(form.gps.data)
+            muestra.id_fotometro = int(form.fotometro.data)
+            muestra.id_patron = int(form.espectralon.data)
+        try:
+            db.session.add(muestra)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
 
     @property
     def is_deleted(self):

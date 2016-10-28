@@ -22,13 +22,13 @@ function validaciones(item){
 function habilitar(item, boton){
     if($(boton+' i')[0].classList.contains('glyphicon-pencil')){
         $(boton+' i')[0].classList.remove('glyphicon-pencil');
-        $(boton+' i')[0].classList.add('glyphicon-check')
+        $(boton+' i')[0].classList.add('glyphicon-check');
         $(item)[0].disabled = false;
         return
     }
     if($(boton+' i')[0].classList.contains('glyphicon-check')){
         $(boton+' i')[0].classList.remove('glyphicon-check');
-        $(boton+' i')[0].classList.add('glyphicon-pencil')
+        $(boton+' i')[0].classList.add('glyphicon-pencil');
         $(item)[0].disabled = true;
     }
 }
@@ -84,12 +84,11 @@ function replaceAll(str, find, replace) {
 }
 
 function limpiaResponsables(){
-    var r = document.getElementById('responsable').value;
+    var r = document.getElementById('nresponsable').value;
     var r1 = replaceAll(r,'"','');
     var r2 = replaceAll(r1,'{','');
-    var r3 = replaceAll(r2,',',', ');
-    var r4 = replaceAll(r3,'}','');
-    document.getElementById('responsable').value = r4;
+    var r4 = replaceAll(r2,'&#34;','');
+    document.getElementById('nresponsable').value = replaceAll(r4,'}','');
 }
 
 // Crear Mensaje de Error Generico
@@ -226,7 +225,7 @@ function crearModal(id, nombre, tit, mensaje, okBtnText, btnclass){
 
 function cargarCoberturas(){
     // Cantidad de elementos a crear
-    var cob = document.getElementById('ecobertura');
+    var cob = document.getElementById('cobertura');
     var cant = cob.length;
     // lugar donde agragaremos los items
     var container = document.getElementById('container');
@@ -238,7 +237,7 @@ function cargarCoberturas(){
         }
         // Agregar Coberturas existentes
         for (var i=0; i< cant; i++){
-            var nombre = document.getElementById('ecobertura')[i].text;
+            var nombre = document.getElementById('cobertura')[i].text;
             agregarCobertura(nombre);
         }
     }
@@ -261,8 +260,8 @@ function agregarCobertura(nombre){
     var div_col = document.createElement('div');
     div_col.id = 'col'+j;
     // agregamos al contenedor
-    div_col.classList.add('col-md-4');
-    div_col.classList.add('col-sm-6');
+    div_col.classList.add('col-md-6');
+    div_col.classList.add('col-sm-8');
     container.appendChild(div_col);
 
     var div = document.createElement('div');
@@ -286,11 +285,13 @@ function agregarCobertura(nombre){
     a.setAttribute('data-toggle','modal');
     a.setAttribute('data-target','#confirm-delete'+j);
     a.addEventListener('click', function(){
+        var modal = document.getElementById('confirm-delete'+j);
         $('#confirm-delete'+j).on('show.bs.modal', function(e){
             $(this).find('.btn-ok').on('click', function(){
+                var modal = this.parentNode.parentNode.parentNode.parentNode;
                 var child = document.getElementById('col'+j);
-                $('#confirm-delete'+j).modal('hide');
-                $('#confirm-delete'+j).on('hidden.bs.modal', function(e){$('#confirm-delete'+j).remove();});
+                $('#'+modal.id).modal('hide');
+                $('#'+modal.id).on('hidden.bs.modal', function(e){$('#confirm-delete'+j).remove();});
                 if(document.getElementById('container').hasChildNodes()){
                     document.getElementById('container').removeChild(child);
                 }
@@ -300,7 +301,7 @@ function agregarCobertura(nombre){
     cap.appendChild(a);
 
     // Título
-    var h = document.createElement('h4');
+    var h = document.createElement('h3');
     h.id = 'cob'+j;
     cap.appendChild(h);
 
@@ -315,7 +316,7 @@ function agregarCobertura(nombre){
         cob.addEventListener('change', function(){
             var val = this.options[this.selectedIndex].text;
             if(val === 'Nueva..'){
-                crearModalNuevaCobertura(j)
+                crearModalNuevaCobertura(j);
                 $('#nueva-cob'+j).modal('show');
             } else {
                 var parent = this.parentElement;
@@ -366,14 +367,18 @@ function crearPunto(nodo){
         var child = this.parentElement;
         caption.removeChild(child);
     });
-    punto.appendChild(document.createTextNode('Punto '+puntos+' '));
+    var tit = document.createElement('h3');
+    tit.innerHTML = 'Punto '+puntos+' ';
     punto.appendChild(elim);
+    punto.appendChild(tit);
 
     // Formulario que contendra los archivos
     var f = document.createElement('form');
     f.id = 'fp'+puntos;
+    $.ajax({url:$SCRIPT_ROOT+'/editar/punto', method:'GET'}).done(function(resp){
+        f.innerHTML = resp;
+    });
     punto.appendChild(f);
-    f.appendChild(document.createElement('label'));
 
     caption.appendChild(punto);
     caption.appendChild(p);
@@ -663,7 +668,7 @@ function rellenar_fot(nombre){
     }
 }
 
-// Rellena formulario Fotometro
+// Rellena formulario Camara
 function rellenar_cam(nombre){
     for(var i=0; i<camaras.length; i++){
         if(camaras[i].nombre == nombre){
@@ -675,6 +680,44 @@ function rellenar_cam(nombre){
             $('#nro_serie').val(camaras[i].nro_serie);
             $('#accesorio').val(camaras[i].accesorio);
             contador(document.getElementById('accesorio'),'#bdesc',340);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario Campania
+function rellenar_camp(nombre){
+    for(var i=0; i<camps.length; i++){
+        if(camps[i].nombre == nombre){
+            $('#id').val(camps[i].id);
+            $('#ncampania').val(camps[i].nombre);
+            $('#nproyecto').val(camps[i].id_pro);
+            $('#nlocalidad').val(camps[i].id_loc);
+            $('#nfecha').val(camps[i].fecha);
+            $('#nresponsable').val(camps[i].resp);
+            $('#nobjetivo').val(camps[i].obj);
+            $('#nfecha_pub').val(camps[i].fecha_pub);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+            limpiaResponsables();
+        }
+    }
+}
+
+// Rellena formulario Muestra
+function rellenar_mues(nombre){
+    for(var i=0; i<mues.length; i++){
+        if(mues[i].nombre == nombre){
+            $('#id').val(mues[i].id);
+            $('#metodologia').val(mues[i].id_met);
+            $('#radiometro').val(mues[i].id_rad);
+            $('#espectralon').val(mues[i].id_pat);
+            $('#fotometro').val(mues[i].id_fot);
+            $('#gps').val(mues[i].id_gps);
+            $('#camara').val(mues[i].id_cam);
+            $('#tipo_cobertura').val(mues[i].id_tp);
+            $('#cobertura').val(mues[i].id_cob);
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
         }
@@ -724,7 +767,6 @@ function btn_eliminar_item(id, lista_entidad, titulo, mensaje, url){
         }).modal('show');
     });
 }
-
 
 // Limpia Formulario de Metodologia
 function limpiar_metod(){
@@ -814,6 +856,35 @@ function limpiar_pat() {
     $('#nro_serie').val('');
     $('#accesorio').val('');
     contador(document.getElementById('accesorio'), '#bdesc', 340);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpia Formulario de Muestra
+function limpiar_mues() {
+    $('#id').val(0);
+    $('#metodologia').val(0);
+    $('#radiometro').val(0);
+    $('#espectralon').val(0);
+    $('#fotometro').val(0);
+    $('#gps').val(0);
+    $('#camara').val(0);
+    $('#tipo_cobertura').val(0);
+    $('#cobertura').val(0);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpia Formulario de Patron
+function limpiar_camp() {
+    $('#id').val(0);
+    $('#nproyecto').val(0);
+    $('#nlocalidad').val(0);
+    $('#nfecha').val('');
+    $('#nresponsable').val('');
+    $('#nobjetivo').val('');
+    $('#nfecha_pub').val('');
+    contador(document.getElementById('nobjetivo'), '#bdesc', 300);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
 }
