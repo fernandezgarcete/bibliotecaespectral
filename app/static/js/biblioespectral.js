@@ -690,6 +690,7 @@ function rellenar_cam(nombre){
 function rellenar_camp(nombre){
     for(var i=0; i<camps.length; i++){
         if(camps[i].nombre == nombre){
+            $('.form-control').prop('disabled',false);
             $('#id').val(camps[i].id);
             $('#ncampania').val(camps[i].nombre);
             $('#nproyecto').val(camps[i].id_pro);
@@ -698,9 +699,9 @@ function rellenar_camp(nombre){
             $('#nresponsable').val(camps[i].resp);
             $('#nobjetivo').val(camps[i].obj);
             $('#nfecha_pub').val(camps[i].fecha_pub);
+            limpiaResponsables();
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
-            limpiaResponsables();
         }
     }
 }

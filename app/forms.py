@@ -81,14 +81,20 @@ class MuestraForm(Form):
     operador = StringField('operador')
     nombre = StringField('nombre')
     campania = StringField('campania')
-    metodologia = SelectField('metodologia', coerce=int)
-    fotometro = SelectField('fotometro', coerce=int)
-    radiometro = SelectField('instrumento', coerce=int)
-    espectralon = SelectField('espectralon', coerce=int)
-    gps = SelectField('gps', coerce=int)  # validators=[DataRequired(message=u'Describa GPS')])
-    camara = SelectField('camara', coerce=int)  # validators=[DataRequired(message=u'Cámara utilizada')])
+    metodologia = SelectField('metodologia', coerce=int, validators=[DataRequired(message=u'Ingrese una Metodología')])
+    fotometro = SelectField('fotometro', coerce=int, validators=[DataRequired(message=u'Ingrese un Fotómetro')])
+    radiometro = SelectField('instrumento', coerce=int, validators=[DataRequired(message=u'Ingrese un Espectro-radiómetro')])
+    espectralon = SelectField('espectralon', coerce=int, validators=[DataRequired(message=u'Ingrese un Patrón')])
+    gps = SelectField('gps', coerce=int, validators=[DataRequired(message=u'Ingrese un GPS')])
+    camara = SelectField('camara', coerce=int, validators=[DataRequired(message=u'Ingrese una Cámara')])
     tipo_cobertura = SelectField('tipo_cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese un Tipo de Cobertura')])
     cobertura = SelectField('cobertura', coerce=int, validators=[DataRequired(message=u'Ingrese una Cobertura')])
+
+
+# Formulario de Punto
+class PuntoForm(Form):
+    StringField('id', validators=[DataRequired(message=u'Falta id')])
+
 
 # Formulario Auxiliar de cobertura
 class CoberturaForm(Form):

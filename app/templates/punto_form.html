@@ -1,15 +1,121 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
 <head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+
+
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
+<li><a href="{{ url_for('editar', id=camp.id) }}">Campañas</a></li>
+<li><a href="{{ url_for('muestra', id=muestra.id) }}">Muestras</a></li>
+<li class="active">Muestras</li>
+</ol>
+
+<div class="panel panel-default" id="pcamp">
+    <div class="panel-heading"><h4>
+        <a data-toggle="collapse" href="#down-camp">Campaña &nbsp; {{ camp.nombre }}</a></h4>
+    </div>
+    <div id="down-camp" class="collapse panel-collapse">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Localidad</th>
+                <td>{{ camp.localidad_campania.nombre }}</td>
+                <th scope="row">Proyecto</th>
+                <td>{{ camp.proyecto_campania.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Fecha</th>
+                <td>{{ camp.fecha.date() }}</td>
+                <th scope="row">Fecha Publicación</th>
+                <td>{{ camp.fecha_publicacion.date() }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Responsables</th>
+                <td colspan="2">{{ camp.responsables }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">Objetivo</th>
+                <td colspan="2">{{ camp.objetivo }}</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel panel-default" id="pmues">
+    <div class="panel-heading"><h4>
+        <a data-toggle="collapse" href="#down-mues">Muestra &nbsp; {{ muestra.nombre }}</a></h4>
+    </div>
+    <div id="down-mues" class="collapse panel-collapse">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Tipo Cobertura</th>
+                <td>{{ tp.nombre }}</td>
+                <th scope="row">Cobertura</th>
+                <td>{{ muestra.cobertura_muestra.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Metodología</th>
+                <td>{{ muestra.metodo_muestra.nombre }}</td>
+                <th scope="row">Espectro-radiómetro</th>
+                <td>{{ muestra.radiometro_muestra.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Patrón</th>
+                <td>{{ muestra.patron_muestra.nombre }}</td>
+                <th scope="row">Cámara</th>
+                <td>{{ muestra.camara_muestra.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Fotómetro</th>
+                <td>{{ muestra.fotometro_muestra.nombre }}</td>
+                <th scope="row">GPS</th>
+                <td>{{ muestra.gps_muestra.nombre }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel panel-info" id="panel">
+    <div class="panel-heading"><strong>Puntos Existentes</strong>
+    <!--img src="/static/img/cobertura.png" style="width: 50px;height: 50px;"-->
+    </div>
+    <div class="list-group">
+        {% for p in puntos.items %}
+        <a href="#form_punto" class="list-group-item" onclick="rellenar_punto('{{ p.nombre }}')" data-toggle="tooltip" title="Modificar Item">
+        {{ p.nombre }}
+        <span type="button" class="badge btn" id="elim_{{ p.nombre }}" data-toggle="tooltip" title="Eliminar Item">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% if puntos.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('punto', idc=camp.id, idm=muestra.id, page=puntos.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if puntos.has_next %}<li><a href="{{ url_for('punto', idm=muestra.id, idc=camp.id, page=puntos.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
 
 <div class="panel panel-default">
     <div class="panel-heading">Radiancias</div>
     <div class="panel-body">
         <div class="panel-group">
             <label>Radiancia TXT</label>
-            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            {{ archivoform.radiancias(class="form-control", multiple="multiple") }}
         </div>
         <div class="panel-group">
-            <label>Radiancia Promedio y Desviación Estándar TXT</label>
-            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            <label>Radiancia Promedio TXT</label>
+            {{ archivoform.rads_avg(class="form-control", multiple="multiple") }}
+        </div>
+        <div class="panel-group">
+            <label>Radiancia Desviación Estándar TXT</label>
+            {{ archivoform.rads_st(class="form-control", multiple="multiple") }}
         </div>
     </div>
 </div>
@@ -19,11 +125,15 @@
     <div class="panel-body">
         <div class="panel-group">
             <label>Reflectancia TXT</label>
-            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            {{ archivoform.reflectancias(class="form-control", multiple="multiple") }}
         </div>
         <div class="panel-group">
-            <label>Reflectancia Promedio y Desviación Estándar TXT</label>
-            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            <label>Reflectancia Promedio TXT</label>
+            {{ archivoform.refs_avg(class="form-control", multiple="multiple") }}
+        </div>
+        <div class="panel-group">
+            <label>Reflectancia Desviación Estándar TXT</label>
+            {{ archivoform.refs_st(class="form-control", multiple="multiple") }}
         </div>
     </div>
 </div>
@@ -32,7 +142,71 @@
     <div class="panel-heading">Fotos</div>
     <div class="panel-body">
         <div class="panel-group">
-            {{ archivoform.archivo(class="form-control", multiple="multiple") }}
+            {{ archivoform.fotos(class="form-control", multiple="multiple") }}
         </div>
     </div>
 </div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Fotometrias</div>
+    <div class="panel-body">
+        <div class="panel-group">
+            {{ archivoform.fotometrias(class="form-control", multiple="multiple") }}
+        </div>
+    </div>
+</div>
+
+
+<br>
+<div class="row" id="mensaje"></div>
+
+<!-- Scripts al cargar el documento -->
+<script>
+//cargarCoberturas();
+limpiar_mues();
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+var puntos = [];
+
+{% for p in puntos.items %}
+    var punto = {
+        id:{{ p.id|default(0) }},
+        nombre:"{{ p.nombre }}",
+        fecha:"{{ p.fecha_hora.date() }}",
+        hora:"{{ p.fecha_hora.timetz() }}",
+        altura:"{{ p.altura_medicion }}",
+        presion:"{{ p.presion }}",
+        temp:"{{ p.temperatura }}",
+        dir_viento:"{{ p.viento_direccion }}",
+        vel_viento:"{{ p.viento_velocidad }}",
+        estado:"{{ p.estado }}",
+        cont_tomas:"{{ p.cantidad_tomas }}",
+        oleaje:"{{ p.oleaje }}",
+        obs:"{{ p.observaciones }}",
+        id_muestra:"{{ p.id_muestra }}"
+    };
+    puntos.push(punto);
+    btn_eliminar_item('elim_'+punto.nombre, puntos, 'Eliminar Punto',
+            'Está seguro de eliminar el Punto "', '/cargar/campania/muestra/punto/borrar/');
+{% endfor %}
+
+function editar_punto(){
+    var id = $('#id').val();
+    if(typeof(id) != 'undefined' && id > 0) {
+        window.location.replace("/cargar/campania/muestra/punto?id="+id);
+    } else {
+        errorMensaje(0,'err',"Seleccione una Muestra para editar sus puntos",$('#mensaje')[0]);
+    }
+}
+
+$('#').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    var id = $('#id').val();
+    if(id > 0){
+        self.setAttribute('action', $SCRIPT_ROOT+'/cargar/campania/muestra/'+ id);
+    }
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
+</script>
+{% endblock %}

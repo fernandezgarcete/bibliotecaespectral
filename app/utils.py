@@ -112,6 +112,12 @@ def nombre_camp(loc, f):
 
     return str(ult_id) + '-' + f + '-' + l
 
+# Averiguar Pagina
+def get_page(obj, query, per_page):
+    for n in range(1, query.paginate(1, per_page).pages + 1):
+        if obj in query.paginate(n, per_page).items:
+            return n
+
 
 # Crear nombre de la muestra
 def nombre_muestra(campania, cobertura):

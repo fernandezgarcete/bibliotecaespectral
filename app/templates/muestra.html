@@ -9,7 +9,7 @@
 <ol class="breadcrumb">
 <li><a href="{{ url_for('cargar') }}">Cargar</a></li>
 <li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
-<li><a href="{{ url_for('editar', id=camp.id) }}">Campaña</a></li>
+<li><a href="{{ url_for('editar', id=camp.id) }}">Campañas</a></li>
 <li class="active">Muestras</li>
 </ol>
 
@@ -182,7 +182,12 @@
 
 <br>
 
-<h3><span class="label label-info btn" onclick="editar_punto()">Editar datos de Puntos</span></h3>
+<div class="row">
+<h3 style="float:right;"><span class="label label-info btn" onclick="editar_punto()">Editar datos de Puntos</span></h3>
+</div>
+
+<br>
+<div class="row" id="mensaje"></div>
 
 <!-- Scripts al cargar el documento -->
 <script>
@@ -212,8 +217,23 @@ var mues = [];
 {% endfor %}
 
 function editar_punto(){
-    window.location.replace("/cargar/campania/muestra/punto?id="+id);
+    var id = $('#id').val();
+    if(typeof(id) != 'undefined' && id > 0) {
+        window.location.replace("/cargar/campania/muestra/punto?idm="+id+'&idc='+{{ camp.id }});
+    } else {
+        errorMensaje(0,'err',"Seleccione una Muestra para editar sus puntos",$('#mensaje')[0]);
+    }
 }
 
+$('#form_muestra').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    var id = $('#id').val();
+    if(id > 0){
+        self.setAttribute('action', $SCRIPT_ROOT+'/cargar/campania/muestra/'+ id);
+    }
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
 </script>
 {% endblock %}

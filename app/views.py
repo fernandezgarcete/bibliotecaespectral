@@ -17,10 +17,11 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
     MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
     GPSForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
-    Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps
+    Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
-    actualizar_tp, utf_to_ascii, tabular_descargas, nombre_camp, ini_muestra_form, limpia_responsables, nombre_muestra
+    actualizar_tp, utf_to_ascii, tabular_descargas, nombre_camp, ini_muestra_form, limpia_responsables, nombre_muestra, \
+    get_page
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -411,10 +412,10 @@ def nueva():
 @app.route('/cargar/campania/muestra', methods=['GET', 'POST'])
 @login_required
 def muestra(page=1):
-    print(request.args)
     id = int(request.args.get('id').split('-')[0])
     form = ini_muestra_form(id)
-    muestras = Muestra.query.join(Cobertura,TipoCobertura).filter(Muestra.id_campania==id, Muestra.deleted==False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    muestras = Muestra.query.join(Cobertura, TipoCobertura).filter(Muestra.id_campania==id, Muestra.deleted==False).\
+        order_by('nombre').paginate(page, POST_PER_PAGE, False)
     camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==id).first()
     camp.responsables = limpia_responsables(camp.responsables)
     if request.method == 'POST':
@@ -477,10 +478,17 @@ def consulta_existente():
                            form_c=form_c)
 
 
-@app.route('/editar/punto', methods=['GET', 'POST'])
+@app.route('/cargar/campania/muestra/punto', methods=['GET', 'POST'])
 @login_required
-def punto_form():
+def punto():
+    idm = int(request.args.get('idm').split('-')[0])
+    idc = int(request.args.get('idc').split('-')[0])
     archivoform = ArchivoForm()
+    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra==idm, Punto.deleted==False).order_by('nombre').all()
+    muestra = Muestra.query.join(Cobertura).filter(Muestra.id==idm).first()
+    tp = TipoCobertura.query.filter_by(id=muestra.cobertura_muestra.id_tipocobertura).first()
+    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==idc).first()
+    camp.responsables = limpia_responsables(camp.responsables)
     if request.method == 'POST':
         if archivoform.validate_on_submit():
             archivos = request.files.getlist('archivo')
@@ -541,7 +549,7 @@ def punto_form():
             # if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
         if not archivoform.validate_on_submit():
             flash('Falta Completar:', 'error')
-    return render_template('punto_form.html', archivoform=archivoform)
+    return render_template('punto_form.html', archivoform=archivoform, puntos=puntos, muestra=muestra, camp=camp, tp=tp)
 
 
 @app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
@@ -582,24 +590,28 @@ def nueva_cobertura():
 
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
-@app.route('/editar/<int:id>/<int:page>', methods=['GET', 'POST'])
 @login_required
-def editar(id, page=1):
+def editar(id):
     form_e = ini_nuevo_form()
-    camps = Campania.query.filter_by(deleted=False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    camp = Campania.query.filter_by(id=id).first()
+    camps = Campania.query.filter_by(deleted=False).order_by('nombre')
+    camps = Campania.query.filter_by(deleted=False).order_by('nombre').paginate(get_page(camp, camps, POST_PER_PAGE),
+                                                                                POST_PER_PAGE, False)
     if request.method == 'POST':
         form_e.id.data = id
-        form_e.ncampania.data = form_e.ncampania.raw_data[0]
-        form_e.nfecha.data = datetime.strptime(form_e.nfecha.raw_data[0], '%Y-%m-%d').date()
-        form_e.nfecha_pub.data = datetime.strptime(form_e.nfecha_pub.raw_data[0], '%Y-%m-%d').date()
+        if form_e.ncampania.raw_data[0] != '' and form_e.nfecha.raw_data[0] != '' and \
+                        form_e.nfecha_pub.raw_data[0] != '':
+            form_e.ncampania.data = form_e.ncampania.raw_data[0]
+            form_e.nfecha.data = datetime.strptime(form_e.nfecha.raw_data[0], '%Y-%m-%d').date()
+            form_e.nfecha_pub.data = datetime.strptime(form_e.nfecha_pub.raw_data[0], '%Y-%m-%d').date()
         if form_e.validate_on_submit():
             c = Campania()
             if c.agregar(form_e):
                 flash('Campaña guardada.', 'success')
             else:
                 print('Error')
-        return render_template('editar.html', form_e=form_e, camps=camps)
-    return render_template('editar.html', form_e=form_e, camps=camps)
+        return render_template('editar.html', form_e=form_e, camps=camps, camp=camp)
+    return render_template('editar.html', form_e=form_e, camps=camps, camp=camp)
 
 # mapa consulta
 @app.route('/consultar/mapa', methods=['GET', 'POST'])
