@@ -15,13 +15,13 @@ from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
     MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
-    GPSForm
+    GPSForm, PuntoForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
     actualizar_tp, utf_to_ascii, tabular_descargas, nombre_camp, ini_muestra_form, limpia_responsables, nombre_muestra, \
-    get_page
+    get_page, nombre_punto
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -425,7 +425,7 @@ def muestra(page=1):
             form.nombre.data = nombre_muestra(camp, cob)
             form.operador.data = camp.responsables
             if m.agregar(form):
-                flash('Campaña guardada.', 'success')
+                flash('Muestra guardada.', 'success')
             else:
                 print('Error')
     return render_template('muestra.html', form=form, muestras=muestras, camp=camp)
@@ -480,11 +480,38 @@ def consulta_existente():
 
 @app.route('/cargar/campania/muestra/punto', methods=['GET', 'POST'])
 @login_required
-def punto():
+def punto(page=1):
     idm = int(request.args.get('idm').split('-')[0])
     idc = int(request.args.get('idc').split('-')[0])
+    form = PuntoForm()
+    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra==idm, Punto.deleted==False).order_by('nombre')\
+        .paginate(page, POST_PER_PAGE, False)
+    muestra = Muestra.query.join(Cobertura).filter(Muestra.id==idm).first()
+    tp = TipoCobertura.query.filter_by(id=muestra.cobertura_muestra.id_tipocobertura).first()
+    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==idc).first()
+    camp.responsables = limpia_responsables(camp.responsables)
+    form.muestra.data = muestra.id
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            p = Punto()
+            mues = Muestra.query.filter_by(id=form.muestra.data).first()
+            form.nombre.data = nombre_punto(mues)
+            if p.agregar(form):
+                flash('Punto guardado.', 'success')
+            else:
+                print('Error')
+    return render_template('punto.html', form=form, puntos=puntos, muestra=muestra, camp=camp, tp=tp)
+
+
+# carga archivos de radiancia
+@app.route('/cargar/campania/muestra/punto/radiancia', methods=['GET','POST'])
+@login_required
+def radiancia():
+    idm = int(request.args.get('idm').split('-')[0])
+    idc = int(request.args.get('idc').split('-')[0])
+    idp = int(request.args.get('idp').split('-')[0])
     archivoform = ArchivoForm()
-    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra==idm, Punto.deleted==False).order_by('nombre').all()
+    punto = Punto.query.join(Muestra).filter(Punto.id==idp, Punto.deleted==False).first()
     muestra = Muestra.query.join(Cobertura).filter(Muestra.id==idm).first()
     tp = TipoCobertura.query.filter_by(id=muestra.cobertura_muestra.id_tipocobertura).first()
     camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==idc).first()
@@ -549,8 +576,7 @@ def punto():
             # if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
         if not archivoform.validate_on_submit():
             flash('Falta Completar:', 'error')
-    return render_template('punto_form.html', archivoform=archivoform, puntos=puntos, muestra=muestra, camp=camp, tp=tp)
-
+    return render_template('radiancia.html', camp=camp, muestra=muestra, tp=tp, archivoform=archivoform, punto=punto)
 
 @app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
 @login_required

@@ -1,0 +1,315 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head><meta charset="UTF-8"></head>
+<script>navegador('#cargar')</script>
+
+
+<ol class="breadcrumb">
+<li><a href="{{ url_for('cargar') }}">Cargar</a></li>
+<li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
+<li><a href="{{ url_for('editar', id=camp.id) }}">Campañas</a></li>
+<li><a href="{{ url_for('muestra', id=camp.id) }}">Muestras</a></li>
+<li class="active">Punto</li>
+</ol>
+
+<div class="panel panel-default" id="pcamp">
+    <div class="panel-heading"><h4>
+        <a data-toggle="collapse" href="#down-camp">Campaña &nbsp; {{ camp.nombre }}</a></h4>
+    </div>
+    <div id="down-camp" class="collapse panel-collapse">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Localidad</th>
+                <td>{{ camp.localidad_campania.nombre }}</td>
+                <th scope="row">Proyecto</th>
+                <td>{{ camp.proyecto_campania.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Fecha</th>
+                <td>{{ camp.fecha.date() }}</td>
+                <th scope="row">Fecha Publicación</th>
+                <td>{{ camp.fecha_publicacion.date() }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Responsables</th>
+                <td colspan="2">{{ camp.responsables }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="row">Objetivo</th>
+                <td colspan="2">{{ camp.objetivo }}</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel panel-default" id="pmues">
+    <div class="panel-heading"><h4>
+        <a data-toggle="collapse" href="#down-mues">Muestra &nbsp; {{ muestra.nombre }}</a></h4>
+    </div>
+    <div id="down-mues" class="collapse panel-collapse">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Tipo Cobertura</th>
+                <td>{{ tp.nombre }}</td>
+                <th scope="row">Cobertura</th>
+                <td>{{ muestra.cobertura_muestra.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Metodología</th>
+                <td>{{ muestra.metodo_muestra.nombre }}</td>
+                <th scope="row">Espectro-radiómetro</th>
+                <td>{{ muestra.radiometro_muestra.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Patrón</th>
+                <td>{{ muestra.patron_muestra.nombre }}</td>
+                <th scope="row">Cámara</th>
+                <td>{{ muestra.camara_muestra.nombre }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Fotómetro</th>
+                <td>{{ muestra.fotometro_muestra.nombre }}</td>
+                <th scope="row">GPS</th>
+                <td>{{ muestra.gps_muestra.nombre }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel panel-info" id="panel">
+    <div class="panel-heading"><strong>Puntos Existentes</strong>
+    <!--img src="/static/img/cobertura.png" style="width: 50px;height: 50px;"-->
+    </div>
+    <div class="list-group">
+        {% for p in puntos.items %}
+        <a href="#form_punto" class="list-group-item" onclick="rellenar_punto('{{ p.nombre }}')" data-toggle="tooltip" title="Modificar Item">
+        {{ p.nombre }}
+        <span type="button" class="badge btn" id="elim_{{ p.nombre }}" data-toggle="tooltip" title="Eliminar Item">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% if puntos.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('punto', idc=camp.id, idm=muestra.id, page=puntos.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if puntos.has_next %}<li><a href="{{ url_for('punto', idm=muestra.id, idc=camp.id, page=puntos.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+
+<button type="button" class="btn btn-info" onclick="limpiar_punto()">
+    Nuevo <span class="glyphicon glyphicon-plus"></span>
+</button>
+<br>
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <span class="glyphicon glyphicon-remove-circle"></span>
+        <ul>
+            {% for key,error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h1>Editar datos de Puntos</h1>
+<hr>
+<form class="form-horizontal" action="" method="post" id="form_punto">
+    <div class="form-group">
+        <label class="col-xs-2">Nombre</label>
+        <div id="nom" class="col-xs-9"></div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Fecha y Hora</label>
+        <div class="col-xs-9">
+            {{ form.fecha_hora(placeholder="Ingrese una fecha y hora de toma", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#fecha_hora', '#bfh')" id="bfh">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Altura de Toma</label>
+        <div class="col-xs-9">
+            {{ form.altura(placeholder="Ingrese la altura de toma", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#altura', '#ba')" id="ba">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Presión Atmosférica</label>
+        <div class="col-xs-9">
+            {{ form.presion(placeholder="Ingrese la presión atmosférica", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#presion', '#bp')" id="bp">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Temperatura Ambiente</label>
+        <div class="col-xs-9">
+            {{ form.temp(placeholder="Ingrese la temperatura ambiente", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#temp', '#bt')" id="bt">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Nubosidad %</label>
+        <div class="col-xs-9">
+            {{ form.nubosidad(placeholder="Ingrese el porcentaje de nubosidad de la toma", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nubosidad', '#bn')" id="bn">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Dirección del Viento</label>
+        <div class="col-xs-9">
+            {{ form.dir_viento(placeholder="Dirección del viento N-NE-E-SE-S-SO-O-NO", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#dir_viento', '#bdv')" id="bdv">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Velocidad del Viento km/hs</label>
+        <div class="col-xs-9">
+            {{ form.vel_viento(placeholder="Ingrese la velocidad del viento en km/hs", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#vel_viento', '#bvv')" id="bvv">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Estado de Toma</label>
+        <div class="col-xs-9">
+            {{ form.estado(placeholder="Estado de toma: M(Malo), A(Aceptable), B(Bueno), MB(Muy Bueno), E(Excelente)", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#estado', '#be')" id="be">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Cantidad de Tomas</label>
+        <div class="col-xs-9">
+            {{ form.cant_tomas(placeholder="Ingrese la cantidad tomas del Punto", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#cant_tomas', '#bc')" id="bc">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Oleaje (si corresponde)</label>
+        <div class="col-xs-9">
+            {{ form.oleaje(placeholder="Caracterice el oleaje para Puntos sobre Agua", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#oleaje', '#bo')" id="bo">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Observaciones</label>
+        <div class="col-xs-9">
+        {{ form.obs(class="form-control", placeholder="Describa alguna observación sobre el punto.",
+        onkeyup="contador(this,'#bdesc',240);") }}
+            <span id="bdesc" class="badge">240</span>
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#obs', '#bobs')" id="bobs">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    {{ form.id(type="hidden") }}
+    {{ form.muestra(type="hidden") }}
+    {{ form.geom(type="hidden") }}
+    <div id="container">
+
+    </div>
+
+    <div class="form-group">
+        {{ form.hidden_tag() }}
+    </div>
+
+    <input type="submit" value="Guardar" class="btn btn-primary" id="esub">
+</form>
+
+
+<br>
+
+<div class="row">
+<h3 style="float:right;"><span class="label label-info btn" onclick="archivo_radiancias()">Archivos de Radiancias</span></h3>
+</div>
+
+<br>
+<div class="row" id="mensaje"></div>
+
+
+<!-- Scripts al cargar el documento -->
+<script>
+//cargarCoberturas();
+limpiar_mues();
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+var puntos = [];
+
+{% for p in puntos.items %}
+    var punto = {
+        id:{{ p.id|default(0) }},
+        nombre:"{{ p.nombre }}",
+        fecha:"{{ p.fecha_hora.date() }}",
+        hora:"{{ p.fecha_hora.timetz() }}",
+        altura:"{{ p.altura_medicion }}",
+        presion:"{{ p.presion }}",
+        temp:"{{ p.temperatura }}",
+        dir_viento:"{{ p.viento_direccion }}",
+        vel_viento:"{{ p.viento_velocidad }}",
+        estado:"{{ p.estado }}",
+        cant_tomas:"{{ p.cantidad_tomas }}",
+        oleaje:"{{ p.oleaje }}",
+        obs:"{{ p.observaciones }}",
+        id_muestra:"{{ p.id_muestra }}",
+        geom:"{{ p.geom }}"
+    };
+    puntos.push(punto);
+    btn_eliminar_item('elim_'+punto.nombre, puntos, 'Eliminar Punto',
+            'Está seguro de eliminar el Punto "', '/cargar/campania/muestra/punto/borrar/');
+{% endfor %}
+
+function archivo_radiancias(){
+    var id = $('#id').val();
+    if(typeof(id) != 'undefined' && id > 0) {
+        window.location.replace("/cargar/campania/muestra/punto/radiancia?idp="+id+'&idm={{ muestra.id }}&idc={{ camp.id }}');
+    } else {
+        errorMensaje(0,'err',"Seleccione un Punto para cargar sus archivos de radiancias",$('#mensaje')[0]);
+    }
+}
+
+$('#punto_form').submit(function(e){
+    var self = this;
+    e.preventDefault();
+    var id = $('#id').val();
+    if(id > 0){
+        self.setAttribute('action', $SCRIPT_ROOT+'/cargar/campania/muestra/punto?id='+id+'&idc={{ camp.id }}&idm={{ muestra.id }}');
+    }
+    $('.form-control').prop('disabled',false);
+    self.submit();
+});
+</script>
+{% endblock %}

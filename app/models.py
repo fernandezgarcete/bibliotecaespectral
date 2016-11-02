@@ -807,6 +807,49 @@ class Punto(db.Model):
                                            cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
 
+    def agregar(self, form):
+        punto = self
+        if int(form.id.data) > 0:
+            punto = self.query.filter_by(id=int(form.id.data)).first()
+            punto.nombre = form.nombre.data
+            punto.fecha_hora = form.fecha_hora.data
+            punto.geom = form.geom.data
+            punto.altura_medicion = float(form.altura.data)
+            punto.presion = float(form.presion.data)
+            punto.temperatura = float(form.temp.data)
+            punto.nubosidad = int(form.nubosidad.data)
+            punto.cantidad_tomas = int(form.cant_tomas.data)
+            punto.id_muestra = int(form.muestra.data)
+            punto.viento_direccion = form.dir_viento.data
+            punto.viento_velocidad = form.vel_viento.data
+            punto.foto = form.foto.data
+            punto.oleaje = form.oleaje.data
+            punto.estado = form.estado.data
+            punto.observaciones = str(form.obs.data).replace('\r\n', ' ')
+        else:
+            punto.fecha_hora = form.fecha_hora.data
+            punto.geom = form.geom.data
+            punto.altura_medicion = float(form.altura.data)
+            punto.presion = float(form.presion.data)
+            punto.temperatura = float(form.temp.data)
+            punto.nubosidad = int(form.nubosidad.data)
+            punto.cantidad_tomas = int(form.cant_tomas.data)
+            punto.id_muestra = int(form.muestra.data)
+            punto.viento_direccion = form.dir_viento.data
+            punto.viento_velocidad = form.vel_viento.data
+            punto.foto = form.foto.data
+            punto.oleaje = form.oleaje.data
+            punto.estado = form.estado.data
+            punto.observaciones = str(form.obs.data).replace('\r\n', ' ')
+        try:
+            db.session.add(punto)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
+
     @property
     def is_deleted(self):
         if self.deleted is True:

@@ -10,8 +10,9 @@
 <li><a href="{{ url_for('cargar') }}">Cargar</a></li>
 <li><a href="{{ url_for('consulta_existente') }}">Existente</a></li>
 <li><a href="{{ url_for('editar', id=camp.id) }}">Campañas</a></li>
-<li><a href="{{ url_for('muestra', id=muestra.id) }}">Muestras</a></li>
-<li class="active">Muestras</li>
+<li><a href="{{ url_for('muestra', id=camp.id) }}">Muestras</a></li>
+<li><a href="{{ url_for('punto', idm=muestra.id, idp=punto.id, idc=camp.id) }}">Puntos</a></li>
+<li class="active">Radiancias</li>
 </ol>
 
 <div class="panel panel-default" id="pcamp">
@@ -84,23 +85,7 @@
     </div>
 </div>
 
-<div class="panel panel-info" id="panel">
-    <div class="panel-heading"><strong>Puntos Existentes</strong>
-    <!--img src="/static/img/cobertura.png" style="width: 50px;height: 50px;"-->
-    </div>
-    <div class="list-group">
-        {% for p in puntos.items %}
-        <a href="#form_punto" class="list-group-item" onclick="rellenar_punto('{{ p.nombre }}')" data-toggle="tooltip" title="Modificar Item">
-        {{ p.nombre }}
-        <span type="button" class="badge btn" id="elim_{{ p.nombre }}" data-toggle="tooltip" title="Eliminar Item">
-            <span class="glyphicon glyphicon-trash"></span>
-        </span>
-        </a>
-        {% endfor %}
-    </div>
-</div>
-{% if puntos.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('punto', idc=camp.id, idm=muestra.id, page=puntos.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
-{% if puntos.has_next %}<li><a href="{{ url_for('punto', idm=muestra.id, idc=camp.id, page=puntos.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+
 
 <div class="panel panel-default">
     <div class="panel-heading">Radiancias</div>
@@ -163,31 +148,9 @@
 <!-- Scripts al cargar el documento -->
 <script>
 //cargarCoberturas();
-limpiar_mues();
+limpiar_punto();
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-var puntos = [];
 
-{% for p in puntos.items %}
-    var punto = {
-        id:{{ p.id|default(0) }},
-        nombre:"{{ p.nombre }}",
-        fecha:"{{ p.fecha_hora.date() }}",
-        hora:"{{ p.fecha_hora.timetz() }}",
-        altura:"{{ p.altura_medicion }}",
-        presion:"{{ p.presion }}",
-        temp:"{{ p.temperatura }}",
-        dir_viento:"{{ p.viento_direccion }}",
-        vel_viento:"{{ p.viento_velocidad }}",
-        estado:"{{ p.estado }}",
-        cont_tomas:"{{ p.cantidad_tomas }}",
-        oleaje:"{{ p.oleaje }}",
-        obs:"{{ p.observaciones }}",
-        id_muestra:"{{ p.id_muestra }}"
-    };
-    puntos.push(punto);
-    btn_eliminar_item('elim_'+punto.nombre, puntos, 'Eliminar Punto',
-            'Está seguro de eliminar el Punto "', '/cargar/campania/muestra/punto/borrar/');
-{% endfor %}
 
 function editar_punto(){
     var id = $('#id').val();

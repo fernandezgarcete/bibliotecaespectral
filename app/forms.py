@@ -93,7 +93,23 @@ class MuestraForm(Form):
 
 # Formulario de Punto
 class PuntoForm(Form):
-    StringField('id', validators=[DataRequired(message=u'Falta id')])
+    id = StringField('id', validators=[DataRequired(message=u'Falta id')])
+    nombre = StringField('nombre')
+    fecha_hora = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de la campaña')],
+                      format='%Y-%m-%d')
+    altura = StringField('altura')
+    presion = StringField('presion')
+    temp = StringField('temp')
+    nubosidad = StringField('nubosidad')
+    dir_viento = StringField('dir_viento')
+    vel_viento = StringField('vel_viento')
+    estado = StringField('estado')
+    cant_tomas = StringField('cant_tomas')
+    obs = TextAreaField('obs')
+    oleaje = StringField('oleaje')
+    foto = StringField('foto')
+    muestra = StringField('muestra')
+    geom = StringField('geom')
 
 
 # Formulario Auxiliar de cobertura

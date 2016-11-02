@@ -708,8 +708,11 @@ function rellenar_camp(nombre){
 
 // Rellena formulario Muestra
 function rellenar_mues(nombre){
+    var nom = $('#nom');
+    nom.empty();
     for(var i=0; i<mues.length; i++){
         if(mues[i].nombre == nombre){
+            nom.append(document.createTextNode(mues[i].nombre));
             $('#id').val(mues[i].id);
             $('#metodologia').val(mues[i].id_met);
             $('#radiometro').val(mues[i].id_rad);
@@ -719,6 +722,34 @@ function rellenar_mues(nombre){
             $('#camara').val(mues[i].id_cam);
             $('#tipo_cobertura').val(mues[i].id_tp);
             $('#cobertura').val(mues[i].id_cob);
+            $('.form-control').prop('disabled',true);
+            $('.col-xs-1').css('display','block');
+        }
+    }
+}
+
+// Rellena formulario Muestra
+function rellenar_punto(nombre){
+    var nom = $('#nom');
+    nom.empty();
+    for(var i=0; i<puntos.length; i++){
+        if(puntos[i].nombre == nombre){
+            nom.append(document.createTextNode(puntos[i].nombre));
+            $('#id').val(puntos[i].id);
+            $('#fecha_hora').val(puntos[i].fecha+' '+puntos[i].hora);
+            $('#altura').val(puntos[i].altura);
+            $('#presion').val(puntos[i].presion);
+            $('#temp').val(puntos[i].temp);
+            $('#nubosidad').val(puntos[i].nubosidad);
+            $('#dir_viento').val(puntos[i].dir_viento);
+            $('#vel_viento').val(puntos[i].vel_viento);
+            $('#estado').val(puntos[i].estado);
+            $('#cant_tomas').val(puntos[i].cant_tomas);
+            $('#oleaje').val(puntos[i].oleaje);
+            $('#muestra').val(puntos[i].id_muestra);
+            $('#geom').val(puntos[i].geom);
+            $('#obs').val(puntos[i].obs);
+            contador(document.getElementById('obs'),'#bdesc',240);
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
         }
@@ -863,6 +894,7 @@ function limpiar_pat() {
 
 // Limpia Formulario de Muestra
 function limpiar_mues() {
+    $('#nom').empty();
     $('#id').val(0);
     $('#metodologia').val(0);
     $('#radiometro').val(0);
@@ -872,6 +904,27 @@ function limpiar_mues() {
     $('#camara').val(0);
     $('#tipo_cobertura').val(0);
     $('#cobertura').val(0);
+    $('.form-control').prop('disabled', false);
+    $('.col-xs-1').css('display', 'none');
+}
+
+// Limpia Formulario de Muestra
+function limpiar_punto() {
+    $('#nom').empty();
+    $('#id').val(0);
+    $('#fecha_hora').val('');
+    $('#altura').val('');
+    $('#presion').val('');
+    $('#temp').val('');
+    $('#nubosidad').val('');
+    $('#dir_viento').val('');
+    $('#vel_viento').val('');
+    $('#estado').val('');
+    $('#cant_tomas').val('');
+    $('#oleaje').val('');
+    $('#muestra').val('');
+    $('#geom').val('');
+    $('#obs').val('');
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
 }
