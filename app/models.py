@@ -120,12 +120,12 @@ class Proyecto(db.Model):
         proyecto = self
         if int(form.id.data) > 0:
             proyecto = self.query.filter_by(id=int(form.id.data)).first()
-            proyecto.nombre = form.nombre.data
+            proyecto.nombre = form.nombre.data.upper()
             proyecto.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
             proyecto.responsables = form.responsables.data
             proyecto.status = bool(form.status.data)
         else:
-            proyecto.nombre = form.nombre.data
+            proyecto.nombre = form.nombre.data.upper()
             proyecto.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
             proyecto.responsables = form.responsables.data
             proyecto.status = bool(form.status.data)
@@ -159,7 +159,7 @@ class Campania(db.Model):
         camp = self
         if int(form.id.data) > 0:
             camp = self.query.filter_by(id=int(form.id.data)).first()
-            camp.nombre = form.ncampania.data
+            camp.nombre = form.ncampania.data.upper()
             camp.fecha = form.nfecha.data
             camp.fecha_publicacion = form.nfecha_pub.data
             camp.responsables = form.nresponsable.data
@@ -167,7 +167,7 @@ class Campania(db.Model):
             camp.objetivo = str(form.nobjetivo.data).replace('\r\n', ' ')
             camp.id_proyecto = form.nproyecto.data
         else:
-            camp.nombre = form.ncampania.data
+            camp.nombre = form.ncampania.data.upper()
             camp.fecha = form.nfecha.data
             camp.fecha_publicacion = form.nfecha_pub.data
             camp.responsables = form.nresponsable.data
@@ -225,9 +225,9 @@ class TipoCobertura(db.Model):
         tp = self
         if int(form.id.data) > 0:
             tp = self.query.filter_by(id=int(form.id.data)).first()
-            tp.nombre = form.nombre.data
+            tp.nombre = form.nombre.data.upper()
         else:
-            tp.nombre = form.nombre.data
+            tp.nombre = form.nombre.data.upper()
         try:
             db.session.add(tp)
             db.session.commit()
@@ -273,13 +273,13 @@ class Cobertura(db.Model):
         cob = self
         if int(form.id.data) > 0:
             cob = self.query.filter_by(id=int(form.id.data)).first()
-            cob.nombre = form.nombre.data
+            cob.nombre = form.nombre.data.upper()
             cob.id_tipocobertura = int(form.tipo_cobertura.data)
             cob.altura = float(form.altura.data)
             cob.fenologia = str(form.fenologia.data).replace('\r\n', ' ')
             cob.observaciones = str(form.observaciones.data).replace('\r\n', ' ')
         else:
-            cob.nombre = form.nombre.data
+            cob.nombre = form.nombre.data.upper()
             cob.id_tipocobertura = int(form.tipo_cobertura.data)
             cob.altura = float(form.altura.data)
             cob.fenologia = str(form.fenologia.data).replace('\r\n', ' ')
@@ -329,7 +329,7 @@ class Muestra(db.Model):
         muestra = self
         if int(form.id.data) > 0:
             muestra = self.query.filter_by(id=int(form.id.data)).first()
-            muestra.nombre = form.nombre.data
+            muestra.nombre = form.nombre.data.upper()
             muestra.operador = form.operador.data
             muestra.id_cobertura = int(form.cobertura.data)
             muestra.id_campania = int(form.campania.data)
@@ -340,7 +340,7 @@ class Muestra(db.Model):
             muestra.id_fotometro = int(form.fotometro.data)
             muestra.id_patron = int(form.espectralon.data)
         else:
-            muestra.nombre = form.nombre.data
+            muestra.nombre = form.nombre.data.upper()
             muestra.operador = form.operador.data
             muestra.id_cobertura = int(form.cobertura.data)
             muestra.id_campania = int(form.campania.data)
@@ -396,15 +396,15 @@ class Camara(db.Model):
         camara = self
         if int(form.id.data) > 0:
             camara = self.query.filter_by(id=int(form.id.data)).first()
-            camara.codigo = form.codigo.data
-            camara.nombre = form.nombre.data
+            camara.codigo = form.codigo.data.upper()
+            camara.nombre = form.nombre.data.upper()
             camara.marca = form.marca.data
             camara.modelo = form.modelo.data
             camara.nro_serie = form.nro_serie.data
             camara.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
         else:
-            camara.codigo = form.codigo.data
-            camara.nombre = form.nombre.data
+            camara.codigo = form.codigo.data.upper()
+            camara.nombre = form.nombre.data.upper()
             camara.marca = form.marca.data
             camara.modelo = form.modelo.data
             camara.nro_serie = form.nro_serie.data
@@ -455,15 +455,15 @@ class Gps(db.Model):
         gps = self
         if int(form.id.data) > 0:
             gps = self.query.filter_by(id=int(form.id.data)).first()
-            gps.codigo = form.codigo.data
-            gps.nombre = form.nombre.data
+            gps.codigo = form.codigo.data.upper()
+            gps.nombre = form.nombre.data.upper()
             gps.marca = form.marca.data
             gps.modelo = form.modelo.data
             gps.nro_serie = form.nro_serie.data
             gps.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
         else:
-            gps.codigo = form.codigo.data
-            gps.nombre = form.nombre.data
+            gps.codigo = form.codigo.data.upper()
+            gps.nombre = form.nombre.data.upper()
             gps.marca = form.marca.data
             gps.modelo = form.modelo.data
             gps.nro_serie = form.nro_serie.data
@@ -520,15 +520,15 @@ class Fotometro(db.Model):
         fotometro = self
         if int(form.id.data) > 0:
             fotometro = self.query.filter_by(id=int(form.id.data)).first()
-            fotometro.codigo = form.codigo.data
-            fotometro.nombre = form.nombre.data
+            fotometro.codigo = form.codigo.data.upper()
+            fotometro.nombre = form.nombre.data.upper()
             fotometro.marca = form.marca.data
             fotometro.modelo = form.modelo.data
             fotometro.nro_serie = form.nro_serie.data
             fotometro.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
         else:
-            fotometro.codigo = form.codigo.data
-            fotometro.nombre = form.nombre.data
+            fotometro.codigo = form.codigo.data.upper()
+            fotometro.nombre = form.nombre.data.upper()
             fotometro.marca = form.marca.data
             fotometro.modelo = form.modelo.data
             fotometro.nro_serie = form.nro_serie.data
@@ -579,15 +579,15 @@ class Patron(db.Model):
         patron = self
         if int(form.id.data) > 0:
             patron = self.query.filter_by(id=int(form.id.data)).first()
-            patron.codigo = form.codigo.data
-            patron.nombre = form.nombre.data
+            patron.codigo = form.codigo.data.upper()
+            patron.nombre = form.nombre.data.upper()
             patron.marca = form.marca.data
             patron.modelo = form.modelo.data
             patron.nro_serie = form.nro_serie.data
             patron.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
         else:
-            patron.codigo = form.codigo.data
-            patron.nombre = form.nombre.data
+            patron.codigo = form.codigo.data.upper()
+            patron.nombre = form.nombre.data.upper()
             patron.marca = form.marca.data
             patron.modelo = form.modelo.data
             patron.nro_serie = form.nro_serie.data
@@ -659,8 +659,8 @@ class Radiometro(db.Model):
         rad = self
         if int(form.id.data) > 0:
             rad = self.query.filter_by(id=int(form.id.data)).first()
-            rad.codigo = form.codigo.data
-            rad.nombre = form.nombre.data
+            rad.codigo = form.codigo.data.upper()
+            rad.nombre = form.nombre.data.upper()
             rad.marca = form.marca.data
             rad.modelo = form.modelo.data
             rad.nro_serie = form.nro_serie.data
@@ -681,8 +681,8 @@ class Radiometro(db.Model):
             rad.fov_cosenoidal = form.fov_cosenoidal.data
             rad.accesorio = str(form.accesorio.data).replace('\r\n', ' ')
         else:
-            rad.codigo = form.codigo.data
-            rad.nombre = form.nombre.data
+            rad.codigo = form.codigo.data.upper()
+            rad.nombre = form.nombre.data.upper()
             rad.marca = form.marca.data
             rad.modelo = form.modelo.data
             rad.nro_serie = form.nro_serie.data
@@ -761,13 +761,13 @@ class Metodologia(db.Model):
         metod = self
         if int(form.id.data) > 0:
             metod = self.query.filter_by(id=int(form.id.data)).first()
-            metod.nombre = form.nombre.data
+            metod.nombre = form.nombre.data.upper()
             metod.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
             metod.metodologia_medicion = str(form.medicion.data).replace('\r\n', ' ')
             metod.angulo_cenital = int(form.cenit.data)
             metod.angulo_azimutal = int(form.azimut.data)
         else:
-            metod.nombre = form.nombre.data
+            metod.nombre = form.nombre.data.upper()
             metod.descripcion = str(form.descripcion.data).replace('\r\n', ' ')
             metod.metodologia_medicion = str(form.medicion.data).replace('\r\n', ' ')
             metod.angulo_cenital = int(form.cenit.data)
@@ -811,7 +811,7 @@ class Punto(db.Model):
         punto = self
         if int(form.id.data) > 0:
             punto = self.query.filter_by(id=int(form.id.data)).first()
-            punto.nombre = form.nombre.data
+            punto.nombre = form.nombre.data.upper()
             punto.fecha_hora = form.fecha_hora.data
             punto.geom = form.geom.data
             punto.altura_medicion = float(form.altura.data)
@@ -827,6 +827,7 @@ class Punto(db.Model):
             punto.estado = form.estado.data
             punto.observaciones = str(form.obs.data).replace('\r\n', ' ')
         else:
+            punto.nombre = form.nombre.data.upper()
             punto.fecha_hora = form.fecha_hora.data
             punto.geom = form.geom.data
             punto.altura_medicion = float(form.altura.data)

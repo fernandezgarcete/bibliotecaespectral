@@ -273,8 +273,8 @@
 
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-validaciones('#fov'); validaciones('#largo_fibra'); validaciones('#exactitud'); validaciones('#reproducibilidad');
-validaciones('#tiempo_escaneo'); limpiar_rad();
+campo_numerico('#fov'); campo_numerico('#largo_fibra'); campo_numerico('#exactitud'); campo_numerico('#reproducibilidad');
+campo_numerico('#tiempo_escaneo'); limpiar_rad();
 
 var radiometros = [];
 var cen = 0.0;

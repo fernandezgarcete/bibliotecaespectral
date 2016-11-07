@@ -8,7 +8,7 @@ function navegador(item){
 }
 
 // Validacion de formularios
-function validaciones(item){
+function campo_numerico(item){
     // Evita los caracteres invalidos
     $(item).keydown(function(e){
         var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,96,97,98,99,100,101,102,103,104,105,110,189]; // numeros, guion, borrar, enter
@@ -447,6 +447,26 @@ function guardarCamp(){
 }
 
 // Date-picker
+function picker_carga(item) {
+    var today = new Date();
+    var dd = today.getDate()+7;
+    var mm = today.getMonth()+1; // Enero es 0!
+    var yyyy = today.getFullYear();
+    if(dd<10){dd = '0'+dd;}
+    if(mm<10){mm = '0'+mm;}
+    today = dd+'-'+mm+'-'+yyyy;
+    $(item).datepicker({
+        startDate: '01-01-2009',
+        endDate: today,
+        todayBtn: true,
+        orientation: 'bottom auto',
+        format: 'dd-mm-yyyy',
+        language: 'es',
+        todayHighlight: true
+    });
+}
+
+// Date-picker
 function pickerdate(item) {
     $(item).datepicker({
         startDate: '01-01-2009',
@@ -457,6 +477,15 @@ function pickerdate(item) {
         format: 'dd-mm-yyyy',
         language: 'es',
         todayHighlight: true
+    });
+}
+
+function piker_hora(item){
+    $(item).datetimepicker({
+        minDate: '2009-01-01',
+        maxDate: moment(),
+        format: 'YYYY-MM-DD HH:mm',
+        locale: 'es'
     });
 }
 
@@ -913,14 +942,14 @@ function limpiar_punto() {
     $('#nom').empty();
     $('#id').val(0);
     $('#fecha_hora').val('');
-    $('#altura').val('');
-    $('#presion').val('');
-    $('#temp').val('');
-    $('#nubosidad').val('');
+    $('#altura').val(0);
+    $('#presion').val(0);
+    $('#temp').val(0);
+    $('#nubosidad').val(0);
     $('#dir_viento').val('');
-    $('#vel_viento').val('');
+    $('#vel_viento').val(0);
     $('#estado').val('');
-    $('#cant_tomas').val('');
+    $('#cant_tomas').val(0);
     $('#oleaje').val('');
     $('#muestra').val('');
     $('#geom').val('');
@@ -1046,4 +1075,26 @@ function listar_descargas(lista){
     tabla.appendChild(tbody);
     panel.appendChild(tabla);
     parent.appendChild(panel);
+}
+
+function punto_latlng(){
+    crearModal(0,'modal-latlng','Cargar Coordenadas Lat-Long','Ingrese la coordenada del Punto.','Ok','btn-primary');
+    var modal = $('#modal-latlng0');
+
+    modal.on('shown.bs.modal', function(){
+        $.ajax({url:$SCRIPT_ROOT+'/punto/mapa', success: function(res){
+            var body = $('.modal-body')[0];
+            var div = document.createElement('div');
+            div.id = 'cont';
+            body.appendChild(div);
+            div.innerHTML = res;
+            $('#modal-latlng0 .btn-ok')[0].addEventListener('click', function(){
+                var valores = {};
+            });
+        }});
+    });
+
+    modal.on('hidden.bs.modal', function(e){modal.remove();});
+
+    modal.modal('show');
 }

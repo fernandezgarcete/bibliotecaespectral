@@ -18,7 +18,7 @@
     <div class="panel-heading"><strong>Metodologías Existentes</strong>
     <img src="/static/img/metod.png" style="width: 30px;height: 30px;"></div>
     <div class="list-group">
-        {% for m in metods %}
+        {% for m in metods.items %}
         <a href="#metod_form" class="list-group-item" onclick="rellenar_metod('{{ m.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         <span >{{ m.nombre }}</span>
         <span type="button" class="badge btn" id="elim_{{ m.nombre }}" data-toggle="tooltip" title="Eliminar Item">
@@ -28,6 +28,9 @@
         {% endfor %}
     </div>
 </div>
+{% if metods.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('metodologia', page=metods.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if metods.has_next %}<li><a href="{{ url_for('metodologia', page=metods.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+
 
 <button type="button" class="btn btn-default" onclick="limpiar_metod()">
     Nueva <span class="glyphicon glyphicon-plus"></span>
@@ -115,13 +118,13 @@
 
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-validaciones('#cenit'); validaciones('#azimut'); limpiar_metod();
+campo_numerico('#cenit'); campo_numerico('#azimut'); limpiar_metod();
 
 var metods = [];
 var cen = 0.0;
 var azi = 0.0;
 
-{% for m in metods %}
+{% for m in metods.items %}
     {% if not m.angulo_cenital %}cen = 0.0;{% else %}cen = {{m.angulo_cenital}};{% endif %}
     {% if not m.angulo_azimutal %}azi = 0.0;{% else %}azi = {{ m.angulo_azimutal }};{% endif %}
     var metod = {

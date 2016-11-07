@@ -19,7 +19,7 @@
     <img src="/static/img/proyecto2.png" style="width: 40px;height: 40px;">
     </div>
     <div class="list-group">
-        {% for p in proyectos %}
+        {% for p in proyectos.items %}
         <a href="#proyecto_form" class="list-group-item" onclick="rellenar_proyecto('{{ p.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ p.nombre }}
         <span type="button" class="badge btn" id="elim_{{ p.nombre }}"  data-toggle="tooltip" title="Eliminar Item">
@@ -29,6 +29,9 @@
         {% endfor %}
     </div>
 </div>
+{% if proyectos.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('proyecto', page=proyectos.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if proyectos.has_next %}<li><a href="{{ url_for('proyecto', page=proyectos.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+
 
 <button type="button" class="btn btn-default" onclick="limpiar_proyecto()">
     Nuevo <span class="glyphicon glyphicon-plus"></span>
@@ -106,15 +109,15 @@ limpiar_proyecto();
 
 var proyectos = [];
 
-{% for p in proyectos %}
+{% for p in proyectos.items %}
     var proyecto = {
         id:{{ p.id|default(0) }},
         nombre:"{{ p.nombre }}",
         descripcion:"{{ p.descripcion }}",
-        reponsables:"{{ p.responsables }}",
+        responsables:"{{ p.responsables }}",
         status:"{{ p.status }}"
     };
-    if(proyecto.status == "False"){proyecto.status = false;} else {proyecto.status = true}
+    if(proyecto.status == "False"){proyecto.status = false;} else {proyecto.status = true;}
     proyectos.push(proyecto);
     btn_eliminar_item('elim_'+proyecto.nombre, proyectos, 'Eliminar Proyecto',
             'Está seguro de eliminar el proyecto "', '/cargar/proyecto/borrar/');

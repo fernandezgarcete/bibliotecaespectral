@@ -7,12 +7,15 @@
     <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="/static/css/bootstrap-datepicker.css" rel="stylesheet">
     <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
-    <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/moment.min.js"></script>
+    <script src="/static/js/moment-with-locales.min.js"></script>
+    <script src="/static/js/transition.js"></script>
+    <script src="/static/js/collapse.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/bootstrap-datepicker.js"></script>
     <script src="/static/locales/bootstrap-datepicker.es.min.js" charset="UTF-8"></script>
     <script src="/static/js/bootstrap-confirmation.js"></script>
-    <script type="text/javascript" src="/static/js/biblioespectral.js"></script>
+    <script charset="UTF-8" type="text/javascript" src="/static/js/biblioespectral.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if title %}
@@ -46,6 +49,9 @@
                         {% if g.user.is_authenticated %}
                         <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
+                        <ul class="nav navbar-nav">
+
+                        </ul>
                         <li id="docs" class=""><a href="/docs">Documentos</a></li>
                         {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>
                         <li id="admin" class=""><a href="/administrativo">Administrativo</a></li>{% endif %}

@@ -235,6 +235,22 @@ def cargar_prod_rad(ur1, ur2, ur3, punto):
     file2.close()
     file3.close()
 
+# Valores predeterminado de Punto
+def default_punto(form):
+    if form.altura.data == '':
+        form.altura.data = 0
+    if form.temp.data == '':
+        form.temp.data = 0
+    if form.presion.data == '':
+        form.presion.data = 0
+    if form.cant_tomas.data == '':
+        form.cant_tomas.data = 0
+    if form.nubosidad.data == '':
+        form.nubosidad.data = 0
+    if form.vel_viento.data == '':
+        form.vel_viento.data = 0
+    return form
+
 # Iniciar Formulario de Muestras
 def ini_muestra_form(id):
     form = MuestraForm()

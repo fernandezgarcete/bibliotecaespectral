@@ -112,7 +112,7 @@
 <!-- Scripts al cargar el documento -->
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    validaciones('#fecha_inicio'); validaciones('#fecha_fin');
+    campo_numerico('#fecha_inicio'); campo_numerico('#fecha_fin');
 
     $("input[type=checkbox]").change(function(){
         if($(this).parent().hasClass('active')){

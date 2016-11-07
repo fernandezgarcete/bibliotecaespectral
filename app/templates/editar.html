@@ -147,8 +147,8 @@
 
 <!-- Scripts al cargar el documento -->
 <script>
-pickerdate('#fecha'); pickerdate_pub('#fecha_pub'); validaciones('#fecha'); limpiaResponsables();
-validaciones('#fecha_pub');
+pickerdate('#fecha'); pickerdate_pub('#fecha_pub'); campo_numerico('#fecha'); limpiaResponsables();
+campo_numerico('#fecha_pub');
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
 var camps = [];

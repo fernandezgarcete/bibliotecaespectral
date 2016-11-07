@@ -6,7 +6,7 @@ __author__ = 'Juanjo'
 from flask_wtf import Form
 from flask_babel import gettext
 from flask_wtf.file import FileRequired, FileAllowed
-from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, SelectField, SelectMultipleField, \
+from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, DateTimeField, SelectField, SelectMultipleField, \
     RadioField, DecimalField, IntegerField
 from wtforms.validators import DataRequired, Length, NumberRange, regexp
 from app.models import User
@@ -95,8 +95,8 @@ class MuestraForm(Form):
 class PuntoForm(Form):
     id = StringField('id', validators=[DataRequired(message=u'Falta id')])
     nombre = StringField('nombre')
-    fecha_hora = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de la campaña')],
-                      format='%Y-%m-%d')
+    fecha_hora = DateTimeField(u'fecha', validators=[DataRequired(message=u'Ingrese fecha y hora de la toma')],
+                      format='%Y-%m-%d %H:%M')
     altura = StringField('altura')
     presion = StringField('presion')
     temp = StringField('temp')

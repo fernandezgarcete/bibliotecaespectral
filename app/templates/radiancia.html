@@ -85,6 +85,52 @@
     </div>
 </div>
 
+<div class="panel panel-default" id="ppunto">
+    <div class="panel-heading"><h4>
+        <a data-toggle="collapse" href="#down-punto">Punto &nbsp; {{ punto.nombre }}</a></h4>
+    </div>
+    <div id="down-punto" class="collapse panel-collapse">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Fecha y Hora</th>
+                <td>{{ punto.fecha_hora }}</td>
+                <th scope="row">Altura de Medición</th>
+                <td>{{ punto.altura_medicion|round(2) }} mts.</td>
+            </tr>
+            <tr>
+                <th scope="row">Presión Atmosférica</th>
+                <td>{{ punto.presion }} hPa</td>
+                <th scope="row">Temperatura</th>
+                <td>{{ punto.temperatura }} °C</td>
+            </tr>
+            <tr>
+                <th scope="row">Nubosidad (%)</th>
+                <td>{{ punto.nubosidad }} %</td>
+                <th scope="row">Estado</th>
+                <td>{{ punto.estado }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Velocidad del Viento</th>
+                <td>{{ punto.viento_velocidad }} Km/Hs</td>
+                <th scope="row">Dirección del Viento</th>
+                <td>{{ punto.viento_direccion }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Cantidad de Tomas</th>
+                <td>{{ punto.cantidad_tomas }} Km/Hs</td>
+                <th scope="row">Oleaje</th>
+                <td>{{ punto.oleaje }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Observaciones</th>
+                <td colspan="2">{{ punto.observaciones }}</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 
 <div class="panel panel-default">

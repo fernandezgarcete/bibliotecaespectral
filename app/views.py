@@ -21,7 +21,7 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
     actualizar_tp, utf_to_ascii, tabular_descargas, nombre_camp, ini_muestra_form, limpia_responsables, nombre_muestra, \
-    get_page, nombre_punto
+    get_page, nombre_punto, default_punto
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -410,6 +410,7 @@ def nueva():
 
 # Carga de Muestras
 @app.route('/cargar/campania/muestra', methods=['GET', 'POST'])
+@app.route('/cargar/campania/muestra/<int:page>', methods=['GET', 'POST'])
 @login_required
 def muestra(page=1):
     id = int(request.args.get('id').split('-')[0])
@@ -479,6 +480,7 @@ def consulta_existente():
 
 
 @app.route('/cargar/campania/muestra/punto', methods=['GET', 'POST'])
+@app.route('/cargar/campania/muestra/punto/<int:page>', methods=['GET', 'POST'])
 @login_required
 def punto(page=1):
     idm = int(request.args.get('idm').split('-')[0])
@@ -492,7 +494,10 @@ def punto(page=1):
     camp.responsables = limpia_responsables(camp.responsables)
     form.muestra.data = muestra.id
     if request.method == 'POST':
+        if form.fecha_hora.data != '':
+            form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M')
         if form.validate_on_submit():
+            form = default_punto(form)
             p = Punto()
             mues = Muestra.query.filter_by(id=form.muestra.data).first()
             form.nombre.data = nombre_punto(mues)
@@ -653,6 +658,12 @@ def mapa():
             nombres.append(c.nombre)
         return resultado(nombres, criterios)
     return render_template('consulta_map.html')
+
+
+@app.route('/punto/mapa', methods=['GET'])
+@login_required
+def punto_map():
+    return render_template('punto_map.html')
 
 # enviar localidades
 @app.route('/consultar/mapa/loc', methods=['GET'])
@@ -927,7 +938,7 @@ def foro(page=1):
 @app.route('/docs')
 @login_required
 def documents():
-    docs = os.listdir(DOCUMENTS_FOLDER)
+    docs = sorted(os.listdir(DOCUMENTS_FOLDER))
     return render_template('docs.html', list=docs)
 
 
@@ -961,7 +972,7 @@ def show_campaign(filename):
 @app.route('/cargar/localidad', methods=['GET', 'POST'])
 @login_required
 def localidad():
-    locs = Localidad.query.order_by('nombre')
+    locs = Localidad.query.order_by('nombre').all()
     if request.method == 'POST':
         lat = request.form.get('lat')
         lng = request.form.get('lng')
@@ -979,10 +990,11 @@ def localidad():
 
 # Carga de Metodologias Nuevas
 @app.route('/cargar/metodologia', methods=['GET', 'POST'])
+@app.route('/cargar/metodologia/<int:page>', methods=['GET', 'POST'])
 @login_required
-def metodologia():
+def metodologia(page=1):
     form = MetodologiaForm()
-    metods = Metodologia.query.order_by('nombre')
+    metods = Metodologia.query.order_by('nombre').paginate(page, POST_PER_PAGE, False)
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1013,10 +1025,11 @@ def borrar_metod(id):
 
 # Carga de Proyectos Nuevos
 @app.route('/cargar/proyecto', methods=['GET', 'POST'])
+@app.route('/cargar/proyecto/<int:page>', methods=['GET', 'POST'])
 @login_required
-def proyecto():
+def proyecto(page=1):
     form = ProyectoForm()
-    proyectos = Proyecto.query.filter_by(deleted=False).order_by('nombre')
+    proyectos = Proyecto.query.filter_by(deleted=False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1050,7 +1063,7 @@ def borrar_proyecto(id):
 @login_required
 def tp():
     form = TPForm()
-    tps = TipoCobertura.query.filter_by(deleted=False).order_by('nombre')
+    tps = TipoCobertura.query.filter_by(deleted=False).order_by('nombre').all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1121,7 +1134,7 @@ def borrar_cobertura(id):
 @login_required
 def radiometro():
     form = RadiometroForm()
-    radiometros = Radiometro.query.filter_by(deleted=False).order_by('nombre')
+    radiometros = Radiometro.query.filter_by(deleted=False).order_by('nombre').all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1134,6 +1147,7 @@ def radiometro():
             else:
                 print('Error')
     return render_template('radiometro_form.html', form=form, radiometros=radiometros, panel=panel)
+
 
 # Borrar un radiometro existente
 @app.route('/cargar/radiometro/borrar/<int:id>')
@@ -1155,7 +1169,7 @@ def borrar_radiometro(id):
 @login_required
 def patron():
     form = PatronForm()
-    patrones = Patron.query.filter_by(deleted=False).order_by('nombre')
+    patrones = Patron.query.filter_by(deleted=False).order_by('nombre').all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1189,7 +1203,7 @@ def borrar_patron(id):
 @login_required
 def fotometro():
     form = FotometroForm()
-    fotometros = Fotometro.query.filter_by(deleted=False).order_by('nombre')
+    fotometros = Fotometro.query.filter_by(deleted=False).order_by('nombre').all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1223,7 +1237,7 @@ def borrar_fotometro(id):
 @login_required
 def camara():
     form = CamaraForm()
-    camaras = Camara.query.filter_by(deleted=False).order_by('nombre')
+    camaras = Camara.query.filter_by(deleted=False).order_by('nombre').all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1257,7 +1271,7 @@ def borrar_camara(id):
 @login_required
 def gps():
     form = GPSForm()
-    gpses = Gps.query.filter_by(deleted=False).order_by('nombre')
+    gpses = Gps.query.filter_by(deleted=False).order_by('nombre').all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
