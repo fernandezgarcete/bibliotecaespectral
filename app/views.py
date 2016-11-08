@@ -396,10 +396,16 @@ def nueva():
     form_n = ini_nuevo_form()
     if request.method == 'POST':
         form_n.id.data = 0
-        if form_n.nfecha.data != '':
-            form_n.nfecha.data = datetime.strptime(form_n.nfecha.raw_data[0], '%d-%m-%Y')
-        if form_n.nfecha_pub.data != '':
-            form_n.nfecha_pub.data = datetime.strptime(form_n.nfecha_pub.raw_data[0], '%d-%m-%Y')
+        if form_n.nfecha.raw_data[0] != '':
+            try:
+                form_n.nfecha.data = datetime.strptime(form_n.nfecha.raw_data[0], '%Y-%m-%d').date()
+            except:
+                pass
+        if form_n.nfecha_pub.raw_data[0] != '':
+            try:
+                form_n.nfecha_pub.data = datetime.strptime(form_n.nfecha_pub.raw_data[0], '%Y-%m-%d').date()
+            except:
+                pass
         if form_n.validate_on_submit():
             c = Campania()
             loc = Localidad.query.filter_by(id=form_n.nlocalidad.data).first()
@@ -634,11 +640,21 @@ def editar(id):
                                                                                 POST_PER_PAGE, False)
     if request.method == 'POST':
         form_e.id.data = id
-        if form_e.ncampania.raw_data[0] != '' and form_e.nfecha.raw_data[0] != '' and \
-                        form_e.nfecha_pub.raw_data[0] != '':
-            form_e.ncampania.data = form_e.ncampania.raw_data[0]
-            form_e.nfecha.data = datetime.strptime(form_e.nfecha.raw_data[0], '%Y-%m-%d').date()
-            form_e.nfecha_pub.data = datetime.strptime(form_e.nfecha_pub.raw_data[0], '%Y-%m-%d').date()
+        if form_e.ncampania.raw_data[0] != '':
+            try:
+                form_e.ncampania.data = form_e.ncampania.raw_data[0]
+            except:
+                pass
+        if form_e.nfecha.raw_data[0] != '':
+            try:
+                form_e.nfecha.data = datetime.strptime(form_e.nfecha.raw_data[0], '%Y-%m-%d').date()
+            except:
+                pass
+        if form_e.nfecha_pub.raw_data[0] != '':
+            try:
+                form_e.nfecha_pub.data = datetime.strptime(form_e.nfecha_pub.raw_data[0], '%Y-%m-%d').date()
+            except:
+                pass
         if form_e.validate_on_submit():
             c = Campania()
             if c.agregar(form_e):

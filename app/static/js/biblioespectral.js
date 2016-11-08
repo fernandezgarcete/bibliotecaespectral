@@ -24,6 +24,9 @@ function habilitar(item, boton){
         $(boton+' i')[0].classList.remove('glyphicon-pencil');
         $(boton+' i')[0].classList.add('glyphicon-check');
         $(item)[0].disabled = false;
+        if (($(item)[0].id).indexOf('fech') !== -1){
+            pickerdate_pub(item);
+        }
         return
     }
     if($(boton+' i')[0].classList.contains('glyphicon-check')){
@@ -454,13 +457,13 @@ function picker_carga(item) {
     var yyyy = today.getFullYear();
     if(dd<10){dd = '0'+dd;}
     if(mm<10){mm = '0'+mm;}
-    today = dd+'-'+mm+'-'+yyyy;
+    today = yyyy+'-'+mm+'-'+dd;
     $(item).datepicker({
-        startDate: '01-01-2009',
+        startDate: '2009-01-01',
         endDate: today,
         todayBtn: true,
         orientation: 'bottom auto',
-        format: 'dd-mm-yyyy',
+        format: 'yyyy-mm-dd',
         language: 'es',
         todayHighlight: true
     });
@@ -474,7 +477,7 @@ function pickerdate(item) {
         endDate: 'today',
         todayBtn: true,
         orientation: 'bottom auto',
-        format: 'dd-mm-yyyy',
+        format: 'yyyy-mm-dd',
         language: 'es',
         todayHighlight: true
     });
@@ -495,7 +498,7 @@ function pickerdate_pub(item) {
         startView: 1,
         todayBtn: true,
         orientation: 'bottom auto',
-        format: 'dd-mm-yyyy',
+        format: 'yyyy-mm-dd',
         language: 'es',
         todayHighlight: true
     });
@@ -728,6 +731,7 @@ function rellenar_camp(nombre){
             $('#nresponsable').val(camps[i].resp);
             $('#nobjetivo').val(camps[i].obj);
             $('#nfecha_pub').val(camps[i].fecha_pub);
+            contador(document.getElementById('nobjetivo'),'#bdesc',300);
             limpiaResponsables();
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
@@ -1077,34 +1081,29 @@ function listar_descargas(lista){
     parent.appendChild(panel);
 }
 
-function punto_latlng(){
-    crearModal(0,'modal-latlng','Cargar Coordenadas Lat-Long','Ingrese la coordenada del Punto.','Ok','btn-primary');
 
-    var modal = $('#modal-latlng0');
+function modal_punto(){
+    crearModal(0,'modal-latlng','Cargar Coordenadas Lat-Long','','Ok','btn-primary');
 
-    $('#modal-latlng0').on('shown.bs.modal', function(){
-        // Cargar el CSS del mapa
-        loadjscssfile('/static/css/map.css','css');
-        // Traer el HTML del servidor
-        $.ajax({url:$SCRIPT_ROOT+'/punto/mapa', success: function(res){
-            var body = $('.modal-body')[0];
-            var div = document.createElement('div');
-            div.id = 'cont';
-            body.appendChild(div);
-            div.innerHTML = res;
-            $('#modal-latlng0 .btn-ok')[0].addEventListener('click', function(){
-                var valores = {};
-            });
-        }});
-        // Cargar el JS del mapa
-        loadjscssfile('/static/js/mapa_punto.js','js');
-        // Ejecutar el JS cargado
-        $.getScript('/static/js/mapa_punto.js');
-    });
+    // Cargar el CSS del mapa
+    //loadjscssfile('/static/css/map.css','css');
+    // Traer el HTML del servidor
+    $.ajax({url:$SCRIPT_ROOT+'/punto/mapa', success: function(res){
+        var body = $('.modal-body')[0];
+        var div = document.createElement('div');
+        div.id = 'cont';
+        body.appendChild(div);
+        div.innerHTML = res;
+        $('#modal-latlng0 .btn-ok')[0].addEventListener('click', function(){
+            var valores = {};
 
-    $('#modal-latlng0').on('hidden.bs.modal', function(e){$('#modal-latlng0').remove();});
+        });
+    }});
+    // Cargar el JS del mapa
+    //loadjscssfile('/static/js/mapa_punto.js','js');
+    // Ejecutar el JS cargado
+    $.getScript('/static/js/mapa_punto.js');
 
-    $('#modal-latlng0').modal('show');
 }
 
 

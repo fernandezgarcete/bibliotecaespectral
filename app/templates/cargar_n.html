@@ -41,7 +41,7 @@
         <label class="col-xs-2">Fecha</label>
         <div class="col-xs-10">
             <div id="fech" class="input-group date">
-                {{ form_n.nfecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", onchange="nombre_camp()") }}
+                {{ form_n.nfecha(placeholder='Fecha de Campaña en formato YYYY-MM-DD', class="form-control", onchange="nombre_camp()") }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
         </div>
@@ -77,7 +77,7 @@
         <label class="col-xs-2">Fecha de Publicación</label>
         <div class="col-xs-10">
             <div id="fechap" class="input-group date">
-                {{ form_n.nfecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", onchange="nombre_camp()") }}
+                {{ form_n.nfecha_pub(placeholder='Fecha de Publicación de los datos en formato YYYY-MM-DD', class="form-control", onchange="nombre_camp()") }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
         </div>

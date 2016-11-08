@@ -79,7 +79,7 @@ def limpia_responsables(str):
 
 # Crear nombre de la campaña
 def nombre_camp(loc, f):
-    camps = Campania.query.filter_by(deleted=False).all()
+    camps = Campania.query.filter_by(deleted=False).order_by('id').all()
     ult_id = 0
     l = ''
     # id campaña

@@ -131,7 +131,7 @@
         <label class="col-xs-2">Coordenadas Lat-Long</label>
         <div class="col-xs-9">
             {{ form.geom(placeholder="Ingrese la altura de toma", class="form-control", disabled=true, style="display:none;") }}
-            <button type="button" class="btn btn-info" onclick="punto_latlng()">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-latlng0">
                 <span class="glyphicon glyphicon-map-marker"></span>
             </button>
         </div>
@@ -282,10 +282,11 @@
 
 <!-- Scripts al cargar el documento -->
 <script>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 campo_numerico('#altura'); campo_numerico('#presion'); campo_numerico('#temp'); campo_numerico('#nubosidad');
 campo_numerico('#vel_viento'); campo_numerico('#cant_tomas'); campo_numerico('#fecha_hora'); piker_hora('#fecha_hora');
 limpiar_punto();
-$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+modal_punto();
 var puntos = [];
 
 {% for p in puntos.items %}

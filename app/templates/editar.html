@@ -82,7 +82,7 @@
         <label class="col-xs-2">Fecha</label>
         <div class="col-xs-9">
             <div class="input-group date">
-                {{ form_e.nfecha(placeholder='Fecha de Campaña en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                {{ form_e.nfecha(placeholder='Fecha de Campaña en formato YYYY-MM-DD', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
         </div>
@@ -105,8 +105,10 @@
     <div class="form-group" id="eo">
         <label class="col-xs-2">Objetivo</label>
         <div class="col-xs-9">
-                {{ form_e.nobjetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true) }}
-            </div>
+                {{ form_e.nobjetivo(placeholder="Describa el objetivo de Campaña", class="form-control", disabled=true,
+            onkeyup="contador(this,'#bdesc',300);") }}
+            <span id="bdesc" class="badge">300</span>
+        </div>
         <div class="col-xs-1">
                     <button class="btn btn-primary" type="button" onclick="habilitar('#nobjetivo', '#bo')" id="bo">
                         <i class="glyphicon glyphicon-pencil"></i></button>
@@ -116,7 +118,7 @@
         <label class="col-xs-2">Fecha de Publicación</label>
         <div class="col-xs-9">
             <div class="input-group date">
-                {{ form_e.nfecha_pub(placeholder='Fecha de Publicación de los datos en formato DD-MM-AAAA', class="form-control", disabled=true) }}
+                {{ form_e.nfecha_pub(placeholder='Fecha de Publicación de los datos en formato YYYY-MM-DD', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
         </div>

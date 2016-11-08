@@ -67,12 +67,12 @@ class NuevaCampForm(Form):
     nproyecto = SelectField('proyecto', coerce=int, validators=[DataRequired(message=u'Seleccione un Proyecto')])
     nlocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Seleccione una Localidad')])
     ncampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
-    nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de la campaña')],
-                      format='%d-%m-%Y')
+    nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de la campaña en formato YYYY-MM-DD')],
+                      format='%Y-%m-%d')
     nresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
     nobjetivo = TextAreaField('objetivo')#, validators=[DataRequired(message=u'Ingrese un objetivo')])
-    nfecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato')],
-                      format='%d-%m-%Y')
+    nfecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato en formato YYYY-MM-DD')],
+                      format='%Y-%m-%d')
 
 
 # Formulario de Muestra
@@ -95,7 +95,7 @@ class MuestraForm(Form):
 class PuntoForm(Form):
     id = StringField('id', validators=[DataRequired(message=u'Falta id')])
     nombre = StringField('nombre')
-    fecha_hora = DateTimeField(u'fecha', validators=[DataRequired(message=u'Ingrese fecha y hora de la toma')],
+    fecha_hora = DateTimeField(u'fecha', validators=[DataRequired(message=u'Ingrese fecha y hora de la toma en formato YYYY-MM-DD HH:mm')],
                       format='%Y-%m-%d %H:%M')
     altura = StringField('altura')
     presion = StringField('presion')
