@@ -396,6 +396,10 @@ def nueva():
     form_n = ini_nuevo_form()
     if request.method == 'POST':
         form_n.id.data = 0
+        if form_n.nfecha.data != '':
+            form_n.nfecha.data = datetime.strptime(form_n.nfecha.raw_data[0], '%d-%m-%Y')
+        if form_n.nfecha_pub.data != '':
+            form_n.nfecha_pub.data = datetime.strptime(form_n.nfecha_pub.raw_data[0], '%d-%m-%Y')
         if form_n.validate_on_submit():
             c = Campania()
             loc = Localidad.query.filter_by(id=form_n.nlocalidad.data).first()

@@ -47,8 +47,8 @@ var mapasBase = {
 
 // Creación del Objeto Mapa
 var mimapa = L.map('mapid', {
-    center: [-34.58, -58.40],
-    zoom: 5,
+    center: [-38.15, -65.91],
+    zoom: 4,
     layers: [calles]
 });
 

@@ -1079,9 +1079,13 @@ function listar_descargas(lista){
 
 function punto_latlng(){
     crearModal(0,'modal-latlng','Cargar Coordenadas Lat-Long','Ingrese la coordenada del Punto.','Ok','btn-primary');
+
     var modal = $('#modal-latlng0');
 
-    modal.on('shown.bs.modal', function(){
+    $('#modal-latlng0').on('shown.bs.modal', function(){
+        // Cargar el CSS del mapa
+        loadjscssfile('/static/css/map.css','css');
+        // Traer el HTML del servidor
         $.ajax({url:$SCRIPT_ROOT+'/punto/mapa', success: function(res){
             var body = $('.modal-body')[0];
             var div = document.createElement('div');
@@ -1092,9 +1096,35 @@ function punto_latlng(){
                 var valores = {};
             });
         }});
+        // Cargar el JS del mapa
+        loadjscssfile('/static/js/mapa_punto.js','js');
+        // Ejecutar el JS cargado
+        $.getScript('/static/js/mapa_punto.js');
     });
 
-    modal.on('hidden.bs.modal', function(e){modal.remove();});
+    $('#modal-latlng0').on('hidden.bs.modal', function(e){$('#modal-latlng0').remove();});
 
-    modal.modal('show');
+    $('#modal-latlng0').modal('show');
+}
+
+
+// Carga un Archivo CSS o JS externo
+function loadjscssfile(filename, filetype){
+    if (filetype=="js"){ //if filename is a external JavaScript file
+        var fileref=document.createElement('script');
+        fileref.setAttribute("type","text/javascript");
+        fileref.setAttribute("src", filename);
+        return true;
+    }
+    else if (filetype=="css"){ //if filename is an external CSS file
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", filename);
+        return true;
+    }
+    if (typeof fileref!="undefined"){
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+        return false;
+    }
 }

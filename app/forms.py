@@ -68,11 +68,11 @@ class NuevaCampForm(Form):
     nlocalidad = SelectField('localidad', coerce=int, validators=[DataRequired(message=u'Seleccione una Localidad')])
     ncampania = StringField('campania', validators=[DataRequired(message=u'Campaña requerida')])
     nfecha = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de la campaña')],
-                      format='%Y-%m-%d')
+                      format='%d-%m-%Y')
     nresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
     nobjetivo = TextAreaField('objetivo')#, validators=[DataRequired(message=u'Ingrese un objetivo')])
     nfecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato')],
-                      format='%Y-%m-%d')
+                      format='%d-%m-%Y')
 
 
 # Formulario de Muestra

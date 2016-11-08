@@ -1,3 +1,5 @@
+@import url('https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css');
+
 #mapid { height: 480px; }
 
 #mapa_punto {height: 240px;}

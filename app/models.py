@@ -149,7 +149,7 @@ class Campania(db.Model):
     fecha_publicacion = db.Column(db.DateTime)
     responsables = db.Column(db.String(340))
     id_localidad = db.Column(db.Integer, db.ForeignKey('localidad.id'))
-    objetivo = db.Column(db.String(140))
+    objetivo = db.Column(db.String(300))
     id_proyecto = db.Column(db.Integer, db.ForeignKey('proyecto.id'))
     muestras = db.relationship('Muestra', backref='campania_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
@@ -797,7 +797,7 @@ class Punto(db.Model):
     cantidad_tomas = db.Column(db.Integer)
     oleaje = db.Column(db.String(80))
     observaciones = db.Column(db.String(240))
-    foto = db.Column(db.String(50))
+    foto = db.Column(db.String(600))
     id_muestra = db.Column(db.Integer, db.ForeignKey('muestra.id'))
     radiometrias = db.relationship('Radiometria', backref='punto_radiometria', lazy='dynamic',
                                    cascade="save-update, merge, delete")
