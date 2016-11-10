@@ -2,9 +2,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<head><meta charset="UTF-8">
-<script src="/static/js/bootstrap-datetimepicker.js"></script>
-</head>
+    <head><meta charset="UTF-8">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
+        <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+        <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+        <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+        <link rel="stylesheet" href="/static/css/map.css" />
+        <script src="/static/js/bootstrap-datetimepicker.js"></script>
+    </head>
 <script>navegador('#cargar')</script>
 
 
@@ -130,10 +135,14 @@
     <div class="form-group">
         <label class="col-xs-2">Coordenadas Lat-Long</label>
         <div class="col-xs-9">
-            {{ form.geom(placeholder="Ingrese la altura de toma", class="form-control", disabled=true, style="display:none;") }}
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-latlng0">
-                <span class="glyphicon glyphicon-map-marker"></span>
-            </button>
+            <div id="mapa_punto"></div>
+            <div class="col-xs-4">
+                {{ form.geom(placeholder="Ingrese la altura de toma", class="form-control", disabled=true, style="display:none;") }}
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-latlng0">
+                    <span class="glyphicon glyphicon-map-marker"></span>
+                </button>
+            </div>
+
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#altura', '#ba')" id="ba">
@@ -332,4 +341,5 @@ $('#punto_form').submit(function(e){
     self.submit();
 });
 </script>
+<script charset="UTF-8" type="text/javascript" src="/static/js/mapa_punto.js"></script>
 {% endblock %}

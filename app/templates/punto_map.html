@@ -2,22 +2,31 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
-    <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
-    <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
-    <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
-    <link rel="stylesheet" href="/static/css/map.css" />
+
 </head>
 <body>
 
 
-<div id="mapa_punto"></div>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-xs-2">Latitud</label>
+            <div class="col-xs-4">
+                <input id="lat" class="form-control" type="text">
+            </div>
+        </div>
+    </div>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-xs-2">Longitud</label>
+            <div class="col-xs-4">
+                <input id="lng" class="form-control" type="text">
+            </div>
+        </div>
+    </div>
+
+
 <br>
-<div id="mensaje"></div>
-
-
-<script charset="UTF-8" type="text/javascript" src="/static/js/mapa_punto.js"></script>
-
+<div id="mensj"></div>
 
 </body>
 </html>

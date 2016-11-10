@@ -11,7 +11,7 @@ function navegador(item){
 function campo_numerico(item){
     // Evita los caracteres invalidos
     $(item).keydown(function(e){
-        var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,96,97,98,99,100,101,102,103,104,105,110,189]; // numeros, guion, borrar, enter
+        var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,96,97,98,99,100,101,102,103,104,105,109,110,189,190]; // numeros, guion, borrar, enter
         if ($.inArray(e.keyCode, accepted) == -1){
             e.preventDefault();
         }
@@ -1094,15 +1094,28 @@ function modal_punto(){
         div.id = 'cont';
         body.appendChild(div);
         div.innerHTML = res;
+        campo_numerico('#lat');
+        campo_numerico('#lng');
         $('#modal-latlng0 .btn-ok')[0].addEventListener('click', function(){
-            var valores = {};
-
+            var lat = $('#lat').val();
+            var lng = $('#lng').val();
+            if(lat == '' || lng == ''){
+                errorMensaje(0,'err','Ingrese los valores de Latitud y Longitud',$('#mensj')[0]);
+                return
+            }
+            var latlng = new L.LatLng(lat,lng);
+            marcador.setLatLng(latlng);
+            $('.btn-default').click();
         });
     }});
     // Cargar el JS del mapa
     //loadjscssfile('/static/js/mapa_punto.js','js');
     // Ejecutar el JS cargado
-    $.getScript('/static/js/mapa_punto.js');
+    //$.getScript('/static/js/mapa_punto.js');
+
+    $('#modal-latlng0').on('shown.bs.modal', function(){
+        _.defer(mimapa.invalidateSize.bind(mimapa));
+    });
 
 }
 
