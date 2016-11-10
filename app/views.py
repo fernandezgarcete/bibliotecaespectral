@@ -505,7 +505,10 @@ def punto(page=1):
     form.muestra.data = muestra.id
     if request.method == 'POST':
         if form.fecha_hora.data != '':
-            form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M')
+            try:
+                form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M')
+            except:
+                pass
         if form.validate_on_submit():
             form = default_punto(form)
             p = Punto()

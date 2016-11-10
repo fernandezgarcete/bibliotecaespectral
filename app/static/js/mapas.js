@@ -22,7 +22,7 @@ var calles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/til
         maxZoom: 18,
         accessToken: 'pk.eyJ1IjoibXJqdWFuam8iLCJhIjoiY2lzYXFyZGVwMDAwYTJ1bTZuaGVvYjl0MiJ9.WT1_Np3aSmvenQLTw6UPZw'
     }),
-    satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v9/tiles/{id}/{z}/{x}/{y}?access_token={accessToken}', {
+    satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satelite-streets-v9/tiles/{id}/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; ' +
         '<a href="http://mapbox.com">Mapbox</a>',

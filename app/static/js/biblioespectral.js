@@ -1094,19 +1094,33 @@ function modal_punto(){
         div.id = 'cont';
         body.appendChild(div);
         div.innerHTML = res;
-        campo_numerico('#lat');
-        campo_numerico('#lng');
-        $('#modal-latlng0 .btn-ok')[0].addEventListener('click', function(){
+        $('.btn-ok')[0].addEventListener('click', function(){
             var lat = $('#lat').val();
             var lng = $('#lng').val();
             if(lat == '' || lng == ''){
                 errorMensaje(0,'err','Ingrese los valores de Latitud y Longitud',$('#mensj')[0]);
                 return
             }
-            var latlng = new L.LatLng(lat,lng);
+            try {
+                var latlng = new L.LatLng(lat,lng);
+            }
+            catch(err) {
+                errorMensaje(0,'err','Invalido. Igrese valores en formato numerico: -99.999',$('#mensj')[0]);
+                return
+            }
             marcador.setLatLng(latlng);
+            marcador.bindPopup('Lat: '+latlng.lat+', Long: '+latlng.lng);
+            mimapa.setView(latlng, 14);
+            mimapa.addLayer(satelite);
+            //mapasBase['Satelite'].addTo(mimapa);
+            $('#lat_long').val(latlng);
             $('.btn-default').click();
         });
+        $('#lng').keydown(function(e){
+            if(e.keyCode == 13){$('.btn-ok').click()}
+        });
+        campo_numerico('#lat');
+        campo_numerico('#lng');
     }});
     // Cargar el JS del mapa
     //loadjscssfile('/static/js/mapa_punto.js','js');

@@ -109,7 +109,7 @@ class PuntoForm(Form):
     oleaje = StringField('oleaje')
     foto = StringField('foto')
     muestra = StringField('muestra')
-    geom = StringField('geom')
+    lat_long = StringField('LatLong', validators=[DataRequired(message=u'Ingrese las coordenadas del Punto')])
 
 
 # Formulario Auxiliar de cobertura

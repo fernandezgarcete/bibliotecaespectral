@@ -809,11 +809,14 @@ class Punto(db.Model):
 
     def agregar(self, form):
         punto = self
+        lat = form.lat_long.data.split('(')[1].split(',')[0]
+        lng = form.lat_long.data.split(' ')[1].split(')')[0]
+        point = db.engine.execute('SELECT ST_SetSRID(ST_MakePoint('+lat+', '+lng+'), 4326)').fetchone()[0]
         if int(form.id.data) > 0:
             punto = self.query.filter_by(id=int(form.id.data)).first()
             punto.nombre = form.nombre.data.upper()
             punto.fecha_hora = form.fecha_hora.data
-            punto.geom = form.geom.data
+            punto.geom = point
             punto.altura_medicion = float(form.altura.data)
             punto.presion = float(form.presion.data)
             punto.temperatura = float(form.temp.data)
@@ -829,7 +832,7 @@ class Punto(db.Model):
         else:
             punto.nombre = form.nombre.data.upper()
             punto.fecha_hora = form.fecha_hora.data
-            punto.geom = form.geom.data
+            punto.geom = point
             punto.altura_medicion = float(form.altura.data)
             punto.presion = float(form.presion.data)
             punto.temperatura = float(form.temp.data)
