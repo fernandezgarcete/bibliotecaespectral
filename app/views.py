@@ -733,7 +733,7 @@ def consultar():
         camps = []
         criterios = {}
         if loc == 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter_by(deleted=False).all()
+            camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre.desc()).all()
         if loc > 0 and proy == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.filter(Campania.id_localidad == loc, Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
