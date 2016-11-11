@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import fnmatch
+import json
 import os
+from flask import jsonify
 from app import db
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
 from app.models import Campania, Muestra, Punto, Fotometria, Radiometria, ProductoRadiancia, Proyecto, Localidad, \
     TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro
+import geoalchemy2.functions as geofunc
 
 __author__ = 'Juanjo'
 from datetime import datetime
@@ -70,6 +73,16 @@ def cargar_archivo(lugar, name, tipo, archivo):
     else:
         return False
 
+# geom to string
+def geom2latlng(list):
+    lista = {}
+    for l in list:
+        x = db.session.scalar(geofunc.ST_X(l.geom))
+        y = db.session.scalar(geofunc.ST_Y(l.geom))
+        latlng = json.dumps({"lat": x, "lng": y})
+        lista[l.id] = latlng
+    return lista
+
 # Limpia el campo responsables
 def limpia_responsables(str):
     res = str.replace('"', '')
@@ -77,68 +90,12 @@ def limpia_responsables(str):
     res2 = res1.replace('}', '')
     return res2
 
-# Crear nombre de la campaña
-def nombre_camp(loc, f):
-    camps = Campania.query.filter_by(deleted=False).order_by('id').all()
-    ult_id = 0
-    l = ''
-    # id campaña
-    if len(camps) == 0:
-        ult_id = '001'
-    elif len(camps) < 9:
-        ult_id = camps[len(camps) - 1].id + 1
-        ult_id = '00' + str(ult_id)
-    elif len(camps) < 99:
-        ult_id = camps[len(camps) - 1].id + 1
-        ult_id = '0' + str(ult_id)
-    # fecha
-    y = str(f.year)
-    m = str(f.month)
-    d = str(f.day)
-    if f.month < 10:
-        m = '0' + str(f.month)
-    if f.day < 10:
-        d = '0' + str(f.day)
-    f = y + m + d
-    # localidad
-    for c in camps:
-        if c.id_localidad == loc.id:
-            l = c.nombre.rsplit('-', 1)[1]
-            break
-    if l is '':
-        locs = loc.nombre.split(' ')
-        for ls in locs:
-            l += ls
-
-    return str(ult_id) + '-' + f + '-' + l
-
 # Averiguar Pagina
 def get_page(obj, query, per_page):
     for n in range(1, query.paginate(1, per_page).pages + 1):
         if obj in query.paginate(n, per_page).items:
             return n
 
-
-# Crear nombre de la muestra
-def nombre_muestra(campania, cobertura):
-    m = Muestra.query.filter(Muestra.id_campania == campania.id, Muestra.deleted == False).count()
-    ult_id = 0
-    if m == 0:
-        ult_id = '1'
-    if m > 0:
-        ult_id = m + 1
-    return campania.nombre + '-M' + str(ult_id) + '-' + cobertura.nombre
-
-
-# Crear nombre del punto
-def nombre_punto(muestra):
-    p = Punto.query.filter(Punto.id_muestra == muestra.id, Punto.deleted == False).count()
-    ult_id = 0
-    if p == 0:
-        ult_id = '1'
-    if p > 0:
-        ult_id = p + 1
-    return muestra.nombre + '-P' + str(ult_id)
 
 
 # Buscar archivo
@@ -237,17 +194,17 @@ def cargar_prod_rad(ur1, ur2, ur3, punto):
 
 # Valores predeterminado de Punto
 def default_punto(form):
-    if form.altura.data == '':
+    if form.altura.data == '' or form.altura.data == 'None':
         form.altura.data = 0
-    if form.temp.data == '':
+    if form.temp.data == '' or form.temp.data == 'None':
         form.temp.data = 0
-    if form.presion.data == '':
+    if form.presion.data == '' or form.presion.data == 'None':
         form.presion.data = 0
-    if form.cant_tomas.data == '':
+    if form.cant_tomas.data == '' or form.cant_tomas.data == 'None':
         form.cant_tomas.data = 0
-    if form.nubosidad.data == '':
+    if form.nubosidad.data == '' or form.nubosidad.data == 'None':
         form.nubosidad.data = 0
-    if form.vel_viento.data == '':
+    if form.vel_viento.data == '' or form.vel_viento.data == 'None':
         form.vel_viento.data = 0
     return form
 
@@ -328,154 +285,6 @@ def ini_consulta_camp():
     form.campania.choices.insert(0, (0, ''))
     return form
 
-# Guardar Campaña Nueva
-def camp_nueva(form):
-    camp = Campania()
-    camp.id_proyecto = form.proyecto.data
-    camp.id_localidad = form.localidad.data
-    camp.fecha = form.fecha.data
-    camp.nombre = nombre_camp(Localidad.query.filter_by(id=camp.id_localidad), camp.fecha)
-    camp.responsables = form.responsable.data
-    camp.objetivo = form.objetivo.data
-    camp.fecha_publicacion = form.fecha_pub.data
-    try:
-        db.session.add(camp)
-        db.commit()
-        return camp
-    except:
-        db.session.rollback()
-        return None
-
-# Guardar Campaña Existente
-def camp_existente(form, camp):
-    camp.nombre = form.campania.data
-    camp.id_proyecto = form.proyecto.data
-    camp.id_localidad = form.localidad.data
-    camp.fecha = form.fecha.data
-    camp.responsables = form.responsable.data
-    camp.objetivo = form.objetivo.data
-    camp.fecha_publicacion = form.fecha_pub.data
-    try:
-        db.session.add(camp)
-        db.commit()
-        return camp
-    except:
-        db.session.rollback()
-        return False
-
-# Guardar Muestra Nueva
-#######################
-# REPLANTEAR LA CARGA DEL FORMULARIO MUESTRA, PARA CONTEMPLAR TODAS LAS MUESTRAS DE UNA CAMPAÑA
-#######################
-def muestra_nueva(form, camp):
-    mues = Muestra()
-    cobs = form.cobertura.data.split(',')
-    for c in cobs:
-        cober = Cobertura.query.filter_by(nombre=c).first()
-        mues.nombre = nombre_muestra(camp, cober)
-        mues.operador = camp.responsables.split('"')[1]
-        mues.id_cobertura = cober.id
-        mues.id_campania = camp.id
-        mues.id_metodologia = form.metodologia.data
-        mues.id_radiometro = form.radiometro.data
-        mues.id_camara = form.camara.data
-        mues.id_gps = form.gps.data
-        mues.id_fotometro = form.fotometro.data
-        mues.id_patron = form.espectralon.data
-        try:
-            db.session.add(mues)
-            db.commit()
-            return mues
-        except:
-            db.session.rollback()
-            return None
-
-# Guardar Muestra Existente
-def muestra_existente(form, camp):
-    mues = Muestra.query.join(Campania).filter(Campania.id == camp.id).all()
-    cobs = form.cobertura.data.split(',')
-    for m in mues:
-        m.nombre = m.nombre
-        m.operador = camp.responsables.split('"')[1]
-        m.id_cobertura = m.id_cobertura
-        m.id_campania = camp.id
-        m.id_metodologia = form.metodologia.data
-        m.id_radiometro = form.radiometro.data
-        m.id_camara = form.camara.data
-        m.id_gps = form.gps.data
-        m.id_fotometro = form.fotometro.data
-        m.id_patron = form.espectralon.data
-        try:
-            db.session.add(m)
-            db.commit()
-        except:
-            db.session.rollback()
-            return None
-
-# Guarda Campaña y Muestra
-def guardar_camp_mues(form_camp, form_mues):
-    camp = Campania.query.filter_by(nombre=form_camp.campania.data).first()
-    views = db.session.query(Campania, Muestra, Cobertura).join(Muestra, Cobertura).filter(Campania.id == camp.id).all()
-    # Para muestras nuevas
-    if len(views) == 0:
-        # Campaña nueva
-        if camp is None:
-            camp = camp_nueva(form_camp)
-            if camp is None:
-                return False
-            campa = Campania.query.filter_by(nombre=camp.nombre).first()
-            mues = muestra_nueva(form_mues, campa)
-            if mues is None:
-                return False
-            else:
-                return True
-        # Campaña existente
-        if camp is not None:
-            if camp_existente(form_camp, camp) is None:
-                return False
-            mues = muestra_nueva(form_mues, camp)
-            if mues is None:
-                return False
-            else:
-                return True
-    if len(views) > 0:
-        camp
-    return False
-
-# Guarda Campaña sola
-def guardar_camp(form):
-    camp = Campania.query.filter_by(nombre=form.campania.data).first()
-    if camp is None:
-        camp = Campania()
-        camp.id_proyecto = form.proyecto.data
-        camp.id_localidad = form.localidad.data
-        camp.fecha = form.fecha.data
-        camp.nombre = nombre_camp(Localidad.query.filter_by(id=camp.id_localidad), camp.fecha)
-        camp.responsables = form.responsable.data
-        camp.objetivo = form.objetivo.data
-        camp.fecha_publicacion = form.fecha_pub.data
-        try:
-            db.session.add(camp)
-            db.commit()
-            return True
-        except:
-            db.session.rollback()
-            return False
-    if camp is not None:
-        camp.nombre = form.campania.data
-        camp.id_proyecto = form.proyecto.data
-        camp.id_localidad = form.localidad.data
-        camp.fecha = form.fecha.data
-        camp.responsables = form.responsable.data
-        camp.objetivo = form.objetivo.data
-        camp.fecha_publicacion = form.fecha_pub.data
-        try:
-            db.session.add(camp)
-            db.commit()
-            return True
-        except:
-            db.session.rollback()
-            return False
 
 def utf_to_ascii(utf):
     str = utf.encode('utf-8').decode('utf-8').upper()

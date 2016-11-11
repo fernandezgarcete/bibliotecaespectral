@@ -19,9 +19,9 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, guardar_camp_mues, \
-    actualizar_tp, utf_to_ascii, tabular_descargas, nombre_camp, ini_muestra_form, limpia_responsables, nombre_muestra, \
-    get_page, nombre_punto, default_punto
+from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
+    actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
+    get_page, default_punto, geom2latlng
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
 from guess_language import guessLanguage
@@ -408,8 +408,6 @@ def nueva():
                 pass
         if form_n.validate_on_submit():
             c = Campania()
-            loc = Localidad.query.filter_by(id=form_n.nlocalidad.data).first()
-            form_n.ncampania.data = nombre_camp(loc, form_n.nfecha.data)
             if c.agregar(form_n):
                 flash('Campaña guardada.', 'success')
             else:
@@ -426,14 +424,12 @@ def muestra(page=1):
     id = int(request.args.get('id').split('-')[0])
     form = ini_muestra_form(id)
     muestras = Muestra.query.join(Cobertura, TipoCobertura).filter(Muestra.id_campania==id, Muestra.deleted==False).\
-        order_by('nombre').paginate(page, POST_PER_PAGE, False)
+        order_by(Muestra.nombre).paginate(page, POST_PER_PAGE, False)
     camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==id).first()
     camp.responsables = limpia_responsables(camp.responsables)
     if request.method == 'POST':
         if form.validate_on_submit():
             m = Muestra()
-            cob = Cobertura.query.filter_by(id=form.cobertura.data).first()
-            form.nombre.data = nombre_muestra(camp, cob)
             form.operador.data = camp.responsables
             if m.agregar(form):
                 flash('Muestra guardada.', 'success')
@@ -496,29 +492,38 @@ def punto(page=1):
     idm = int(request.args.get('idm').split('-')[0])
     idc = int(request.args.get('idc').split('-')[0])
     form = PuntoForm()
-    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra==idm, Punto.deleted==False).order_by('nombre')\
+    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra==idm, Punto.deleted==False).order_by(Punto.id)\
         .paginate(page, POST_PER_PAGE, False)
     muestra = Muestra.query.join(Cobertura).filter(Muestra.id==idm).first()
     tp = TipoCobertura.query.filter_by(id=muestra.cobertura_muestra.id_tipocobertura).first()
     camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==idc).first()
     camp.responsables = limpia_responsables(camp.responsables)
     form.muestra.data = muestra.id
+    latlngs = geom2latlng(puntos.items)
     if request.method == 'POST':
         if form.fecha_hora.data != '':
             try:
-                form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M')
+                if len(form.fecha_hora.raw_data[0].rsplit(':')) > 2:
+                    aux = form.fecha_hora.raw_data[0].rsplit(':')
+                    try:
+                        form.fecha_hora.data = datetime.strptime(aux[0]+':'+aux[1], '%Y-%m-%d %H:%M')
+                    except:
+                        pass
+                else:
+                    try:
+                        form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M')
+                    except:
+                        pass
             except:
                 pass
         if form.validate_on_submit():
             form = default_punto(form)
             p = Punto()
-            mues = Muestra.query.filter_by(id=form.muestra.data).first()
-            form.nombre.data = nombre_punto(mues)
             if p.agregar(form):
                 flash('Punto guardado.', 'success')
             else:
                 print('Error')
-    return render_template('punto.html', form=form, puntos=puntos, muestra=muestra, camp=camp, tp=tp)
+    return render_template('punto.html', form=form, puntos=puntos, muestra=muestra, camp=camp, tp=tp, latlngs=latlngs)
 
 
 # carga archivos de radiancia
@@ -638,8 +643,8 @@ def nueva_cobertura():
 def editar(id):
     form_e = ini_nuevo_form()
     camp = Campania.query.filter_by(id=id).first()
-    camps = Campania.query.filter_by(deleted=False).order_by('nombre')
-    camps = Campania.query.filter_by(deleted=False).order_by('nombre').paginate(get_page(camp, camps, POST_PER_PAGE),
+    camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre)
+    camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre).paginate(get_page(camp, camps, POST_PER_PAGE),
                                                                                 POST_PER_PAGE, False)
     if request.method == 'POST':
         form_e.id.data = id
@@ -995,7 +1000,7 @@ def show_campaign(filename):
 @app.route('/cargar/localidad', methods=['GET', 'POST'])
 @login_required
 def localidad():
-    locs = Localidad.query.order_by('nombre').all()
+    locs = Localidad.query.order_by(Localidad.nombre).all()
     if request.method == 'POST':
         lat = request.form.get('lat')
         lng = request.form.get('lng')
@@ -1017,7 +1022,7 @@ def localidad():
 @login_required
 def metodologia(page=1):
     form = MetodologiaForm()
-    metods = Metodologia.query.order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    metods = Metodologia.query.order_by(Metodologia.nombre).paginate(page, POST_PER_PAGE, False)
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1052,7 +1057,7 @@ def borrar_metod(id):
 @login_required
 def proyecto(page=1):
     form = ProyectoForm()
-    proyectos = Proyecto.query.filter_by(deleted=False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    proyectos = Proyecto.query.filter_by(deleted=False).order_by(Proyecto.nombre).paginate(page, POST_PER_PAGE, False)
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1121,7 +1126,7 @@ def borrar_tp(id):
 @login_required
 def cobertura(page=1):
     form = CobForm()
-    coberturas = Cobertura.query.filter_by(deleted=False).order_by('nombre').paginate(page, POST_PER_PAGE, False)
+    coberturas = Cobertura.query.filter_by(deleted=False).order_by(Cobertura.nombre).paginate(page, POST_PER_PAGE, False)
     form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
     if request.args.get('c') == 'n':
@@ -1157,7 +1162,7 @@ def borrar_cobertura(id):
 @login_required
 def radiometro():
     form = RadiometroForm()
-    radiometros = Radiometro.query.filter_by(deleted=False).order_by('nombre').all()
+    radiometros = Radiometro.query.filter_by(deleted=False).order_by(Radiometro.nombre).all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1192,7 +1197,7 @@ def borrar_radiometro(id):
 @login_required
 def patron():
     form = PatronForm()
-    patrones = Patron.query.filter_by(deleted=False).order_by('nombre').all()
+    patrones = Patron.query.filter_by(deleted=False).order_by(Patron.nombre).all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1226,7 +1231,7 @@ def borrar_patron(id):
 @login_required
 def fotometro():
     form = FotometroForm()
-    fotometros = Fotometro.query.filter_by(deleted=False).order_by('nombre').all()
+    fotometros = Fotometro.query.filter_by(deleted=False).order_by(Fotometro.nombre).all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1260,7 +1265,7 @@ def borrar_fotometro(id):
 @login_required
 def camara():
     form = CamaraForm()
-    camaras = Camara.query.filter_by(deleted=False).order_by('nombre').all()
+    camaras = Camara.query.filter_by(deleted=False).order_by(Camara.nombre).all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1294,7 +1299,7 @@ def borrar_camara(id):
 @login_required
 def gps():
     form = GPSForm()
-    gpses = Gps.query.filter_by(deleted=False).order_by('nombre').all()
+    gpses = Gps.query.filter_by(deleted=False).order_by(Gps.nombre).all()
     if request.args.get('c') == 'n':
         panel = 'none'
     else:

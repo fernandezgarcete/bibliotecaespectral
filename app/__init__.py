@@ -73,4 +73,4 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 with app.app_context():
-    from app import views, models
+    from app import views, models, utils

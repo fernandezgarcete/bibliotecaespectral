@@ -746,6 +746,7 @@ function rellenar_mues(nombre){
     for(var i=0; i<mues.length; i++){
         if(mues[i].nombre == nombre){
             nom.append(document.createTextNode(mues[i].nombre));
+            $('#nombre').val(mues[i].nombre);
             $('#id').val(mues[i].id);
             $('#metodologia').val(mues[i].id_met);
             $('#radiometro').val(mues[i].id_rad);
@@ -768,6 +769,7 @@ function rellenar_punto(nombre){
     for(var i=0; i<puntos.length; i++){
         if(puntos[i].nombre == nombre){
             nom.append(document.createTextNode(puntos[i].nombre));
+            $('#nombre').val(puntos[i].nombre);
             $('#id').val(puntos[i].id);
             $('#fecha_hora').val(puntos[i].fecha+' '+puntos[i].hora);
             $('#altura').val(puntos[i].altura);
@@ -780,13 +782,24 @@ function rellenar_punto(nombre){
             $('#cant_tomas').val(puntos[i].cant_tomas);
             $('#oleaje').val(puntos[i].oleaje);
             $('#muestra').val(puntos[i].id_muestra);
-            $('#geom').val(puntos[i].geom);
             $('#obs').val(puntos[i].obs);
             contador(document.getElementById('obs'),'#bdesc',240);
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
+            cargar_latlng(puntos[i].geom);
         }
     }
+}
+
+function cargar_latlng(geom){
+    var latlng = new L.LatLng(geom.lat, geom.lng);
+    $('#lat_long').val(latlng);
+    $('#lat').val(geom.lat);
+    $('#lng').val(geom.lng);
+    marcador.setLatLng(latlng);
+    marcador.bindPopup('Lat: '+latlng.lat+', Long: '+latlng.lng);
+    mimapa.setView(latlng, 14);
+    mimapa.addLayer(satelite);
 }
 
 // Rellena formulario GPS
@@ -928,6 +941,7 @@ function limpiar_pat() {
 // Limpia Formulario de Muestra
 function limpiar_mues() {
     $('#nom').empty();
+    $('#nombre').val('');
     $('#id').val(0);
     $('#metodologia').val(0);
     $('#radiometro').val(0);
@@ -944,6 +958,7 @@ function limpiar_mues() {
 // Limpia Formulario de Muestra
 function limpiar_punto() {
     $('#nom').empty();
+    $('#nombre').val('');
     $('#id').val(0);
     $('#fecha_hora').val('');
     $('#altura').val(0);

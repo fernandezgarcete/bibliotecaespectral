@@ -2,15 +2,12 @@
 from datetime import datetime
 import os
 import traceback
-from flask import current_app, url_for
-from rauth import OAuth2Service, OAuth1Service
 
 __author__ = 'Juanjo'
 
 from hashlib import md5
 from app import db, app
 from geoalchemy2 import Geometry
-from flask_login import UserMixin
 import sys, re
 
 if sys.version_info >= (3, 0):
@@ -167,7 +164,8 @@ class Campania(db.Model):
             camp.objetivo = str(form.nobjetivo.data).replace('\r\n', ' ')
             camp.id_proyecto = form.nproyecto.data
         else:
-            camp.nombre = form.ncampania.data.upper()
+            loc = Localidad.query.filter_by(id=form.nlocalidad.data).first()
+            camp.nombre = camp.nombre_camp(loc, form.nfecha.data).upper()
             camp.fecha = form.nfecha.data
             camp.fecha_publicacion = form.nfecha_pub.data
             camp.responsables = form.nresponsable.data
@@ -188,6 +186,40 @@ class Campania(db.Model):
         if self.deleted is True:
             return True
         return False
+
+    # Crear nombre de la campaña
+    def nombre_camp(self, loc, f):
+        camps = self.query.filter_by(deleted=False).order_by('id').all()
+        ult_id = 0
+        l = ''
+        # id campaña
+        if len(camps) == 0:
+            ult_id = '001'
+        elif len(camps) < 9:
+            ult_id = camps[len(camps) - 1].id + 1
+            ult_id = '00' + str(ult_id)
+        elif len(camps) < 99:
+            ult_id = camps[len(camps) - 1].id + 1
+            ult_id = '0' + str(ult_id)
+        # fecha
+        y = str(f.year)
+        m = str(f.month)
+        d = str(f.day)
+        if f.month < 10:
+            m = '0' + str(f.month)
+        if f.day < 10:
+            d = '0' + str(f.day)
+        f = y + m + d
+        # localidad
+        for c in camps:
+            if c.id_localidad == loc.id:
+                l = c.nombre.rsplit('-', 1)[1]
+                break
+        if l is '':
+            locs = loc.nombre.split(' ')
+            for ls in locs:
+                l += ls
+        return str(ult_id) + '-' + f + '-' + l
 
     def has_muestra(self, muestra):
         return self.muestras.filter(muestra.id_campania == self.id).count() > 0
@@ -340,7 +372,9 @@ class Muestra(db.Model):
             muestra.id_fotometro = int(form.fotometro.data)
             muestra.id_patron = int(form.espectralon.data)
         else:
-            muestra.nombre = form.nombre.data.upper()
+            cob = Cobertura.query.filter_by(id=form.cobertura.data).first()
+            camp = Campania.query.filter_by(id=int(form.campania.data)).first()
+            muestra.nombre = muestra.nombre_muestra(camp, cob).upper()
             muestra.operador = form.operador.data
             muestra.id_cobertura = int(form.cobertura.data)
             muestra.id_campania = int(form.campania.data)
@@ -364,6 +398,16 @@ class Muestra(db.Model):
         if self.deleted is True:
             return True
         return False
+
+    # Crear nombre de la muestra
+    def nombre_muestra(self, campania, cobertura):
+        m = self.query.filter(self.id_campania == campania.id, self.deleted == False).count()
+        ult_id = 0
+        if m == 0:
+            ult_id = '1'
+        if m > 0:
+            ult_id = m + 1
+        return campania.nombre + '-M' + str(ult_id) + '-' + cobertura.nombre
 
     def has_punto(self, punto):
         return self.coberturas.filter(punto.id_muestra == self.id).count() > 0
@@ -830,7 +874,8 @@ class Punto(db.Model):
             punto.estado = form.estado.data
             punto.observaciones = str(form.obs.data).replace('\r\n', ' ')
         else:
-            punto.nombre = form.nombre.data.upper()
+            mues = Muestra.query.filter_by(id=form.muestra.data).first()
+            punto.nombre = punto.nombre_punto(mues).upper()
             punto.fecha_hora = form.fecha_hora.data
             punto.geom = point
             punto.altura_medicion = float(form.altura.data)
@@ -859,6 +904,16 @@ class Punto(db.Model):
         if self.deleted is True:
             return True
         return False
+
+    # Crear nombre del punto
+    def nombre_punto(self, muestra):
+        p = self.query.filter(self.id_muestra == muestra.id, self.deleted == False).count()
+        ult_id = 0
+        if p == 0:
+            ult_id = '1'
+        if p > 0:
+            ult_id = p + 1
+        return muestra.nombre + '-P' + str(ult_id)
 
     def has_radiometria(self, radiometria):
         return self.radiometrias.filter(radiometria.id_punto == self.id).count() > 0
