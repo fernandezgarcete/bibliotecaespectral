@@ -281,7 +281,7 @@ def ini_nuevo_form():
 # Iniciar Formulario Consultar Campaña
 def ini_consulta_camp():
     form = ConsultaCampForm()
-    form.campania.choices = [(c.id, c.nombre) for c in Campania.query.filter_by(deleted=False).order_by('nombre')]
+    form.campania.choices = [(c.id, c.nombre) for c in Campania.query.filter_by(deleted=False).order_by(Campania.id.desc())]
     form.campania.choices.insert(0, (0, ''))
     return form
 
