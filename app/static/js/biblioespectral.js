@@ -858,6 +858,7 @@ function limpiar_metod(){
     contador(document.getElementById('medicion'),'#bmed',600);
     $('.form-control').prop('disabled',false);
     $('.col-xs-1').css('display','none');
+    location.href = "#metod_form";
 }
 
 // Limpia Formulario de Metodologia
@@ -871,6 +872,7 @@ function limpiar_proyecto(){
     contador(document.getElementById('descripcion'),'#bdesc',600);
     $('.form-control').prop('disabled',false);
     $('.col-xs-1').css('display','none');
+    location.href = "#proyecto_form";
 }
 
 // Limpia Formulario de Metodologia
@@ -885,6 +887,7 @@ function limpiar_cob(){
     contador(document.getElementById('observaciones'),'#bobse',140);
     $('.form-control').prop('disabled',false);
     $('.col-xs-1').css('display','none');
+    location.href = "#cobertura_form";
 }
 
 // Limpia Formulario de Radiometro
@@ -914,6 +917,7 @@ function limpiar_rad() {
     contador(document.getElementById('accesorio'), '#bdesc', 340);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#rad_form";
 }
 
 // Limpiar Formulario Tipo de Cobertura
@@ -922,6 +926,7 @@ function limpiar_tp(){
     $('#nombre').val('');
     $('.form-control').prop('disabled',false);
     $('.col-xs-1').css('display','none');
+    location.href = "#tp_form";
 }
 
 // Limpia Formulario de Patron
@@ -936,6 +941,7 @@ function limpiar_pat() {
     contador(document.getElementById('accesorio'), '#bdesc', 340);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#patron_form";
 }
 
 // Limpia Formulario de Muestra
@@ -953,6 +959,7 @@ function limpiar_mues() {
     $('#cobertura').val(0);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#form_muestra";
 }
 
 // Limpia Formulario de Muestra
@@ -975,6 +982,7 @@ function limpiar_punto() {
     $('#obs').val('');
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#form_punto";
 }
 
 // Limpia Formulario de Patron
@@ -989,6 +997,7 @@ function limpiar_camp() {
     contador(document.getElementById('nobjetivo'), '#bdesc', 300);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#n_camp";
 }
 
 // Limpia Formulario de Fotometro
@@ -1003,6 +1012,7 @@ function limpiar_fot() {
     contador(document.getElementById('accesorio'), '#bdesc', 340);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#fotometro_form";
 }
 
 // Limpia Formulario de Camara
@@ -1017,6 +1027,7 @@ function limpiar_cam() {
     contador(document.getElementById('accesorio'), '#bdesc', 340);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#camara_form";
 }
 
 // Limpia Formulario de Camara
@@ -1031,6 +1042,7 @@ function limpiar_gps() {
     contador(document.getElementById('accesorio'), '#bdesc', 340);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    location.href = "#gps_form";
 }
 
 // Configurar llamado a ejecucion cuando la API de visualizacion de Google esta cargada

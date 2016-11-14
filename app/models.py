@@ -401,7 +401,7 @@ class Muestra(db.Model):
 
     # Crear nombre de la muestra
     def nombre_muestra(self, campania, cobertura):
-        m = self.query.filter(self.id_campania == campania.id, self.deleted == False).count()
+        m = self.query.filter_by(id_campania=campania.id).count()
         ult_id = 0
         if m == 0:
             ult_id = '1'
@@ -907,7 +907,7 @@ class Punto(db.Model):
 
     # Crear nombre del punto
     def nombre_punto(self, muestra):
-        p = self.query.filter(self.id_muestra == muestra.id, self.deleted == False).count()
+        p = self.query.filter_by(id_muestra=muestra.id).count()
         ult_id = 0
         if p == 0:
             ult_id = '1'
