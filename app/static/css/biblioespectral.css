@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Fjalla+One');
+
+* {
+	margin: 0;
+}
+html, body {
+	height: 100%;
+}
+.wrapper {
+	min-height: 100%;
+	margin: 0 auto -100px; /* the bottom margin is the negative value of the footer's height */
+    background-color: #f1f1f1;
+}
+footer, .push {
+	height: 100px; /* '.push' must be the same height as 'footer' */
+    color: white;
+}
+
+.info{
+    background: #d0e0f0;
+}
+
+header.navbar.well-lg.info.bs-docs-nav{
+    margin-bottom: 0;
+}
+
+.navbar-inverse {
+    background-color: #3277bc;
+    border-color: #3277bc;
+}
+
+#anchor_foot{color: #00bbff;}
+
+.navbar-inverse .navbar-nav>li>a {
+    color: #FFFFFF;
+}
+
+.navbar-inverse .navbar-nav>.active>a:hover,.navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus {
+    background-color: #3A8BDB;
+}
+
+.prima{
+    /*border-radius: 5px;*/
+    /*background: #3277bc;*/
+    background: #045d9c; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#045d9c, #0b70b8); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#045d9c, #0b70b8); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#045d9c, #0b70b8); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#045d9c, #0b70b8); /* Standard syntax */
+    font-family: "Fjalla One", sans-serif;
+    font-size: 110%;
+}
+
+.head-border {
+    height: 10px;
+    /*border-radius: 1px;*/
+    background: #d0e0f0; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#d0e0f0, #a2c9dd); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#d0e0f0, #a2c9dd); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#d0e0f0, #a2c9dd); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#d0e0f0, #a2c9dd); /* Standard syntax */
+}
+

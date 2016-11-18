@@ -6,6 +6,7 @@
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="/static/css/bootstrap-datepicker.css" rel="stylesheet">
+    <link href="/static/css/biblioespectral.css" rel="stylesheet">
     <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
     <script src="/static/js/moment.min.js"></script>
     <script src="/static/js/moment-with-locales.min.js"></script>
@@ -26,57 +27,70 @@
 </head>
 
 <body>
-<div id="fb-root"></div>
-<div class="container">
-    <header>
-        <nav id="menubar" class="navbar navbar-default navbar-static-top well-lg" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.conae.gov.ar">
-                        <img style="max-width:80px; margin-top: -17px;" src="/static/img/CONAE_chico_transp.png">
-                    </a>
-                    <a class="navbar-brand" href="/">
-                        <img style="max-width:160px; margin-top: -10px;" src="/static/img/logo_radiometro_v3.png">
-                    </a>
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#radionavbar">
-                        <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                    </button>
-                </div>
 
-                <div id="radionavbar" class="collapse navbar-collapse navbarCollapse">
-                    <ul class="nav navbar-nav">
-                        <li id="inicio" class=""><a href="/index">Inicio</a></li>
-                        {% if g.user.is_authenticated %}
-                        <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+<div class="wrapper">
+    <header class="navbar well-lg info bs-docs-nav" role="banner">
+    <div class="container">
+        <a class="navbar-brand" href="http://www.conae.gov.ar">
+            <img style="max-width:130px; margin-top: -30px;" src="/static/img/CONAE_chico_transp.png">
+        </a>
+        <a class="navbar-brand" href="/">
+            <img style="max-width:210px; margin-top: -20px;" src="/static/img/logo_radiometro_v3.png">
+        </a>
+    </div>
+</header>
+<div class="head-border"></div>
+
+<div>
+   <nav id="menubar" class="navbar navbar-static-top navbar-inverse prima" role="navigation">
+    <div class="container">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#radionavbar">
+            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+        </button>
+
+        <div id="radionavbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="inicio" class=""><a href="/index">INICIO</a></li>
+                    <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
-                        <ul class="nav navbar-nav">
-
+                <ul class="nav navbar-nav">
+                    <li id="docs_menu" class="dropdown">
+                        <a href="#" id="d_docs" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            RECURSOS
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="d_docs">
+                            <li><a href="{{ url_for('documents') }}">Documentos</a></li>
+                            <li><a href="{{ url_for('fichas') }}">Fichas Técnicas</a></li>
+                            <li><a href="{{ url_for('protocolos') }}">Protocolos</a></li>
                         </ul>
-                        <li id="docs" class=""><a href="/docs">Documentos</a></li>
-                        {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">Cargar</a></li>
-                        <li id="admin" class=""><a href="/administrativo">Administrativo</a></li>{% endif %}
-                        <li id="consultar" class=""><a href="/consultar">Consultar</a></li>
+                    </li>
+                </ul>
+                {% if g.user.is_authenticated %}
+                    {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">CARGAR</a></li>
+                        <li id="admin" class=""><a href="/administrativo">ADMINISTRATIVO</a></li>{% endif %}
+                    <li id="consultar" class=""><a href="/consultar">CONSULTAR</a></li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li id="user_menu" class="dropdown">
-                            <a href="#" id="d_user" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ g.user.nombre }}
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="d_user">
-                                <!-- li id="perfil" class=""><a href="{#  #} url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+                    <li id="user_menu" class="dropdown">
+                        <a href="#" id="d_user" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ g.user.nombre }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="d_user">
+                            <!-- li id="perfil" class=""><a href="{#  #} url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                                 <li role="separator" class="divider"></li-->
-                                <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
-                            </ul>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+                            <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                </ul>
+        </div>
+    </div>
+</nav>
 </div>
+
 
 <div>
     <h2>
@@ -128,16 +142,21 @@
     {% block content %}{% endblock %}
 </div>
 
-<div class='footer'>
+<br>
+<div class="push"></div>
+</div>
+
+<div class="footer">
+    <footer class='footer prima'>
     <div class='container'>
-        <div class='row main well-lg'>
-            <div class='col-md-offset-1'><br>
+            <div class='col-md-offset-2'><br>
                 <br>
                 Av. Paseo Colón 751, 1063 Ciudad de Buenos Aires, Argentina - Tel: +54 11 4331-0074 -
                 <a id='anchor_foot' href='mailto:ssu.atencionusuarios@conae.gov.ar'>ssu.atencionusuarios@conae.gov.ar</a>
             </div>
-        </div>
     </div>
+</footer>
 </div>
+
 </body>
 </html>

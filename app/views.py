@@ -21,9 +21,9 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
     actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
-    get_page, default_punto, geom2latlng
+    get_page, default_punto, geom2latlng, detalle_archivos
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
-    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT
+    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
 import geoalchemy2.functions as geofunc
@@ -504,14 +504,14 @@ def punto(page=1):
         if form.fecha_hora.data != '':
             try:
                 if len(form.fecha_hora.raw_data[0].rsplit(':')) > 2:
-                    aux = form.fecha_hora.raw_data[0].rsplit(':')
                     try:
-                        form.fecha_hora.data = datetime.strptime(aux[0]+':'+aux[1], '%Y-%m-%d %H:%M')
+                        form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M:%S')
                     except:
                         pass
                 else:
+                    form.fecha_hora.raw_data[0] += ':00'
                     try:
-                        form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M')
+                        form.fecha_hora.data = datetime.strptime(form.fecha_hora.raw_data[0], '%Y-%m-%d %H:%M:%S')
                     except:
                         pass
             except:
@@ -693,9 +693,9 @@ def mapa():
 def punto_map():
     return render_template('punto_map.html')
 
+
 # enviar localidades
 @app.route('/consultar/mapa/loc', methods=['GET'])
-@login_required
 def loc():
     jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom)).filter_by(deleted=False).all())
     gloc = {
@@ -964,16 +964,35 @@ def foro(page=1):
 
 # Vista de Documentos
 @app.route('/docs')
-@login_required
 def documents():
     docs = sorted(os.listdir(DOCUMENTS_FOLDER))
-    return render_template('docs.html', list=docs)
+    detalles = detalle_archivos(docs, DOCUMENTS_FOLDER)
+    return render_template('docs.html', list=docs, folder='/docs', detalles=detalles)
 
+# Vista de Documentos
+@app.route('/fichas')
+def fichas():
+    docs = sorted(os.listdir(FICHAS_FOLDER))
+    detalles = detalle_archivos(docs, FICHAS_FOLDER)
+    return render_template('docs.html', list=docs, folder='/fichas', detalles=detalles)
+
+# Vista de Documentos
+@app.route('/protocolos')
+def protocolos():
+    docs = sorted(os.listdir(PROTOCOLOS_FOLDER))
+    detalles = detalle_archivos(docs, PROTOCOLOS_FOLDER)
+    return render_template('docs.html', list=docs, folder='/protocolos', detalles=detalles)
 
 # Muestra de documentos online
-@app.route('/docs/<filename>')
-def show_file(filename):
-    return send_from_directory(DOCUMENTS_FOLDER, filename)
+@app.route('/<folder>/<filename>')
+def show_file(folder, filename):
+    if folder == 'docs':
+        url = DOCUMENTS_FOLDER
+    if folder == 'fichas':
+        url = FICHAS_FOLDER
+    if folder == 'protocolos':
+        url = PROTOCOLOS_FOLDER
+    return send_from_directory(url, filename)
 
 
 # Vista de Resultados

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import fnmatch
 import json
-import os
+import os, time
 from flask import jsonify
 from app import db
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
@@ -215,13 +215,21 @@ def ini_muestra_form(id):
             filter(Campania.id == id, Campania.deleted is False).all()
     form.campania.data = id
     form.metodologia.choices = [(met.id, met.nombre) for met in Metodologia.query.filter_by(deleted=False).order_by('nombre')]
+    form.metodologia.choices.insert(0, (0, ''))
     form.fotometro.choices = [(fot.id, fot.nombre) for fot in Fotometro.query.filter_by(deleted=False).order_by('nombre')]
+    form.fotometro.choices.insert(0, (0, ''))
     form.camara.choices = [(cam.id, cam.nombre) for cam in Camara.query.filter_by(deleted=False).order_by('nombre')]
+    form.camara.choices.insert(0, (0, ''))
     form.espectralon.choices = [(e.id, e.nombre) for e in Patron.query.filter_by(deleted=False).order_by('nombre')]
+    form.espectralon.choices.insert(0, (0, ''))
     form.radiometro.choices = [(r.id, r.nombre) for r in Radiometro.query.filter_by(deleted=False).order_by('nombre')]
+    form.radiometro.choices.insert(0, (0, ''))
     form.gps.choices = [(gps.id, gps.nombre) for gps in Gps.query.filter_by(deleted=False).order_by('nombre')]
+    form.gps.choices.insert(0, (0, ''))
     form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
+    form.tipo_cobertura.choices.insert(0, (0, ''))
     form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.filter_by(deleted=False).order_by('nombre')]
+    form.cobertura.choices.insert(0, (0, ''))
     return form
 
 
@@ -334,3 +342,14 @@ def tabular_descargas(descargas):
             mes['mes'] = d.fecha_descarga.month
             descarga[mes['mes']].append(mes)
     return descarga
+
+def detalle_archivos(files, path):
+    archivos = []
+    for f in files:
+        archivo = {}
+        archivo['nombre'] = f
+        archivo['tamanio'] = str(round(os.path.getsize(os.path.join(path, f))/1024/1024, 2)) + ' MB.'
+        archivo['fecha'] = datetime.strptime(time.ctime(os.path.getmtime(os.path.join(path, f))),
+                                             '%a %b %d %H:%M:%S %Y').date()
+        archivos.append(archivo)
+    return archivos

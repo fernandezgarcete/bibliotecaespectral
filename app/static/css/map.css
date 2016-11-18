@@ -6,6 +6,8 @@
 
 #mapa_loc { height: 480px; }
 
+#mapa_index { height: 360px; }
+
 .controls {
   margin-top: 10px;
   border: 1px solid transparent;

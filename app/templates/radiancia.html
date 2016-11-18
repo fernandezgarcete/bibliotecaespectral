@@ -17,6 +17,12 @@
 
 <div class="panel panel-default" id="pcamp">
     <div class="panel-heading"><h4>
+        <a href="{{ url_for('editar', id=camp.id) }}" data-toggle="tooltip" title="Ir a la Campaña"><span class="glyphicon glyphicon-share-alt" style="-webkit-transform: scale(-1, 1);
+-moz-transform: scale(-1, 1);
+-ms-transform: scale(-1, 1);
+-o-transform: scale(-1, 1);
+transform: scale(-1, 1);"></span></a>
+        &nbsp;&nbsp;
         <a data-toggle="collapse" href="#down-camp">Campaña &nbsp; {{ camp.nombre }}</a></h4>
     </div>
     <div id="down-camp" class="collapse panel-collapse">
@@ -51,6 +57,12 @@
 
 <div class="panel panel-default" id="pmues">
     <div class="panel-heading"><h4>
+        <a href="{{ url_for('muestra', id=camp.id) }}" data-toggle="tooltip" title="Ir a la Muestra"><span class="glyphicon glyphicon-share-alt" style="-webkit-transform: scale(-1, 1);
+-moz-transform: scale(-1, 1);
+-ms-transform: scale(-1, 1);
+-o-transform: scale(-1, 1);
+transform: scale(-1, 1);"></span></a>
+        &nbsp;&nbsp;
         <a data-toggle="collapse" href="#down-mues">Muestra &nbsp; {{ muestra.nombre }}</a></h4>
     </div>
     <div id="down-mues" class="collapse panel-collapse">
@@ -87,6 +99,12 @@
 
 <div class="panel panel-default" id="ppunto">
     <div class="panel-heading"><h4>
+        <a href="{{ url_for('punto', idm=muestra.id, idp=punto.id, idc=camp.id) }}" data-toggle="tooltip" title="Ir al Punto"><span class="glyphicon glyphicon-share-alt" style="-webkit-transform: scale(-1, 1);
+-moz-transform: scale(-1, 1);
+-ms-transform: scale(-1, 1);
+-o-transform: scale(-1, 1);
+transform: scale(-1, 1);"></span></a>
+        &nbsp;&nbsp;
         <a data-toggle="collapse" href="#down-punto">Punto &nbsp; {{ punto.nombre }}</a></h4>
     </div>
     <div id="down-punto" class="collapse panel-collapse">

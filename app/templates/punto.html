@@ -28,6 +28,7 @@
 -ms-transform: scale(-1, 1);
 -o-transform: scale(-1, 1);
 transform: scale(-1, 1);"></span></a>
+        &nbsp;&nbsp;
         <a data-toggle="collapse" href="#down-camp" title="Datos de Campaña">Campaña &nbsp; {{ camp.nombre }}</a></h4>
     </div>
     <div id="down-camp" class="collapse panel-collapse">
@@ -67,6 +68,7 @@ transform: scale(-1, 1);"></span></a>
 -ms-transform: scale(-1, 1);
 -o-transform: scale(-1, 1);
 transform: scale(-1, 1);"></span></a>
+        &nbsp;&nbsp;
         <a data-toggle="collapse" href="#down-mues" title="Datos de la Muestra">Muestra &nbsp; {{ muestra.nombre }}</a></h4>
     </div>
     <div id="down-mues" class="collapse panel-collapse">
@@ -162,7 +164,7 @@ transform: scale(-1, 1);"></span></a>
         <label class="col-xs-2">Fecha y Hora</label>
         <div class="col-xs-9">
             <div class="input-group date" id="piker">
-                {{ form.fecha_hora(placeholder='Fecha de Campaña en formato DD-MM-AAAA HH:mm', class="form-control", disabled=true) }}
+                {{ form.fecha_hora(placeholder='Fecha de Campaña en formato AAAA-MM-DD HH:mm:ss', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
         </div>
@@ -304,7 +306,6 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 campo_numerico('#altura'); campo_numerico('#presion'); campo_numerico('#temp'); campo_numerico('#nubosidad');
 campo_numerico('#vel_viento'); campo_numerico('#cant_tomas'); campo_numerico('#fecha_hora'); piker_hora('#fecha_hora');
 limpiar_punto();
-modal_punto();
 var puntos = [];
 
 {% for p in puntos.items %}
@@ -338,6 +339,8 @@ function archivo_radiancias(){
         errorMensaje(0,'err',"Seleccione un Punto para cargar sus archivos de radiancias",$('#mensaje')[0]);
     }
 }
+
+modal_punto();
 
 $('#form_punto').submit(function(e){
     var self = this;

@@ -8,7 +8,9 @@ sep = os.path.sep
 UPLOAD_FOLDER = basedir + sep + 'subidas' + sep
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
-DOCUMENTS_FOLDER = basedir+sep+'docs'+sep
+DOCUMENTS_FOLDER = basedir+sep+'docs'+sep+'documentos'+sep
+FICHAS_FOLDER =  basedir+sep+'docs'+sep+'fichas'+sep
+PROTOCOLOS_FOLDER = basedir+sep+'docs'+sep+'protocolos'+sep
 CAMPAIGNS_FOLDER = basedir+sep+'campanias'+sep
 
 ### Data Base Configuration ###

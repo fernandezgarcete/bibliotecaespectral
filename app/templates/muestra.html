@@ -20,6 +20,7 @@
 -ms-transform: scale(-1, 1);
 -o-transform: scale(-1, 1);
 transform: scale(-1, 1);"></span></a>
+        &nbsp;&nbsp;
         <a data-toggle="collapse" href="#down-camp" title="Datos de Campaña">Campaña &nbsp; {{ camp.nombre }}</a></h4>
     </div>
     <div id="down-camp" class="collapse panel-collapse">
@@ -238,9 +239,9 @@ function editar_punto(){
 $('#form_muestra').submit(function(e){
     var self = this;
     e.preventDefault();
-    var id = $('#id').val();
+    var id = {{ camp.id }};
     if(id > 0){
-        self.setAttribute('action', $SCRIPT_ROOT+'/cargar/campania/muestra/'+ id);
+        self.setAttribute('action', $SCRIPT_ROOT+'/cargar/campania/muestra?id='+ id);
     }
     $('.form-control').prop('disabled',false);
     self.submit();

@@ -487,7 +487,7 @@ function piker_hora(item){
     $(item).datetimepicker({
         minDate: '2009-01-01',
         maxDate: moment(),
-        format: 'YYYY-MM-DD HH:mm',
+        format: 'YYYY-MM-DD HH:mm:ss',
         locale: 'es'
     });
 }
@@ -964,6 +964,8 @@ function limpiar_mues() {
 
 // Limpia Formulario de Muestra
 function limpiar_punto() {
+    $('#lat').val('');
+    $('#lng').val('');
     $('#nom').empty();
     $('#nombre').val('');
     $('#id').val(0);
@@ -982,6 +984,7 @@ function limpiar_punto() {
     $('#obs').val('');
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
+    marcador_punto();
     location.href = "#form_punto";
 }
 
@@ -1122,25 +1125,7 @@ function modal_punto(){
         body.appendChild(div);
         div.innerHTML = res;
         $('.btn-ok')[0].addEventListener('click', function(){
-            var lat = $('#lat').val();
-            var lng = $('#lng').val();
-            if(lat == '' || lng == ''){
-                errorMensaje(0,'err','Ingrese los valores de Latitud y Longitud',$('#mensj')[0]);
-                return
-            }
-            try {
-                var latlng = new L.LatLng(lat,lng);
-            }
-            catch(err) {
-                errorMensaje(0,'err','Invalido. Igrese valores en formato numerico: -99.999',$('#mensj')[0]);
-                return
-            }
-            marcador.setLatLng(latlng);
-            marcador.bindPopup('Lat: '+latlng.lat+', Long: '+latlng.lng);
-            mimapa.setView(latlng, 14);
-            mimapa.addLayer(satelite);
-            //mapasBase['Satelite'].addTo(mimapa);
-            $('#lat_long').val(latlng);
+            marcador_punto();
             $('.btn-default').click();
         });
         $('#lng').keydown(function(e){
@@ -1158,6 +1143,41 @@ function modal_punto(){
         _.defer(mimapa.invalidateSize.bind(mimapa));
     });
 
+}
+
+function marcador_punto(){
+    var lat = $('#lat').val();
+    var lng = $('#lng').val();
+    var m = $('#modal-latlng0');
+    if(lat == '' || lng == ''){
+        lat = -34.58;
+        lng = -58.40;
+        if (m.hasClass('in')) {
+            errorMensaje(0,'err','Ingrese los valores de Latitud y Longitud',m);
+            return
+        }
+    }
+    try {
+        var latlng = new L.LatLng(lat,lng);
+    }
+    catch(err) {
+        if(m.hasClass('in')){
+            errorMensaje(0,'err','Invalido. Igrese valores en formato numerico: -99.999',$('#mensj')[0]);
+        }
+        return
+    }
+    marcador.setLatLng(latlng);
+    if(m.hasClass('in')){
+        marcador.bindPopup('Lat: '+latlng.lat+', Long: '+latlng.lng);
+        mimapa.setView(latlng, 14);
+        mimapa.addLayer(satelite);
+        marcador.openPopup();
+        $('#lat_long').val(latlng);
+    }else{
+        marcador.bindPopup('Ingrese Latitud Longitud');
+        mimapa.setView(latlng, 10);
+        marcador.openPopup();
+    }
 }
 
 
