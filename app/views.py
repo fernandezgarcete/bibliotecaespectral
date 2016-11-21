@@ -89,9 +89,15 @@ def after_request(response):
 def login():
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
-    form = LoginConaeForm()
     conae_sign = ConaeSignIn()
     if request.method == 'POST':
+        form = LoginConaeForm()
+        try:
+            form.username.data = request.form['username']
+            form.password.data = request.form['password']
+            form.csrf_token.data = request.form['csrf_token']
+        except:
+            pass
         if form.validate_on_submit():
             datos = conae_sign.login(form)
             if datos:
@@ -100,9 +106,14 @@ def login():
                 return redirect(url_for('login'))
         else:
             flash('Falta Completar:', 'error')
-    return render_template('login.html',
-                           form=form)
+    return render_template('login.html')
 
+
+# Renderizar Formulario Login
+@app.route('/loginform')
+def loginform():
+    form = LoginConaeForm()
+    return render_template('login_form.html', form=form)
 
 
 # Inicio de sesión del usuario
@@ -685,7 +696,7 @@ def mapa():
         for c in camps:
             nombres.append(c.nombre)
         return resultado(nombres, criterios)
-    return render_template('consulta_map.html')
+    return redirect(url_for('consultar'))
 
 
 @app.route('/punto/mapa', methods=['GET'])

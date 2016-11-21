@@ -10,34 +10,19 @@
     <link rel="stylesheet" href="/static/css/map.css" />
 </head>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
-{% if form.errors %}
-    <div class="alert alert-dismissable alert-danger">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <ul>
-            {% for error in form.errors %}
-                <li><span style="color:darkred;">{{ error }}</span><br></li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
+<script>navegador('#inicio')</script>
 
-<div align="right">
-    <form class="form-signin" id="loginform" action="{{ url_for('login', ext=request.args.get('next', '')) }}" method="POST" style="border-color: #101010; margin-left: 0; padding: 0; width: auto;">
-        <div style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
-            {{ form.username(placeholder="Usuario de Email", style="display: inline-block; vertical-align: middle; width: auto; background-color: #fff; border-radius: 4px; color: #555; font-size: 14px; padding: 6px 12px; transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;", required="true", maxlength="128") }}
-        </div>
-        <div style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
-            {{ form.password(type="password", autocomplete="off", style="display: inline-block; vertical-align: middle; width: auto; background-color: #fff; border-radius: 4px; color: #555; font-size: 14px; padding: 6px 12px; transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;", maxlength="128", placeholder="contraseña") }}
-        </div>
-        {{ form.hidden_tag() }}
-        <input type="submit" value="Ingresar" onclick="logueo()" style="background-color: #5cb85c; border-color: #4cae4c; color: #fff; -moz-user-select: none; background-image: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; display: inline-block; font-size: 14px; font-weight: 400; line-height: 1.42857; margin-bottom: 0; padding: 6px 12px; text-align: center; vertical-align: middle; white-space: nowrap;">
-        <div style="display: inline-block; margin-bottom: 0; vertical-align: middle; text-align: left;">
-            <a href="https://registro.conae.gov.ar/registracion/view/"> Regístrese</a><br>
-            <a href="https://registro.conae.gov.ar/resetpassword/forgot/"> ¿Olvidó su contraseña?</a>
-        </div>
-    </form>
-</div>
+<div class="col-md-12">
+    {% if not g.user.is_authenticated %}
+        <div id="logueo" align="right"></div>
+        <script>
+            $.ajax({url:"{{ url_for('loginform') }}"}).done(function(resp){
+                document.getElementById('logueo').innerHTML = resp;
+            });
+        </script>
+    {% endif %}
 <br>
+</div>
 
 <div class="col-md-6">
     <div id="radiometroCarousel" class="carousel slide" data-ride="carousel">

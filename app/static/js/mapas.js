@@ -154,13 +154,14 @@ function consultaCamp(loc, loading, btn){
     $.ajax({
         url: $SCRIPT_ROOT+'/consultar/mapa',
         method: 'POST',
-        data: {loc: loc},
-        success: function(resp){
-            $("#result")[0].innerHTML = "<br>" + resp.substring(resp.indexOf("<p>"), resp.indexOf("footer"));
+        data: {loc: loc, csrf_token: $csrf_token}
+    }).done(function(resp){
+            $("#result")[0].innerHTML = "<br>" + resp;
             window.location.href = '#result';
             $(btn).show();
             $(loading).hide();
-        }
+    }).fail(function(resp){
+        console.log(resp)
     });
 }
 

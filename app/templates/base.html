@@ -30,13 +30,21 @@
 
 <div class="wrapper">
     <header class="navbar well-lg info bs-docs-nav" role="banner">
-    <div class="container">
+    <div id="header" class="container">
         <a class="navbar-brand" href="http://www.conae.gov.ar">
             <img style="max-width:130px; margin-top: -30px;" src="/static/img/CONAE_chico_transp.png">
         </a>
         <a class="navbar-brand" href="/">
             <img style="max-width:210px; margin-top: -20px;" src="/static/img/logo_radiometro_v3.png">
         </a>
+        {# if not g.user.is_authenticated %}
+            <div id="logueo" align="right"></div>
+            <script>
+                $.ajax({url:"{{ url_for('loginform') }}"}).done(function(resp){
+                    document.getElementById('logueo').innerHTML = resp;
+                });
+            </script>
+        {% endif #}
     </div>
 </header>
 <div class="head-border"></div>
@@ -53,7 +61,7 @@
                 <li id="inicio" class=""><a href="/index">INICIO</a></li>
                     <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
-                <ul class="nav navbar-nav">
+                <ul id="docs" class="nav navbar-nav">
                     <li id="docs_menu" class="dropdown">
                         <a href="#" id="d_docs" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             RECURSOS
@@ -99,7 +107,6 @@
 </div>
 
 <div class="container">
-    <br>
     {% with errors = get_flashed_messages(category_filter=["error"]) %}
     {% if errors %}
     <div class="alert alert-dismissable alert-danger">

@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_openid import OpenID
 from flask_oidc import OpenIDConnect
 from flask_mail import Mail
+from flask_wtf.csrf import CsrfProtect
 from flask.json import JSONEncoder
 from flask_bootstrap import Bootstrap
 from .momentjs import momentjs
@@ -25,6 +26,8 @@ lm.login_view = 'login'
 lm.login_message = 'Por favor autentíquese para acceder a la página.'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
+csrf = CsrfProtect()
+csrf.init_app(app)
 
 mail = Mail(app)
 

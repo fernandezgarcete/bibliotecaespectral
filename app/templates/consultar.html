@@ -2,9 +2,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<head><meta charset="UTF-8"></head>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="/static/css/map.css" />
+    <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+</head>
 <script>navegador('#consultar')</script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{#<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>#}
 
 
 {% if form.errors %}
@@ -20,7 +25,7 @@
 
 <h1>Consulta de Datos</h1>
 <hr>
-<ul class="list-inline" name="filtro">
+{#<ul class="list-inline" name="filtro">
     <li id="to" onclick="item_consulta('#to')"><a href="#"><h1><span class="label label-primary">Todo</span></h1></a></li>
     <li id="p" onclick="item_consulta('#p')"><a href="#"><h2><span class="label label-info">Proyecto</span></h2></a></li>
     <li id="l" onclick="item_consulta('#l')"><a href="#"><h2><span class="label label-info">Localidad</span></h2></a></li>
@@ -28,23 +33,22 @@
     <li id="c" onclick="item_consulta('#c')"><a href="#"><h2><span class="label label-info">Cobertura</span></h2></a></li>
     <li id="f" onclick="item_consulta('#f')"><a href="#"><h2><span class="label label-info">Fecha</span></h2></a></li>
     <li id="m" ><a href="{{ url_for('mapa') }}"><h2><span class="label label-info">Geográfica</span></h2></a></li>
-</ul>
-<br>
-<br>
-<form class="form-horizontal" action="" method="post" name="consultar">
-    <div class="form-group" id="fp" style="display: none;">
+</ul>#}
+<div class="col-md-6">
+<form class="form-horizontal" action="" method="post" id="consultarform">
+    <div class="form-group" id="fp" style="display: block;">
         <label class="col-xs-2">Proyecto</label>
         <div class="col-xs-10">
             {{ form.proyecto(placeholder="Nombre de Proyecto", class="form-control") }}
         </div>
     </div>
-    <div class="form-group" id="fl" style="display: none;">
+    <div class="form-group" id="fl" style="display: block;">
         <label class="col-xs-2">Localidad</label>
         <div class="col-xs-10">
             {{ form.localidad(placeholder="Nombre de la Localidad", class="form-control") }}
         </div>
     </div>
-    <div class="form-group" id="ff" style="display: none;">
+    <div class="form-group" id="ff" style="display: block;">
         <label class="col-xs-2">Fechas</label>
         <div class="col-xs-10">
             <div class="input-group input-daterange">
@@ -57,61 +61,40 @@
             </div>
         </div>
     </div>
-    <div class="form-group" id="ft" style="display: none;">
+    <div class="form-group" id="ft" style="display: block;">
         <label class="col-xs-2">Tipo de Cobertura</label>
         <div class="col-xs-10">
             {{ form.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()") }}
         </div>
     </div>
-    <div class="form-group" id="fc" style="display: none;">
+    <div class="form-group" id="fc" style="display: block;">
         <label class="col-xs-2">Cobertura</label>
         <div class="col-xs-10">
             {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control") }}
         </div>
     </div>
-    <!-- div class="form-group">
-        <label class="col-xs-2">Radiancia</label>
-        <div class="col-xs-10">
-            <div class="btn-group" data-toggle="buttons">
-                <label id="rad" class="btn btn-primary active">
-                    Radiancia
-                </label>
-                <label id="rad_avg" class="btn btn-default">
-                     Radiancia Promedio
-                </label>
-                <label id="rad_std" class="btn btn-default">
-                     Radiancia Desviación Estándar
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2">Reflectancia</label>
-        <div class="col-xs-10">
-            <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-default">
-                     Reflectancia
-                </label>
-                <label class="btn btn-default">
-                     Reflectancia Promedio
-                </label>
-                <label class="btn btn-default">
-                     Reflectancia Desviación Estándar
-                </label>
-            </div>
-        </div>
-    </div-->
     <div class="form-group">
         {{ form.hidden_tag() }}
     </div>
-    <input type="submit" value="Consultar" class="btn btn-primary">
+    </span><img id="buscando" style="display: none" src="/static/img/loading.gif">
+    <button id="busca" type="submit" class="btn btn-primary">
+        Consultar
+        <span class="glyphicon glyphicon-search"></span>
+    </button>
+{#    <input type="submit" value="Consultar" class="btn btn-primary">#}
 </form>
-<hr>
-<!-- div id="grafico_linea"></div -->
+<br>
+</div>
+<div class="col-md-6">
+<div id="mapid"></div>
+</div>
+
+<div class="col-md-12" id="result"></div>
 
 <!-- Scripts al cargar el documento -->
 <script>
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+$csrf_token = {{ csrf_token()|tojson|safe }};
     campo_numerico('#fecha_inicio'); campo_numerico('#fecha_fin');
 
     $("input[type=checkbox]").change(function(){
@@ -135,10 +118,24 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         startView: 2
     });
 
-    $('#fp').hide();
+{#    $('#fp').hide();
     $('#fl').hide();
     $('#ft').hide();
     $('#fc').hide();
-    $('#ff').hide();
+    $('#ff').hide();#}
+$('#consultarform').submit(function(e){
+    var $form = $(this);
+    e.preventDefault();
+    $('#busca').hide();
+    $('#buscando').show();
+    $.post("{{ url_for('consultar') }}", $form.serialize())
+    .done(function(resp) {
+        $('#result').empty().append(resp);
+        window.location.href = '#result';
+        $('#buscando').hide();
+        $('#busca').show();
+    });
+});
 </script>
+<script src="/static/js/mapas.js" charset="UTF-8"></script>
 {% endblock %}

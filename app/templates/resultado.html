@@ -1,22 +1,41 @@
-<!-- Extiende de base.html -->
-{% extends "base.html" %}
-
-{% block content %}
-<head><meta charset="UTF-8"></head>
-<script>navegador('#consultar')</script>
-
-<a href="{{ url_for('consultar') }}"><h3><span class="label label-primary">Otra consulta</span></h3></a>
 
 <br>
-<p>Resultados para la búsqueda:</p>
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>Resultados para la búsqueda:</strong></div>
+    <div class="panel-body">
+        <ul>
+        {% for name, value in criterios.items() %}
+            <li><strong>{{ name }}:</strong> {{ value }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<h2>Campañas</h2>
+    {% if list|length > 0 %}
+        <div class="list-group">
+            {% for file in list %}
+                <a class="list-group-item" href="{{ url_for('show_campaign', filename=file) }}" data-toggle="tooltip" title="Descargar Item">
+                {{ file }}
+                    <span class="badge">
+                        <span  class="glyphicon glyphicon-arrow-down"></span>
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    {% elif list|length == 0 %}
+        &nbsp;No se encontraron campañas para su búsqueda.
+        <br>
+    {% endif %}
+{#<p>Resultados para la búsqueda:</p>
     <ul>
         {% for name, value in criterios.items() %}
             <li><strong>{{ name }}:</strong> {{ value }}</li>
         {% endfor %}
-    </ul>
+    </ul>#}
 
 
-<h1>Campañas</h1>
+{#<h1>Campañas</h1>
 <hr>
 <div class="container">
 {% if list|length > 0 %}
@@ -31,6 +50,4 @@
 {% elif list|length == 0 %}
     No se encontraron campañas para su búsqueda.
 {% endif %}
-</div>
-
-{% endblock %}
+</div>#}
