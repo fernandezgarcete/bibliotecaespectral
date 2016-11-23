@@ -59,7 +59,7 @@ Contacto
     </div>
     {{ form.hidden_tag() }}
 
-    </span><img id="enviando" style="display: none" src="/static/img/loading.gif">
+    <img id="enviando" style="display: none" src="/static/img/loading.gif"/>
     <button id="enviar" type="submit" class="btn btn-primary">
         <span class="glyphicon glyphicon-envelope"></span>&nbsp;
         Enviar
@@ -76,8 +76,8 @@ $('#contacto').submit(function(e){
     $('#enviando').show();
     $.post("{{ url_for('contacto') }}", $form.serialize())
     .done(function(resp) {
-        $('#buscando').hide();
-        $('#busca').show();
+        $('#enviando').hide();
+        $('#enviar').show();
     });
 });
 </script>

@@ -74,14 +74,17 @@
                         </ul>
                     </li>
                 </ul>
-                <li id="contacto" class=""><a href="/contacto">CONTACTO</a></li>
                 {% if g.user.is_authenticated %}
-                    {% if g.user.is_editable %}<li id="cargar" class=""><a href="/cargar">CARGAR</a></li>
-                        <li id="admin" class=""><a href="/administrativo">ADMINISTRATIVO</a></li>{% endif %}
+                    {% if g.user.is_editable %}
+                        <li id="cargar" class=""><a href="/cargar">CARGAR</a></li>
+                        <li id="admin" class=""><a href="/administrativo">ADMINISTRATIVO</a></li>
+                    {% endif %}
                     <li id="consultar" class=""><a href="/consultar">DATOS</a></li>
-                    </ul>
-
-                    <ul class="nav navbar-nav navbar-right">
+                {% endif %}
+                <li id="contacto" class=""><a href="/contacto">CONTACTO</a></li>
+            </ul>
+            {% if g.user.is_authenticated %}
+                <ul class="nav navbar-nav navbar-right">
                     <li id="user_menu" class="dropdown">
                         <a href="#" id="d_user" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ g.user.nombre }}
@@ -93,8 +96,8 @@
                             <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
                         </ul>
                     </li>
-                {% endif %}
                 </ul>
+            {% endif %}
         </div>
     </div>
 </nav>

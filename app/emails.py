@@ -57,7 +57,7 @@ def error_notification(user):
 def contact_notification(form):
     send_email('[Biblioteca Espectral] %s - %s' % (form.nombre.data, form.asunto.data),         # Asunto
                form.email.data,                                                                 # Remitente
-               [ADMINS[1]],                                                                     # Destinatario
+               [ADMINS[2]],                                                                     # Destinatario
                form.mensaje.data+'\n\n\nEnviado por\nNOMBRE:\t'+form.nombre.data+'\nEMAIL:\t'
                +form.email.data+'\n\nDesde https://bibliotecaespectral.conae.gov.ar/contacto',  # Cuerpo del mail texto
                None,                                                                            # Cuerpo del mail HMTL

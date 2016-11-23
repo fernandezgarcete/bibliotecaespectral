@@ -2,7 +2,7 @@
 import fnmatch
 import json
 import os, time
-import urllib
+import requests
 from flask import jsonify
 from app import db
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
@@ -362,7 +362,7 @@ def checkRecaptcha(response, secretkey):
     url = url + 'secret=' +secretkey
     url = url + '&response=' +response
     try:
-        jsonobj = json.loads(urllib.request.urlopen(url).read().decode('utf-8'))
+        jsonobj = json.loads(requests.get(url).content.decode('utf-8'))
         if jsonobj['success']:
             return True
         else:
