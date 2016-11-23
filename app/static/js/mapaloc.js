@@ -9,7 +9,7 @@ $.getScript($SCRIPT_ROOT+'/static/js/biblioespectral.js');
 // pick list containing a mix of places and predicted search terms.
 
 
-var localidad = {lat: 0, lng: 0, name: ''};
+var localidad = {lat: 0, lng: 0, name: '', csrf_token: $csrf_token};
 
 function EnviarControl(controlDiv, map, markers){
     var controlUI = document.createElement('div');

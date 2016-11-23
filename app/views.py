@@ -15,15 +15,15 @@ from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
     MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
-    GPSForm, PuntoForm
+    GPSForm, PuntoForm, ContactoForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
     actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
-    get_page, default_punto, geom2latlng, detalle_archivos
+    get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
-    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER
+    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER, SECRET_KEY_CAPTCHA, SITE_KEY_CAPTCHA
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
 import geoalchemy2.functions as geofunc
@@ -1356,3 +1356,17 @@ def borrar_gps(id):
     db.session.commit()
     flash(gettext('El GPS ha sido borrado.'), 'success')
     return redirect(url_for('gps'))
+
+# Pagina de Contacto
+@app.route('/contacto', methods=['GET', 'POST'])
+def contacto():
+    form = ContactoForm()
+    if request.method == 'POST':
+        response = request.form.get('g-recaptcha-response')
+        if checkRecaptcha(response, SECRET_KEY_CAPTCHA):
+            if form.validate_on_submit():
+
+                flash('Su mensaje ha sido enviado. Gracias por contactarse', 'success')
+        else:
+            flash('Indique que No es un robot', 'error')
+    return render_template('contacto.html', form=form, siteKey=SITE_KEY_CAPTCHA)

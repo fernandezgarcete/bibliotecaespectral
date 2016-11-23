@@ -91,3 +91,7 @@ LANGUAGES = {
 #  Microsoft Translation service
 MS_TRANSLATOR_CLIENT_ID = 'flask-test-microblog' # ingresar el Id de la app traduccion MS
 MS_TRANSLATOR_CLIENT_SECRET = '8IwAJV7BJWEjHcHtvfHOlMv94djxCnIhT3DEKn1jMjQ=' # ingresa tu secreto app traduccion de MS aquí
+
+# Google NoCaptcha ReCaptcha API Key
+SITE_KEY_CAPTCHA = '6LdBqQwUAAAAAPRfUvYwc78kzaV0BUnHwhyD3zKU'
+SECRET_KEY_CAPTCHA = '6LdBqQwUAAAAABVBhVfZPtN0oYef-hl_7jztwheg'

@@ -194,13 +194,19 @@ class Campania(db.Model):
         l = ''
         # id campaña
         if len(camps) == 0:
-            ult_id = '001'
+            ult_id = '0001'
         elif len(camps) < 9:
             ult_id = camps[len(camps) - 1].id + 1
-            ult_id = '00' + str(ult_id)
+            ult_id = '000' + str(ult_id)
         elif len(camps) < 99:
             ult_id = camps[len(camps) - 1].id + 1
+            ult_id = '00' + str(ult_id)
+        elif len(camps) < 999:
+            ult_id = camps[len(camps) - 1].id + 1
             ult_id = '0' + str(ult_id)
+        elif len(camps) > 999:
+            ult_id = camps[len(camps) - 1].id + 1
+            ult_id = str(ult_id)
         # fecha
         y = str(f.year)
         m = str(f.month)

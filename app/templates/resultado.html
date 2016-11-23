@@ -3,11 +3,10 @@
 <div class="panel panel-default">
     <div class="panel-heading"><strong>Resultados para la búsqueda:</strong></div>
     <div class="panel-body">
-        <ul>
         {% for name, value in criterios.items() %}
-            <li><strong>{{ name }}:</strong> {{ value }}</li>
+            <strong>{{ name }}:</strong> {{ value }}<br>
         {% endfor %}
-        </ul>
+        {% if criterios.items()|length < 1 %}Todas las campañas{% endif %}
     </div>
 </div>
 

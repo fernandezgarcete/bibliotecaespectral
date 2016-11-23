@@ -6,7 +6,7 @@ from flask_wtf import Form
 from flask_wtf.file import FileRequired
 from wtforms import StringField, BooleanField, TextAreaField, FileField, DateField, DateTimeField, SelectField, SelectMultipleField, \
     DecimalField
-from wtforms.validators import DataRequired, Length, regexp
+from wtforms.validators import DataRequired, Length, regexp, Email
 from app.models import User
 from config import ALLOWED_EXTENSIONS
 
@@ -314,3 +314,10 @@ class GPSForm(Form):
     modelo = StringField('modelo', validators=[DataRequired(message=u'Falta modelo')])
     nro_serie = StringField('nro_serie', validators=[DataRequired(message=u'Falta el número de serie')])
     accesorio = TextAreaField('accesorio')
+
+# Formulario de Contacto
+class ContactoForm(Form):
+    nombre = StringField('nombre', validators=[DataRequired(message=u'Falta el nombre')])
+    email = StringField('email', validators=[DataRequired(message=u'Falta el email'), Email(message=u'Ingrese un email con formato: ejemplo@dominio.com')])
+    asunto = StringField('asunto', validators=[DataRequired(message=u'Falta el asunto')])
+    mensaje = TextAreaField('mensaje', validators=[DataRequired(message=u'Falta el mensaje')])

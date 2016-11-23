@@ -1,0 +1,84 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+<script src='https://www.google.com/recaptcha/api.js?hl=es'></script>
+</head>
+<script>navegador('#contacto')</script>
+
+<div class="container">
+
+{% if form.errors %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul>
+            {% for key, error in form.errors.items() %}
+                <li><span style="color:darkred;"><strong>{{ key }}:</strong> {{ error }}</span><br></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h1>
+Contacto
+</h1>
+<hr>
+<form class="form-horizontal" id="contacto"  method="post">
+    <div class="form-group">
+        <label class="col-xs-2">Nombre *</label>
+        <div class="col-xs-9">
+            {{ form.nombre(placeholder="Nombre y Apellido", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Email *</label>
+        <div class="col-xs-9">
+            {{ form.email(placeholder="ejemplo@dominio.com", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Asunto *</label>
+        <div class="col-xs-9">
+            {{ form.asunto(placeholder="Asunto de referencia", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">Mensaje *</label>
+        <div class="col-xs-9">
+            {{ form.mensaje(placeholder="Escriba su mensaje", class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2"></label>
+        <div class="col-xs-9">
+            <div class="g-recaptcha" data-sitekey="{{siteKey}}"></div>
+        </div>
+    </div>
+    {{ form.hidden_tag() }}
+
+    </span><img id="enviando" style="display: none" src="/static/img/loading.gif">
+    <button id="enviar" type="submit" class="btn btn-primary">
+        <span class="glyphicon glyphicon-envelope"></span>&nbsp;
+        Enviar
+    </button>
+</form>
+
+</div>
+
+<script>
+$('#contacto').submit(function(e){
+    var $form = $(this);
+    e.preventDefault();
+    $('#enviar').hide();
+    $('#enviando').show();
+    $.post("{{ url_for('contacto') }}", $form.serialize())
+    .done(function(resp) {
+        $('#buscando').hide();
+        $('#busca').show();
+    });
+});
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
-    <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+    <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};$csrf_token = {{ csrf_token()|tojson|safe  }}</script>
     <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
     <link rel="stylesheet" href="/static/css/map.css" />
     <script>navegador('#cargar')</script>

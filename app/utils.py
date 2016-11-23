@@ -2,6 +2,7 @@
 import fnmatch
 import json
 import os, time
+import urllib
 from flask import jsonify
 from app import db
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
@@ -353,3 +354,19 @@ def detalle_archivos(files, path):
                                              '%a %b %d %H:%M:%S %Y').date()
         archivos.append(archivo)
     return archivos
+
+
+# Verificar Robot Captcha
+def checkRecaptcha(response, secretkey):
+    url = 'https://www.google.com/recaptcha/api/siteverify?'
+    url = url + 'secret=' +secretkey
+    url = url + '&response=' +response
+    try:
+        jsonobj = json.loads(urllib.request.urlopen(url).read().decode('utf-8'))
+        if jsonobj['success']:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e)
+        return False
