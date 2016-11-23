@@ -39,15 +39,26 @@ def follower_notification(followed, follower):
                render_template('follower_email.txt',                        # Cuerpo del mensaje en texto plano
                                user=followed, follower=follower),
                render_template('follower_email.hmtl',                       # Cuerpo del mensaje en HTML.
-                               user=followed, follower=follower))
+                               user=followed, follower=follower),
+               None)                                                        # Arhivo Adjunto
 
-
+# Notificacion de Errores
 def error_notification(user):
     log = '/var/log/apache2/error.log'
     send_email('[BibliotecaEspectral] ERROR 500',       # Asunto
                ADMINS[0],                               # Remitente
-               ADMINS[0],                               # Destinatario
+               [ADMINS[0]],                               # Destinatario
                render_template('error_500_email.txt',   # Cuerpo del mail
                                user=user),
                None,                                    # Cuerpo html
                log)                                     # Path de archivo adjunto
+
+# Notificacion de Contacto
+def contact_notification(form):
+    send_email('[Biblioteca Espectral] %s - %s' % (form.nombre.data, form.asunto.data),         # Asunto
+               form.email.data,                                                                 # Remitente
+               [ADMINS[2]],                                                                     # Destinatario
+               form.mensaje.data+'\n\n\nEnviado por\nNOMBRE:\t'+form.nombre.data+'\nEMAIL:\t'
+               +form.email.data+'\n\nDesde https://bibliotecaespectral.conae.gov.ar/contacto',  # Cuerpo del mail texto
+               None,                                                                            # Cuerpo del mail HMTL
+               None)                                                                            # Archivo Adjunto

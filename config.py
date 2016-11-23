@@ -72,7 +72,7 @@ MAIL_USERNAME = 'jjfernandez@conae.gov.ar'
 MAIL_PASSWORD = 'Ep$ilon1'
 
 # Lista de administradores
-ADMINS = ['jjfernandez@conae.gov.ar']
+ADMINS = ['jjfernandez@conae.gov.ar', 'ssu.atencionusuarios@conae.gov.ar', 'mr.juanjo@gmail.com']
 
 # pagination
 POST_PER_PAGE = 5
@@ -82,10 +82,10 @@ MAX_SEARCH_RESULTS = 50
 
 # available language
 LANGUAGES = {
-    'en' : 'English',
-    'es' : 'Español',
-    'pt' : 'Portugues',
-    'it' : 'Italiano'
+    'en': 'English',
+    'es': 'Español',
+    'pt': 'Portugues',
+    'it': 'Italiano'
 }
 
 #  Microsoft Translation service

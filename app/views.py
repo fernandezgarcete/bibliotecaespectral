@@ -12,7 +12,7 @@ from flask_sqlalchemy import get_debug_queries
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
-from .emails import follower_notification, error_notification
+from .emails import follower_notification, error_notification, contact_notification
 from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
     MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
     GPSForm, PuntoForm, ContactoForm
@@ -1365,8 +1365,8 @@ def contacto():
         response = request.form.get('g-recaptcha-response')
         if checkRecaptcha(response, SECRET_KEY_CAPTCHA):
             if form.validate_on_submit():
-
-                flash('Su mensaje ha sido enviado. Gracias por contactarse', 'success')
+                contact_notification(form)
+                flash('Su mensaje ha sido enviado.\nEn breve nos comunicaremos.\nGracias por contactarse', 'success')
         else:
             flash('Indique que No es un robot', 'error')
     return render_template('contacto.html', form=form, siteKey=SITE_KEY_CAPTCHA)
