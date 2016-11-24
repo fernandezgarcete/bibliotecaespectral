@@ -118,6 +118,9 @@ $csrf_token = {{ csrf_token()|tojson|safe }};
         startView: 2
     });
 
+{% if not g.user.is_authenticated %}
+modal_login();
+{% endif %}
 {#    $('#fp').hide();
     $('#fl').hide();
     $('#ft').hide();

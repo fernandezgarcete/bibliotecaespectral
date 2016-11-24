@@ -160,6 +160,9 @@ function infoMensaje(id, nombre, mens, parent){
 
 // Crear Modal Generico
 function crearModal(id, nombre, tit, mensaje, okBtnText, btnclass){
+    mensaje = mensaje || '';
+    okBtnText = okBtnText || '';
+    btnclass = btnclass || '';
     var modal = document.createElement('div');
     modal.id = nombre + id;
     modal.classList.add('modal');
@@ -203,27 +206,29 @@ function crearModal(id, nombre, tit, mensaje, okBtnText, btnclass){
     content.appendChild(body);
 
     var mens = document.createElement('p');
-    mens.appendChild(document.createTextNode(mensaje));
-    body.appendChild(mens);
+        mens.appendChild(document.createTextNode(mensaje));
+        body.appendChild(mens);
 
-    var footer = document.createElement('div');
-    footer.classList.add('modal-footer');
-    content.appendChild(footer);
+    if(okBtnText != '' || btnclass != ''){
+        var footer = document.createElement('div');
+        footer.classList.add('modal-footer');
+        content.appendChild(footer);
 
-    var cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.classList.add('btn');
-    cancel.classList.add('btn-default');
-    cancel.setAttribute('data-dismiss','modal');
-    cancel.appendChild(document.createTextNode('Cancelar'));
-    footer.appendChild(cancel);
+        var cancel = document.createElement('button');
+        cancel.type = 'button';
+        cancel.classList.add('btn');
+        cancel.classList.add('btn-default');
+        cancel.setAttribute('data-dismiss','modal');
+        cancel.appendChild(document.createTextNode('Cancelar'));
+        footer.appendChild(cancel);
 
-    var ok = document.createElement('a');
-    ok.classList.add('btn');
-    ok.classList.add(btnclass);
-    ok.classList.add('btn-ok');
-    ok.appendChild(document.createTextNode(okBtnText));
-    footer.appendChild(ok);
+        var ok = document.createElement('a');
+        ok.classList.add('btn');
+        ok.classList.add(btnclass);
+        ok.classList.add('btn-ok');
+        ok.appendChild(document.createTextNode(okBtnText));
+        footer.appendChild(ok);
+    }
 }
 
 function cargarCoberturas(){
@@ -398,7 +403,7 @@ function crearModalNuevaCobertura(id){
 
     var body = $('#nueva-cob'+id+' .modal-body')[0];
 
-    var f = $.ajax({url:$SCRIPT_ROOT+'/editar/nueva_cobertura', success: function(res){
+    $.ajax({url:$SCRIPT_ROOT+'/editar/nueva_cobertura', success: function(res){
         body.innerHTML = res;
         $('#ncaltura')[0].addEventListener('keydown', function(e){
             var accepted = [8,9,13,46,48,49,50,51,52,53,54,55,56,57,58,189]; // numeros, guion, borrar, enter
@@ -1180,7 +1185,6 @@ function marcador_punto(){
     }
 }
 
-
 // Carga un Archivo CSS o JS externo
 function loadjscssfile(filename, filetype){
     if (filetype=="js"){ //if filename is a external JavaScript file
@@ -1200,4 +1204,36 @@ function loadjscssfile(filename, filetype){
         document.getElementsByTagName("head")[0].appendChild(fileref);
         return false;
     }
+}
+
+// Modal de Logueo
+function modal_login(){
+    crearModal(-1, 'modal-login', 'Ingresar', '');
+    var body = $('#modal-login-1 .modal-body')[0];
+
+    $.ajax({url:$SCRIPT_ROOT+'/loginform'})
+    .done(function(res) {
+        body.innerHTML = res;
+
+    });
+}
+
+function abrir_login(){
+    $('#modal-login-1').modal('show');
+}
+
+// Realizar el login
+function logueo(){
+    $('#loginform').submit(function(event){
+        event.preventDefault();
+        var $form = $(this),
+            data = {'username':$form.find('input[name="username"]').val(),
+                'password':$form.find('input[name="password"]').val(),
+                'csrf_token':$form.find('input[name="csrf_token"]').val()
+            },
+            url = $form.attr('action');
+        $.post(url,data).done(function(){
+            window.location = $SCRIPT_ROOT;
+        });
+    });
 }

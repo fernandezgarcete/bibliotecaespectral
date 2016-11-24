@@ -136,22 +136,6 @@
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail());
     }
-
-    function logueo(){
-        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-        $('#loginform').submit(function(event){
-            event.preventDefault();
-            var $form = $(this),
-                    data = {'username':$form.find('input[name="username"]').val(),
-                        'password':$form.find('input[name="password"]').val(),
-                        'csrf_token':$form.find('input[name="csrf_token"]').val()
-                    },
-                    url = $form.attr('action');
-            $.post(url,data).done(function(){
-                window.location = $SCRIPT_ROOT;
-            });
-        });
-    }
 </script>
 
 

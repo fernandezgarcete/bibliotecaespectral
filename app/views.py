@@ -685,7 +685,6 @@ def editar(id):
 
 # mapa consulta
 @app.route('/consultar/mapa', methods=['GET', 'POST'])
-@login_required
 def mapa():
     if request.method == 'POST':
         nom = request.form.get('loc')
@@ -723,7 +722,6 @@ def loc():
 
 # Consulta de datos
 @app.route('/consultar', methods=['GET', 'POST'])
-@login_required
 def consultar():
     form = ConsultarForm()
     form.proyecto.choices = [(p.id, p.nombre) for p in Proyecto.query.filter_by(deleted=False).order_by('nombre')]
@@ -1007,7 +1005,6 @@ def show_file(folder, filename):
 
 
 # Vista de Resultados
-@login_required
 def resultado(campañas, criterios):
     archivos = os.listdir(CAMPAIGNS_FOLDER)
     lista = []
