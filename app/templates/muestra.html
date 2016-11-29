@@ -69,8 +69,8 @@ transform: scale(-1, 1);"></span></a>
         {% endfor %}
     </div>
 </div>
-{% if muestras.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('muestra', page=muestras.prev_num) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
-{% if muestras.has_next %}<li><a href="{{ url_for('muestra', page=muestras.next_num) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
+{% if muestras.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('muestra', page=muestras.prev_num, id=camp.id) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
+{% if muestras.has_next %}<li><a href="{{ url_for('muestra', page=muestras.next_num, id=camp.id) }}">Siguientes <i class="glyphicon glyphicon-chevron-right"></i></a></li></ul></nav>{% else %}</ul></nav>{% endif %}
 
 <button type="button" class="btn btn-info" onclick="limpiar_mues()">
     Nueva <span class="glyphicon glyphicon-plus"></span>

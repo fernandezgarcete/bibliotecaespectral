@@ -68,8 +68,8 @@ MAIL_SERVER = 'mail.conae.gov.ar'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
-MAIL_USERNAME = 'jjfernandez@conae.gov.ar'
-MAIL_PASSWORD = 'Ep$ilon1'
+MAIL_USERNAME = 'bibliotecaespectral.udae@conae.gov.ar'
+MAIL_PASSWORD = 'M1yi924r'
 
 # Lista de administradores
 ADMINS = ['jjfernandez@conae.gov.ar', 'ssu.atencionusuarios@conae.gov.ar', 'mr.juanjo@gmail.com']

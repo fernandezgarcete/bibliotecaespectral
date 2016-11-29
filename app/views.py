@@ -7,6 +7,7 @@ import re
 import requests
 import traceback
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
+from setuptools.compat import unicode
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import get_debug_queries
 from flask_login import login_user, logout_user, current_user, login_required
@@ -1001,7 +1002,7 @@ def show_file(folder, filename):
         url = FICHAS_FOLDER
     if folder == 'protocolos':
         url = PROTOCOLOS_FOLDER
-    return send_from_directory(url, filename)
+    return send_from_directory(url, unicode(filename))
 
 
 # Vista de Resultados
@@ -1020,7 +1021,7 @@ def resultado(campañas, criterios):
 def show_campaign(filename):
     d = Descarga()  # Registrar la descarga
     d.agregar(g.user.email, CAMPAIGNS_FOLDER, filename)
-    return send_from_directory(CAMPAIGNS_FOLDER, filename)
+    return send_from_directory(CAMPAIGNS_FOLDER, unicode(filename))
 
 
 # Carga de Localidades nuevas

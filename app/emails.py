@@ -4,7 +4,7 @@ __author__ = 'Juanjo'
 
 from flask_mail import Message
 from flask import render_template
-from config import ADMINS
+from config import ADMINS, MAIL_USERNAME
 from app import mail, app
 from .decorators import async
 
@@ -56,9 +56,9 @@ def error_notification(user):
 # Notificacion de Contacto
 def contact_notification(form):
     send_email('[Biblioteca Espectral] %s - %s' % (form.nombre.data, form.asunto.data),         # Asunto
-               form.email.data,                                                                 # Remitente
+               MAIL_USERNAME,                                                                   # Remitente
                [ADMINS[2]],                                                                     # Destinatario
-               form.mensaje.data+'\n\n\nEnviado por\nNOMBRE:\t'+form.nombre.data+'\nEMAIL:\t'
+               form.mensaje.data+'\n\n\nEnviado por\nNOMBRE:\t'+form.nombre.data+'\nRESPONDER A:\t'
                +form.email.data+'\n\nDesde https://bibliotecaespectral.conae.gov.ar/contacto',  # Cuerpo del mail texto
                None,                                                                            # Cuerpo del mail HMTL
                None)                                                                            # Archivo Adjunto
