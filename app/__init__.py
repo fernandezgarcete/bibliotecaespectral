@@ -48,14 +48,49 @@ if not app.debug:
 
 if not app.debug:
     import logging
-    from logging.handlers import SMTPHandler
+    import logging.handlers
+
+    class TlsSMTPHandler(logging.handlers.SMTPHandler):
+        def emit(self, record):
+            """
+            Emit a record.
+
+            Format the record and send it to the specified addressees.
+            """
+            try:
+                import smtplib
+                try:
+                    from email.utils import formatdate
+                except ImportError:
+                    formatdate = self.date_time
+                port = self.mailport
+                if not port:
+                    port = smtplib.SMTP_PORT
+                smtp = smtplib.SMTP(self.mailhost, port)
+                msg = self.format(record)
+                msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nDate: %s\r\n\r\n%s" % (
+                                self.fromaddr,
+                                self.toaddrs[0].join(","),
+                                self.getSubject(record),
+                                formatdate(), msg)
+                if self.username:
+                    smtp.ehlo()         # for tls add this line
+                    smtp.starttls()     # for tls add this line
+                    smtp.ehlo()         # for tls add this line
+                    smtp.login(self.username, self.password)
+                smtp.sendmail(self.fromaddr, self.toaddrs, msg)
+                smtp.quit()
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                self.handleError(record)
 
     credentials = None
     if MAIL_USERNAME or MAIL_PASSWORD:
         credentials = (MAIL_USERNAME, MAIL_PASSWORD)
-    mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT),
-                               'no-responder@' + MAIL_SERVER, ADMINS,
-                               'Falla en BibliotecaEspectral', credentials)
+    mail_handler = TlsSMTPHandler((MAIL_SERVER, MAIL_PORT),
+                               MAIL_USERNAME, [ADMINS[0]],
+                               'ERROR en Biblioteca Espectral', credentials)
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
@@ -73,6 +108,8 @@ class CustomJSONEncoder(JSONEncoder):
             except NameError:
                 return str(obj)  # python3
         return super(CustomJSONEncoder, self).default(obj)
+
+
 
 
 with app.app_context():
