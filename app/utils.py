@@ -270,8 +270,11 @@ def ini_actualizar_form(id, idtp):
 
 def actualizar_tp(idtp):
     form = ConsultarForm()
-    form.cobertura.choices = [(cn.id, cn.nombre) for cn in
-                              Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
+    if idtp > 0:
+        form.cobertura.choices = [(cn.id, cn.nombre) for cn in
+                                  Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
+    else:
+        form.cobertura.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
     form.cobertura.choices.insert(0, (0, ''))
     return form
 
@@ -336,11 +339,13 @@ def tabular_descargas(descargas):
             descarga[mes['mes']][1]['cant'] += 1
         if d.fecha_descarga.year == y and d.fecha_descarga.month != mes['mes'] and d.institucion != 'CONAE.GOV.AR':
             mes = {'cant': 0, 'mb': 0, 'y': 0, 'mes': 0, 'inst': ''}
+            arr = []
             mes['mb'] += round(d.tamanio_archivo/1024/1024, 2)
             mes['cant'] += 1
             mes['year'] = y
             mes['inst'] = 'otros'
             mes['mes'] = d.fecha_descarga.month
+            arr.append(mes)
             descarga[mes['mes']].append(mes)
     return descarga
 

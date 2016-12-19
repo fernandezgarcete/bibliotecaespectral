@@ -14,7 +14,12 @@ var sanpedro = L.marker([-33.68, -59.66]).bindPopup('San Pedro, Buenos Aires'),
 var ciudades = L.layerGroup([sanpedro, chacabuco, riestra, lujan]);
 
 // Mapas base
-var calles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{id}/{z}/{x}/{y}?access_token={accessToken}', {
+var ign = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png',{
+        maxZoom: 18,
+        tms: true,
+        attribution: 'Argenmap; <a href="http://www.ign.gob.ar">IGN</a>  '
+    }),
+    calles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{id}/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; ' +
         '<a href="http://mapbox.com">Mapbox</a>',
@@ -40,16 +45,17 @@ var calles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/til
     });*/
 
 var mapasBase = {
-    'Calles': calles,
+    'IGN': ign,
+    'OSM Calles': calles,
     //'Gris': mapagris,
-    'Satelite': satelite
+    'OSM Satelite': satelite
 };
 
 // Creación del Objeto Mapa
 var mimapa = L.map('mapid', {
     center: [-38.15, -65.91],
     zoom: 4,
-    layers: [calles]
+    layers: [ign]
 });
 
 // Creación del Control de Capas Base y Superpuestas
