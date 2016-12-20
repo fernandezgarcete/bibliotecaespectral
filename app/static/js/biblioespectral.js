@@ -1214,7 +1214,6 @@ function modal_login(){
     $.ajax({url:$SCRIPT_ROOT+'/loginform'})
     .done(function(res) {
         body.innerHTML = res;
-
     });
 }
 
@@ -1226,8 +1225,10 @@ function abrir_login(){
 function logueo(){
     $('#loginform').submit(function(event){
         event.preventDefault();
-        var $form = $(this),
-            data = {'username':$form.find('input[name="username"]').val(),
+        var $form = $(this);
+        $('#logueando').show();
+        $form.hide();
+        var data = {'username':$form.find('input[name="username"]').val(),
                 'password':$form.find('input[name="password"]').val(),
                 'csrf_token':$form.find('input[name="csrf_token"]').val()
             },
@@ -1236,4 +1237,9 @@ function logueo(){
             window.location = $SCRIPT_ROOT;
         });
     });
+}
+
+// Descargar url
+function descargar(url){
+    window.location.href = url;
 }

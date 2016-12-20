@@ -15,18 +15,45 @@
     <div class="list-group">
         {% for file in list %}
             {% if g.user.is_authenticated %}
-                <a class="list-group-item" href="{{ url_for('show_campaign', filename=file) }}" data-toggle="tooltip" title="Descargar Item">
+                <a class="list-group-item" href="#resul" data-toggle="collapse" data-target="#pcamp{{ loop.index }}">
                 {{ file }}
-                    <span class="badge">
-                        <span  class="glyphicon glyphicon-arrow-down"></span>
-                    </span>
+                    <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
+                    <div id="pcamp{{ loop.index }}" class="collapse panel panel-default">
+                        <div class="panel-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo de Cobertura</th>
+                                        <th>Cobertura</th>
+                                        <th>Ubicación</th>
+                                        <th>Tipo de Calibración</th>
+                                        <th>Fecha</th>
+                                        <th>Nombre de Campaña</th>
+                                        <th>Muestras</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{ file }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <span style="float: right;" class="badge" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=file) }}')">
+                                <span  class="glyphicon glyphicon-arrow-down"></span>
+                            </span>
+                        </div>
+                    </div>
                 </a>
             {% else %}
-                <a class="list-group-item" href="javascript:void(0);" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login()">
+                <a id="" class="list-group-item" href="#resul" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login()">
                 {{ file }}
-                    <span class="badge">
-                        <span  class="glyphicon glyphicon-arrow-down"></span>
-                    </span>
+                    <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
                 </a>
             {% endif %}
         {% endfor %}
