@@ -3,7 +3,6 @@
 
 {% block content %}
     <head><meta charset="UTF-8">
-        <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
         <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
         <script>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
         <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
@@ -176,7 +175,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Altura de Toma (mts)</label>
         <div class="col-xs-9">
-            {{ form.altura(placeholder="Ingrese la altura de toma", class="form-control", disabled=true) }}
+            {{ form.altura(placeholder="Ingrese la altura de toma", class="form-control", disabled=true, maxlength="5") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#altura', '#ba')" id="ba">
@@ -186,7 +185,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Presión Atmosférica (hPa)</label>
         <div class="col-xs-9">
-            {{ form.presion(placeholder="Ingrese la presión atmosférica", class="form-control", disabled=true) }}
+            {{ form.presion(placeholder="Ingrese la presión atmosférica", class="form-control", disabled=true, maxlength="6") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#presion', '#bp')" id="bp">
@@ -196,7 +195,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Temperatura Ambiente (°C)</label>
         <div class="col-xs-9">
-            {{ form.temp(placeholder="Ingrese la temperatura ambiente", class="form-control", disabled=true) }}
+            {{ form.temp(placeholder="Ingrese la temperatura ambiente", class="form-control", disabled=true, maxlength="6") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#temp', '#bt')" id="bt">
@@ -206,7 +205,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Nubosidad (%)</label>
         <div class="col-xs-9">
-            {{ form.nubosidad(placeholder="Ingrese el porcentaje de nubosidad de la toma", class="form-control", disabled=true) }}
+            {{ form.nubosidad(placeholder="Ingrese el porcentaje de nubosidad de la toma", class="form-control", disabled=true, maxlength="3") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#nubosidad', '#bn')" id="bn">
@@ -216,7 +215,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Dirección del Viento</label>
         <div class="col-xs-9">
-            {{ form.dir_viento(placeholder="Dirección del viento N-NE-E-SE-S-SO-O-NO", class="form-control", disabled=true) }}
+            {{ form.dir_viento(placeholder="Dirección del viento N-NE-E-SE-S-SO-O-NO", class="form-control", disabled=true, maxlength="2") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#dir_viento', '#bdv')" id="bdv">
@@ -226,7 +225,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Velocidad del Viento (Km/Hs)</label>
         <div class="col-xs-9">
-            {{ form.vel_viento(placeholder="Ingrese la velocidad del viento en km/hs", class="form-control", disabled=true) }}
+            {{ form.vel_viento(placeholder="Ingrese la velocidad del viento en km/hs", class="form-control", disabled=true, maxlength="6") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#vel_viento', '#bvv')" id="bvv">
@@ -236,7 +235,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Estado de Toma</label>
         <div class="col-xs-9">
-            {{ form.estado(placeholder="Estado de toma: M(Malo), A(Aceptable), B(Bueno), MB(Muy Bueno), E(Excelente)", class="form-control", disabled=true) }}
+            {{ form.estado(placeholder="Estado de toma: M(Malo), A(Aceptable), B(Bueno), MB(Muy Bueno), E(Excelente)", class="form-control", disabled=true, maxlength="2") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#estado', '#be')" id="be">
@@ -246,7 +245,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Cantidad de Tomas</label>
         <div class="col-xs-9">
-            {{ form.cant_tomas(placeholder="Ingrese la cantidad tomas del Punto", class="form-control", disabled=true) }}
+            {{ form.cant_tomas(placeholder="Ingrese la cantidad tomas del Punto", class="form-control", disabled=true, maxlength="3") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#cant_tomas', '#bc')" id="bc">
@@ -293,7 +292,7 @@ transform: scale(-1, 1);"></span></a>
 <br>
 
 <div class="row">
-<h3 style="float:right;"><span class="label label-info btn" onclick="archivo_radiancias()">Archivos de Radiancias</span></h3>
+<h3 style="float:right;"><span class="label label-info btn" onclick="archivo_radiancias()">Archivos</span></h3>
 </div>
 
 <br>
@@ -317,6 +316,7 @@ var puntos = [];
         altura:"{{ p.altura_medicion }}",
         presion:"{{ p.presion }}",
         temp:"{{ p.temperatura }}",
+        nubosidad:"{{ p.nubosidad }}",
         dir_viento:"{{ p.viento_direccion }}",
         vel_viento:"{{ p.viento_velocidad }}",
         estado:"{{ p.estado }}",
@@ -334,7 +334,7 @@ var puntos = [];
 function archivo_radiancias(){
     var id = $('#id').val();
     if(typeof(id) != 'undefined' && id > 0) {
-        window.location.replace("/cargar/campania/muestra/punto/radiancia?idp="+id+'&idm={{ muestra.id }}&idc={{ camp.id }}');
+        window.location.replace("/cargar/campania/muestra/punto/archivos?idp="+id+'&idm={{ muestra.id }}&idc={{ camp.id }}');
     } else {
         errorMensaje(0,'err',"Seleccione un Punto para cargar sus archivos de radiancias",$('#mensaje')[0]);
     }

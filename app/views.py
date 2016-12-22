@@ -536,11 +536,24 @@ def punto(page=1):
                 print('Error')
     return render_template('punto.html', form=form, puntos=puntos, muestra=muestra, camp=camp, tp=tp, latlngs=latlngs)
 
+# Borrar una muestra existente
+@app.route('/cargar/campania/muestra/punto/borrar/<int:id>')
+@login_required
+def borrar_punto(id):
+    punto = Punto.query.join(Muestra).filter(Punto.id==id, Muestra.id == Punto.id_muestra).first()
+    if punto is None:
+        flash('No se ha podido eliminar el Punto '+punto.nombre, 'error')
+        return redirect(url_for('punto', idc=punto.punto.id_campania, idp=punto.id, idm=punto.id_muestra))
+    punto.deleted = True
+    db.session.add(punto)
+    db.session.commit()
+    flash('El Punto ha sido borrado.\nPunto -'+punto.nombre, 'success')
+    return redirect(url_for('punto', idp=punto.id, idc=punto.punto.id_campania, idm=punto.id_muestra))
 
 # carga archivos de radiancia
-@app.route('/cargar/campania/muestra/punto/radiancia', methods=['GET','POST'])
+@app.route('/cargar/campania/muestra/punto/archivos', methods=['GET','POST'])
 @login_required
-def radiancia():
+def archivos():
     idm = int(request.args.get('idm').split('-')[0])
     idc = int(request.args.get('idc').split('-')[0])
     idp = int(request.args.get('idp').split('-')[0])
@@ -610,7 +623,7 @@ def radiancia():
             # if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
         if not archivoform.validate_on_submit():
             flash('Falta Completar:', 'error')
-    return render_template('radiancia.html', camp=camp, muestra=muestra, tp=tp, archivoform=archivoform, punto=punto)
+    return render_template('archivos.html', camp=camp, muestra=muestra, tp=tp, archivoform=archivoform, punto=punto)
 
 @app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
 @login_required
@@ -691,10 +704,7 @@ def mapa():
         loc = Localidad.query.filter_by(nombre=nom, deleted=False).first()
         camps = Campania.query.filter(Campania.id_localidad == loc.id, Campania.deleted == False).all()
         criterios = {'Localidad': loc.nombre}
-        nombres = []
-        for c in camps:
-            nombres.append(c.nombre)
-        return resultado(nombres, criterios)
+        return resultado(criterios, camps)
     return redirect(url_for('consultar'))
 
 
@@ -835,10 +845,7 @@ def consultar():
             criterios['Fecha Fin'] = ff
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
-        nombres = []
-        for c in camps:
-            nombres.append(c.nombre)
-        return resultado(nombres, criterios)
+        return resultado(criterios, camps)
     return render_template('consultar.html', form=form)
 
 
@@ -926,13 +933,18 @@ def show_file(folder, filename):
 
 
 # Vista de Resultados
-def resultado(campañas, criterios):
+def resultado(criterios, camps):
     archivos = os.listdir(CAMPAIGNS_FOLDER)
     lista = []
-    for c in campañas:
+    for c in camps:
+        find = 0
         for a in archivos:
-            if a.find(c.split('-')[1]) > -1:
-                lista.append(a)
+            if a.find(c.nombre.split('-')[1]) > -1:
+                lista.append([c, a])
+                find += 1
+                break
+        if find == 0:
+            lista.append([c, ""])
     return render_template('resultado.html', list=lista, criterios=criterios)
 
 

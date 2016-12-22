@@ -12,7 +12,7 @@
 <li><a href="{{ url_for('editar', id=camp.id) }}">Campañas</a></li>
 <li><a href="{{ url_for('muestra', id=camp.id) }}">Muestras</a></li>
 <li><a href="{{ url_for('punto', idm=muestra.id, idp=punto.id, idc=camp.id) }}">Puntos</a></li>
-<li class="active">Radiancias</li>
+<li class="active">Archivos</li>
 </ol>
 
 <div class="panel panel-default" id="pcamp">
@@ -150,21 +150,21 @@ transform: scale(-1, 1);"></span></a>
     </div>
 </div>
 
-
+<h1>Archivos</h1>
 <div class="panel panel-default">
     <div class="panel-heading">Radiancias</div>
     <div class="panel-body">
         <div class="panel-group">
             <label>Radiancia TXT</label>
-            {{ archivoform.radiancias(class="form-control", multiple="multiple") }}
+            {{ archivoform.radiancias(class="form-control", multiple="multiple", accept=".rad.txt") }}
         </div>
         <div class="panel-group">
             <label>Radiancia Promedio TXT</label>
-            {{ archivoform.rads_avg(class="form-control", multiple="multiple") }}
+            {{ archivoform.rads_avg(class="form-control", multiple="multiple", accept=".rad.md.txt") }}
         </div>
         <div class="panel-group">
             <label>Radiancia Desviación Estándar TXT</label>
-            {{ archivoform.rads_st(class="form-control", multiple="multiple") }}
+            {{ archivoform.rads_st(class="form-control", multiple="multiple", accept=".rad.st.txt") }}
         </div>
     </div>
 </div>
@@ -174,15 +174,15 @@ transform: scale(-1, 1);"></span></a>
     <div class="panel-body">
         <div class="panel-group">
             <label>Reflectancia TXT</label>
-            {{ archivoform.reflectancias(class="form-control", multiple="multiple") }}
+            {{ archivoform.reflectancias(class="form-control", multiple="multiple", accept=".rts.txt") }}
         </div>
         <div class="panel-group">
             <label>Reflectancia Promedio TXT</label>
-            {{ archivoform.refs_avg(class="form-control", multiple="multiple") }}
+            {{ archivoform.refs_avg(class="form-control", multiple="multiple", accept=".rts.md.txt") }}
         </div>
         <div class="panel-group">
             <label>Reflectancia Desviación Estándar TXT</label>
-            {{ archivoform.refs_st(class="form-control", multiple="multiple") }}
+            {{ archivoform.refs_st(class="form-control", multiple="multiple", accept=".rts.st.txt") }}
         </div>
     </div>
 </div>
@@ -197,7 +197,7 @@ transform: scale(-1, 1);"></span></a>
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading">Fotometrias</div>
+    <div class="panel-heading">Fotometrías</div>
     <div class="panel-body">
         <div class="panel-group">
             {{ archivoform.fotometrias(class="form-control", multiple="multiple") }}

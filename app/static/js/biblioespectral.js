@@ -167,7 +167,7 @@ function crearModal(id, nombre, tit, mensaje, okBtnText, btnclass){
     modal.id = nombre + id;
     modal.classList.add('modal');
     modal.classList.add('fade');
-    modal.role = 'dialog';
+    modal.setAttribute('role', 'dialog');
     modal.setAttribute('tab-index','-1');
     modal.setAttribute('aria-labelledby','modal-title');
     document.body.appendChild(modal);
@@ -1144,10 +1144,6 @@ function modal_punto(){
     // Ejecutar el JS cargado
     //$.getScript('/static/js/mapa_punto.js');
 
-    $('#modal-latlng0').on('shown.bs.modal', function(){
-        _.defer(mimapa.invalidateSize.bind(mimapa));
-    });
-
 }
 
 function marcador_punto(){
@@ -1234,7 +1230,20 @@ function logueo(){
             },
             url = $form.attr('action');
         $.post(url,data).done(function(){
-            window.location = $SCRIPT_ROOT;
+            /*let vars = $('#consultarform').serialize();
+            if(vars !== ""){
+                $('#modal-login-1').modal('hide');
+                $.ajax("/consultar").done(function(html){
+                    let navbar = html.substring(html.indexOf('menubar')-9, html.indexOf('</nav>',1)+6);
+                    $("#menubar").empty().append(navbar);
+                   $.post("/consultar", vars)
+                    .done(function(resp) {
+                        $('#result').empty().append(resp);
+                    });
+                });
+            } else {*/
+                window.location = $SCRIPT_ROOT;
+            //}
         });
     });
 }

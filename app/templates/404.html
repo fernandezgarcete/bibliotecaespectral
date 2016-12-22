@@ -6,7 +6,15 @@
 </head>
 
 {% block content %}
-    <h1>Esta página no se encuentra en el servidor o ha sido cambiada.</h1>
-    <p>Mejor volvamos a empezar...<a href="{{ url_for('index') }}">Inicio</a></p>
+{% set img = "" %}
+{% if range(0,2)|random == 0 %}
+    {% set img = "img/nature.svg" %}
+{% else %}
+    {% set img = "img/orientation.svg" %}
+{% endif %}
+    <img src="{{ url_for('static', filename=img) }}"
+         height="180" width="180" align="middle" style="display:block; margin: 0 auto;"/>
+    <h1>Este recurso no se encuentra en el servidor o ha sido cambiado.</h1>
+    <p>Desea volver a empezar...? <a href="{{ url_for('index') }}">Inicio</a></p>
 {% endblock %}
 

@@ -13,10 +13,11 @@
 <h2>Campañas</h2>
 {% if list|length > 0 %}
     <div class="list-group">
-        {% for file in list %}
+        {% for pair in list %}
             {% if g.user.is_authenticated %}
-                <a class="list-group-item" href="#resul" data-toggle="collapse" data-target="#pcamp{{ loop.index }}">
-                {{ file }}
+                {% if pair[1] != "" %}
+                <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pcamp{{ loop.index }}">
+                {{ pair[1] }}
                     <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
                     <div id="pcamp{{ loop.index }}" class="collapse panel panel-default">
                         <div class="panel-body">
@@ -24,7 +25,7 @@
                                 <thead>
                                     <tr>
                                         <th>Tipo de Cobertura</th>
-                                        <th>Cobertura</th>
+                                        <th>Cobertura/s</th>
                                         <th>Ubicación</th>
                                         <th>Tipo de Calibración</th>
                                         <th>Fecha</th>
@@ -33,28 +34,43 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr>{% if pair[0].muestras.all()|length > 0 %}
+                                        <td>{{ pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre }}</td>
+                                        <td>{% if pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre == "AGRICULTURA" %}
+                                            {% for p in pair[0].muestras.all() %}
+                                                {{ p.cobertura_muestra.nombre }}<br>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ pair[0].muestras.all()[0].cobertura_muestra.nombre }}
+                                        {% endif %}</td>
+                                        <td>{{ pair[0].localidad_campania.nombre }}</td>
+                                        <td>{{ pair[0].muestras.all()[0].patron_muestra.nombre }}</td>
+                                        <td>{{ pair[0].fecha.date() }}</td>
+                                        <td>{{ pair[0].nombre }}</td>
+                                        <td></td>
+                                        {% else %}
                                         <td></td>
                                         <td></td>
+                                        <td>{{ pair[0].localidad_campania.nombre }}</td>
                                         <td></td>
+                                        <td>{{ pair[0].fecha.date() }}</td>
+                                        <td>{{ pair[0].nombre }}</td>
                                         <td></td>
-                                        <td></td>
-                                        <td>{{ file }}</td>
-                                        <td></td>
-                                    </tr>
+                                    </tr>{% endif %}
                                 </tbody>
-                            </table>
-                            <span style="float: right;" class="badge" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=file) }}')">
-                                <span  class="glyphicon glyphicon-arrow-down"></span>
-                            </span>
+                            </table><div style="font-size: 23px;border-radius: 1em;">
+                            <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=pair[1]) }}')">
+                                &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
+                            </span></div>
                         </div>
                     </div>
-                </a>
+                </a>{% endif %}
             {% else %}
-                <a id="" class="list-group-item" href="#resul" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login()">
-                {{ file }}
+                {% if pair[1] != "" %}
+                <a class="list-group-item" href="#resul" style="padding: 20px 25px;" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login()">
+                {{ pair[1] }}
                     <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
-                </a>
+                </a>{% endif %}
             {% endif %}
         {% endfor %}
     </div>

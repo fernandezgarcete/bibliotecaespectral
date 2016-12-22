@@ -62,7 +62,7 @@ transform: scale(-1, 1);"></span></a>
         {% for m in muestras.items %}
         <a href="#form_muestra" class="list-group-item" onclick="rellenar_mues('{{ m.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ m.nombre }}
-        <span type="button" class="badge btn-primary" id="elim_{{ m.nombre }}" data-toggle="tooltip" title="Eliminar Item">
+        <span type="button" class="badge btn" id="elim_{{ m.nombre }}" data-toggle="tooltip" title="Eliminar Item">
             <span class="glyphicon glyphicon-trash"></span>
         </span>
         </a>
