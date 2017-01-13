@@ -127,12 +127,14 @@ $('#consultarform').submit(function(e){
     $('#busca').hide();
     $('#buscando').show();
     $.post("{{ url_for('consultar') }}", $form.serialize())
-    .done(function(resp) {
-        $('#result').empty().append(resp);
-        window.location.href = '#result';
-        $('#buscando').hide();
-        $('#busca').show();
-    });
+            .done(function(resp) {
+                $('#result').empty().append(resp);
+                window.location.href = '#result';
+                $('#buscando').hide();
+                $('#busca').show();
+            }).fail(function(){
+                location.reload(true);
+            });
 });
 </script>
 <script src="/static/js/mapas.js" charset="UTF-8"></script>

@@ -136,7 +136,7 @@ transform: scale(-1, 1);"></span></a>
     </div>
 {% endif %}
 
-<h1>Editar datos de Puntos</h1>
+<h1>Editar datos del Punto</h1>
 <hr>
 <form class="form-horizontal" action="" method="post" id="form_punto">
     <div class="form-group">
@@ -162,7 +162,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Fecha y Hora</label>
         <div class="col-xs-9">
-            <div class="input-group date" id="piker">
+            <div class="input-group" id="piker">
                 {{ form.fecha_hora(placeholder='Fecha de Campaña en formato AAAA-MM-DD HH:mm:ss', class="form-control", disabled=true) }}
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
@@ -185,7 +185,7 @@ transform: scale(-1, 1);"></span></a>
     <div class="form-group">
         <label class="col-xs-2">Presión Atmosférica (hPa)</label>
         <div class="col-xs-9">
-            {{ form.presion(placeholder="Ingrese la presión atmosférica", class="form-control", disabled=true, maxlength="6") }}
+            {{ form.presion(placeholder="Ingrese la presión atmosférica", class="form-control", disabled=true, maxlength="7") }}
         </div>
         <div class="col-xs-1" style="display:none;">
             <button class="btn btn-primary" type="button" onclick="habilitar('#presion', '#bp')" id="bp">

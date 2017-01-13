@@ -853,7 +853,7 @@ class Punto(db.Model):
                                    cascade="save-update, merge, delete")
     fotometrias = db.relationship('Fotometria', backref='Fotometria', lazy='dynamic',
                                   cascade="save-update, merge, delete")
-    productos_radiancias = db.relationship('ProductoRadiancia', backref='producto_radiancia_punto', lazy='dynamic',
+    productos_radiancias = db.relationship('Reflectancia', backref='producto_radiancia_punto', lazy='dynamic',
                                            cascade="save-update, merge, delete")
     deleted = db.Column(db.Boolean, default=False)
 
@@ -952,7 +952,7 @@ class Punto(db.Model):
             return self
 
     def get_productos_radiancias(self):
-        return ProductoRadiancia.query.filter(ProductoRadiancia.id_punto == self.id).all()
+        return Reflectancia.query.filter(Reflectancia.id_punto == self.id).all()
 
     def __repr__(self): # pragma: no cover
         return '<Punto %r>' % (self.nombre)
@@ -976,6 +976,7 @@ class Fotometria(db.Model):
     r870 = db.Column(db.DECIMAL(precision=12, scale=7))
     r1020 = db.Column(db.DECIMAL(precision=12, scale=7))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    archivo = db.Column(db.String(120))
     deleted = db.Column(db.Boolean, default=False)
 
     @property
@@ -987,14 +988,13 @@ class Fotometria(db.Model):
     def __repr__(self): # pragma: no cover
         return '<Fotometria %r>' % (str(self.id))
 
-# Tabla Producto Radiancia
-class ProductoRadiancia(db.Model):
+# Tabla Reflectancia
+class Reflectancia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     longitud_onda = db.Column(db.Integer)
     reflectancia = db.Column(db.DECIMAL(precision=20, scale=15))
-    radiancia_avg = db.Column(db.DECIMAL(precision=20, scale=15))
-    radiancia_std = db.Column(db.DECIMAL(precision=20, scale=15))
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    archivo = db.Column(db.String(120))
     deleted = db.Column(db.Boolean, default=False)
 
     @property
@@ -1003,8 +1003,46 @@ class ProductoRadiancia(db.Model):
             return True
         return False
 
-    def __repr__(self): # pragma: no cover
-        return '<Producto Radiancia %r>' % (str(self.id))
+    def __repr__(self):     # pragma: no cover
+        return '<Reflectancia %r>' % (str(self.id))
+
+# Tabla Radiancia Avg
+class RadianciaAvg(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    longitud_onda = db.Column(db.Integer)
+    radiancia_avg = db.Column(db.DECIMAL(precision=20, scale=15))
+    id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    archivo = db.Column(db.String(120))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+
+    def __repr__(self):     # pragma: no cover
+        return '<Radiancia AVG %r>' % (str(self.id))
+
+
+# Tabla Radiancia Std
+class RadianciaStd(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    longitud_onda = db.Column(db.Integer)
+    radiancia_std = db.Column(db.DECIMAL(precision=20, scale=15))
+    id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    archivo = db.Column(db.String(120))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+
+    def __repr__(self):     # pragma: no cover
+        return '<Radiancia STD %r>' % (str(self.id))
+
 
 # Tabla Radiometria
 class Radiometria(db.Model):
@@ -1014,6 +1052,7 @@ class Radiometria(db.Model):
     toma = db.Column(db.Integer)
     id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
     id_superficie = db.Column(db.Integer, db.ForeignKey('superficie.id'))
+    archivo = db.Column(db.String(120))
     deleted = db.Column(db.Boolean, default=False)
 
     @property

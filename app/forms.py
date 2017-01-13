@@ -131,14 +131,7 @@ class NuevaCoberturaForm(Form):
 
 # Formulario de archivo
 class ArchivoForm(Form):
-    radiancias = FileField('radiancias', validators=[FileRequired(), regexp(r'^[^/\\]\.rad.txt$')])
-    rads_avg = FileField('rads_avg', validators=[FileRequired(), regexp(r'^[^/\\]\.md.txt$')])
-    rads_st = FileField('rads_st', validators=[FileRequired(), regexp(r'^[^/\\]\.st.txt$')])
-    reflectancias = FileField('reflectancias', validators=[FileRequired(), regexp(r'^[^/\\]\.rts.txt$')])
-    refs_avg = FileField('refs_avg', validators=[FileRequired(), regexp(r'^[^/\\]\.md.rts.txt$')])
-    refs_st = FileField('refs_st', validators=[FileRequired(), regexp(r'^[^/\\]\.st.rts.txt$')])
-    fotos = FileField('fotos', validators=[FileRequired()])
-    fotometrias = FileField('fotometrias', validators=[FileRequired(), regexp(r'^[^/\\]\-FOT.txt$')])
+    archivos = FileField('archivos', validators=[FileRequired(), regexp(r'^[^/\\]\.txt$')])
 
     def validate_archivo(self, filename):
         if self.validate_img(filename):
@@ -155,46 +148,48 @@ class ArchivoForm(Form):
             return 'refavg'
         elif self.validate_refstdtxt(filename):
             return 'refstd'
+        elif self.validate_fottxt(filename):
+            return 'fot'
         else:
             return False
 
     def validate_img(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     def validate_radtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1] == 'rad' and \
-           filename.rsplit('.', 1)[1] == 'txt'
+            (filename.rsplit('.', 2)[1].lower() == 'rad' or filename.rsplit('.', 2)[1].lower() == 'asd') and \
+           filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_radavgtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('-', 1)[1] != 'refl.md.txt' and \
-           filename.rsplit('.', 2)[1] == 'md' and \
-           filename.rsplit('.', 1)[1] == 'txt'
+           filename.rsplit('.', 2)[1].lower() == 'md' and \
+           filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_radstdtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('-', 1)[1] != 'refl.st.txt' and \
-           filename.rsplit('.', 2)[1] == 'st' and \
-           filename.rsplit('.', 1)[1] == 'txt'
+           filename.rsplit('.', 2)[1].lower() == 'st' and \
+           filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_reftxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1] == 'rts' and \
-           filename.rsplit('.', 1)[1] == 'txt'
+           filename.rsplit('.', 2)[1].lower() == 'rts' and \
+           filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_refavgtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('-', 1)[1] == 'refl.md.txt' and \
-           filename.rsplit('.', 2)[1] == 'md' and \
-           filename.rsplit('.', 1)[1] == 'txt'
+           filename.rsplit('.', 2)[1].lower() == 'md' and \
+           filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_refstdtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('-', 1)[1] == 'refl.st.txt' and \
-           filename.rsplit('.', 2)[1] == 'st' and \
-           filename.rsplit('.', 1)[1] == 'txt'
+           filename.rsplit('.', 2)[1].lower() == 'st' and \
+           filename.rsplit('.', 1)[1].lower() == 'txt'
+
+    def validate_fottxt(self, filename):
+        return '.' in filename and \
+           filename.rsplit('-', 1)[1].lower() == 'fot.txt'
 
 # Formulario de consulta
 class ConsultarForm(Form):

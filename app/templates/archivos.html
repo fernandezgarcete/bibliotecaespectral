@@ -151,48 +151,63 @@ transform: scale(-1, 1);"></span></a>
 </div>
 
 <h1>Archivos</h1>
+{% if archivos|length > 0 %}
+{% set nombres = {'fot':'Fotometrías', 'img':'Fotografías', 'rad':'Radiancias', 'radavg':'Radiancias Promedio',
+'radstd':'Radiancias Desviación Estandar', 'ref':'Reflectancias', 'refavg':'Reflectancias Promedio',
+'refstd':'Reflectancias Desviación Estandar'} %}
+{% for key, vals in archivos.items()|sort %}
+<div class="panel panel-info">
+    <div class="panel-heading">{{ nombres[key] }}
+        <span style="float: right;" class=" btn" id="opci_{{ key }}" data-toggle="tooltip" title="Opciones">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        </span>
+        <span style="float: right;display: none;" class=" btn" id="sele_{{ key }}" data-toggle="tooltip" title="Seleccionar Todo">
+            <span class="glyphicon glyphicon-ok"></span><span id="cont_{{ key }}"> 0</span>/{{ vals|length }}
+        </span>
+        <span style="float: right;display: none;" class=" btn" id="desc_{{ key }}" data-toggle="tooltip" title="Descargar">
+            <span class="glyphicon glyphicon-arrow-down"></span>
+        </span>
+        <span style="float: right;display: none;" class=" btn" id="elim_{{ key }}" data-toggle="tooltip" title="Eliminar">
+            <span class="glyphicon glyphicon-trash"></span>
+        </span>
+    </div>
+    <ul class="list-group">
+        {% for v in vals %}
+        <a href="#-" class="list-group-item" onclick="marcar('{{ v }}');">{{ v }}
+            <input type="checkbox" style="float: right;display: none;" class="check_{{ key }}" id="{{ v }}" data-toggle="tooltip" title="Seleccionar Item">
+        </a>
+        {% endfor %}
+    </ul>
+</div>
+{% endfor %}
+{% endif %}
+
+<form id="#archivo_form" method="post" enctype="multipart/form-data" action="/cargar/campania/muestra/punto/archivos?idm={{ muestra.id }}&idc={{ camp.id }}&idp={{ punto.id }}">
 <div class="panel panel-default">
     <div class="panel-heading">Radiancias</div>
     <div class="panel-body">
         <div class="panel-group">
             <label>Radiancia TXT</label>
-            {{ archivoform.radiancias(class="form-control", multiple="multiple", accept=".rad.txt") }}
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".rad.txt,.asd.txt") }}
         </div>
         <div class="panel-group">
-            <label>Radiancia Promedio TXT</label>
-            {{ archivoform.rads_avg(class="form-control", multiple="multiple", accept=".rad.md.txt") }}
-        </div>
-        <div class="panel-group">
-            <label>Radiancia Desviación Estándar TXT</label>
-            {{ archivoform.rads_st(class="form-control", multiple="multiple", accept=".rad.st.txt") }}
+            <label>Radiancia Promedio y Desviación Estandar TXT</label>
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".rad.md.txt, .md.txt, .rad.st.txt, .st.txt") }}
         </div>
     </div>
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading">Reflectancias</div>
+    <div class="panel-heading">Reflectancia</div>
     <div class="panel-body">
         <div class="panel-group">
             <label>Reflectancia TXT</label>
-            {{ archivoform.reflectancias(class="form-control", multiple="multiple", accept=".rts.txt") }}
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".rts.txt") }}
         </div>
-        <div class="panel-group">
-            <label>Reflectancia Promedio TXT</label>
-            {{ archivoform.refs_avg(class="form-control", multiple="multiple", accept=".rts.md.txt") }}
-        </div>
-        <div class="panel-group">
-            <label>Reflectancia Desviación Estándar TXT</label>
-            {{ archivoform.refs_st(class="form-control", multiple="multiple", accept=".rts.st.txt") }}
-        </div>
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading">Fotos</div>
-    <div class="panel-body">
-        <div class="panel-group">
-            {{ archivoform.fotos(class="form-control", multiple="multiple") }}
-        </div>
+        {#<div class="panel-group">
+            <label>Reflectancia Promedio y Desviación Estandar TXT</label>
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".md.rts.txt, .st.rts.txt") }}
+        </div>#}
     </div>
 </div>
 
@@ -200,40 +215,54 @@ transform: scale(-1, 1);"></span></a>
     <div class="panel-heading">Fotometrías</div>
     <div class="panel-body">
         <div class="panel-group">
-            {{ archivoform.fotometrias(class="form-control", multiple="multiple") }}
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".txt") }}
         </div>
     </div>
 </div>
 
+<div class="panel panel-default">
+    <div class="panel-heading">Imágenes o Fotos</div>
+    <div class="panel-body">
+        <div class="panel-group">
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept="image/*") }}
+        </div>
+    </div>
+</div>
+
+    {{ archivoform.hidden_tag() }}
+    <input type="submit" value="Guardar" class="btn btn-primary" onclick="progress('start')">
+</form>
 
 <br>
 <div class="row" id="mensaje"></div>
 
 <!-- Scripts al cargar el documento -->
 <script>
-//cargarCoberturas();
-limpiar_punto();
+
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-
-
-function editar_punto(){
-    var id = $('#id').val();
-    if(typeof(id) != 'undefined' && id > 0) {
-        window.location.replace("/cargar/campania/muestra/punto?id="+id);
-    } else {
-        errorMensaje(0,'err',"Seleccione una Muestra para editar sus puntos",$('#mensaje')[0]);
-    }
-}
-
-$('#').submit(function(e){
-    var self = this;
-    e.preventDefault();
-    var id = $('#id').val();
-    if(id > 0){
-        self.setAttribute('action', $SCRIPT_ROOT+'/cargar/campania/muestra/'+ id);
-    }
-    $('.form-control').prop('disabled',false);
-    self.submit();
-});
+{% if archivos|length > 0 %}
+{% for key, vals in archivos.items() %}
+    $("#opci_"+"{{ key }}").click(function(){
+        $("#elim_"+"{{ key }}").toggle();
+        $("#desc_"+"{{ key }}").toggle();
+        $("#sele_"+"{{ key }}").toggle();
+        $(".check_"+"{{ key }}").toggle();
+    });
+    $("#sele_"+"{{ key }}").click(function(){
+        var checkBoxes = $(".check_"+"{{ key }}");
+        checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+        cont("{{ key }}");
+    });
+    $("#desc_"+"{{ key }}").click(function(){
+        manipular("{{ key }}", "desc", "C{{ camp.id }}", "M{{ muestra.id }}", "P{{ punto.id }}");
+    });
+    $("#elim_"+"{{ key }}").click(function(){
+        manipular("{{ key }}", "elim", "C{{ camp.id }}", "M{{ muestra.id }}", "P{{ punto.id }}");
+    });
+{% endfor %}
+    crearModal(0, "alert", "Mensaje", "Seleccione al menos 1 ítem para continuar.");
+    crearModalBorrar(1,'Eliminar Archivo', 'Está seguro de eliminar el archivo?');
+{% endif %}
+    makeProgressBar();
 </script>
 {% endblock %}

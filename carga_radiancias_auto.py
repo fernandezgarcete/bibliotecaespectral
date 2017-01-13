@@ -1,5 +1,5 @@
 from app import db
-from app.models import Fotometria, Punto, Radiometria, ProductoRadiancia
+from app.models import Fotometria, Punto, Radiometria, Reflectancia
 from app.utils import find_pattern_files
 
 __author__ = 'Juanjo'
@@ -516,7 +516,7 @@ def cargar_prod_rad(ur1, ur2, ur3,  punto):
     file2.readline()
     file3.readline()
     for line in file1:
-        prod = ProductoRadiancia()
+        prod = Reflectancia()
         ref = line.split('\t')
         prod.longitud_onda = int(ref[0])
         prod.reflectancia = float(ref[1].replace(',', '.'))

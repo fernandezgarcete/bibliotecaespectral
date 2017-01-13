@@ -1,77 +1,145 @@
 # -*- coding: utf-8 -*-
 import fnmatch
 import json
-import os, time
+import os
+import time
+import zipfile
+
+from app.decorators import async
+from app.archivos import guardar_archivo, borrar_datos
 import requests
-from flask import jsonify
-from app import db
+from app import db, app
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
-from app.models import Campania, Muestra, Punto, Fotometria, Radiometria, ProductoRadiancia, Proyecto, Localidad, \
+from app.models import Campania, Muestra, Fotometria, Radiometria, Reflectancia, Proyecto, Localidad, \
     TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro
 import geoalchemy2.functions as geofunc
 
 __author__ = 'Juanjo'
 from datetime import datetime
 
-# Cargar archivo de radiancia, reflect, fotos
+# Guardar archivo de radiancia, reflect, fotos
 def cargar_archivo(lugar, name, tipo, archivo):
     if tipo == 'rad':
+        lugar = os.path.join(lugar, 'rad')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 1, 'f': file_url}
         except:
             raise
-        return 1
     elif tipo == 'radavg':
+        lugar = os.path.join(lugar, 'radavg')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 2, 'f': file_url}
         except:
             raise
-        return 2
     elif tipo == 'radstd':
+        lugar = os.path.join(lugar, 'radstd')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 3, 'f': file_url}
         except:
             raise
-        return 3
     elif tipo == 'ref1':
+        lugar = os.path.join(lugar, 'ref')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 4, 'f': file_url}
         except:
             raise
-        return 4
     elif tipo == 'refavg':
+        lugar = os.path.join(lugar, 'refavg')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 5, 'f': file_url}
         except:
             raise
-        return 5
     elif tipo == 'refstd':
+        lugar = os.path.join(lugar, 'refstd')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 6, 'f': file_url}
         except:
             raise
-        return 6
     elif tipo == 'img':
+        lugar = os.path.join(lugar, 'img')
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            archivo.save(os.path.join(lugar, name))
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 7, 'f': file_url}
         except:
             raise
-        return 7
+    elif tipo == 'fot':
+        lugar = os.path.join(lugar, 'fot')
+        try:
+            if not os.path.exists(lugar):
+                os.makedirs(lugar)
+            file_url = os.path.join(lugar, name)
+            archivo.save(file_url)                          # Guarda archivo en disco
+            return {'t': 8, 'f': file_url}
+        except:
+            raise
     else:
+        return False
+
+
+# Guardado asincrono de archivos subidos
+@async
+def guardar_async(app, paths):
+    with app.app_context():
+        # Recorrer los paths guardados para leer los archivos y cargar en la base
+        for path in paths:
+            folders = path.split(os.sep)
+            print(datetime.now())
+            print('Cargando : %s' % folders[len(folders)-1])
+            idp = int(folders[len(folders)-3].split('P')[1])
+            guardar_archivo(path, idp)
+
+# Borrar Datos de la Base
+# @async
+def borrar_async(path, filesnames):
+    with app.app_context():
+        folders = path.split(os.sep)
+        idp = int(folders[len(folders)-2].split('P')[1])
+        borrar_datos(path, filesnames, idp)
+
+
+# Listar directorio si Existe
+def list_dir(dir):
+    if os.path.exists(dir):
+        return os.listdir(dir)
+
+
+# Zip Comprimir directorio
+def zipdir(path, nombre):
+    try:
+        zip = zipfile.ZipFile(os.path.join(path, nombre), 'w', zipfile.ZIP_DEFLATED)
+        for f in os.listdir(path):
+            if f.rsplit('.')[1] != 'zip':
+                zip.write(os.path.join(path, f))
+        zip.close()
+        return True
+    except:
         return False
 
 # geom to string
@@ -180,7 +248,7 @@ def cargar_prod_rad(ur1, ur2, ur3, punto):
     file2.readline()
     file3.readline()
     for line in file1:
-        prod = ProductoRadiancia()
+        prod = Reflectancia()
         ref = line.split('\t')
         prod.longitud_onda = int(ref[0])
         prod.reflectancia = float(ref[1].replace(',', '.'))

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import json
+import json, time
 import os
 import re
 import requests
 import traceback
-from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
+from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory, \
+    send_file, Response
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import get_debug_queries
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import gettext
 from app import app, db, lm, oid, babel
 from .emails import follower_notification, error_notification, contact_notification
-from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, NuevaCoberturaForm, \
+from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, ArchivoForm, LoginConaeForm, \
+    NuevaCoberturaForm, \
     MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
     GPSForm, PuntoForm, ContactoForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
@@ -21,7 +23,7 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
     actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
-    get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha
+    get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER, SECRET_KEY_CAPTCHA, SITE_KEY_CAPTCHA
 from guess_language import guessLanguage
@@ -29,13 +31,12 @@ from .oauth import OAuthSignIn, ConaeSignIn
 import geoalchemy2.functions as geofunc
 
 
-
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
 @login_required
 def index(page=1):
-    user = g.user   # Se asigna el usuario de sesión actual
+    user = g.user  # Se asigna el usuario de sesión actual
     form = PostForm()
     if form.validate_on_submit():
         language = guessLanguage(form.post.data)
@@ -61,14 +62,14 @@ def index(page=1):
 @app.before_request
 def before_request():
     g.user = current_user
-    #if g.user.is_anonymous:
+    # if g.user.is_anonymous:
     #    g.user = User.query.filter_by(email='anonymous@example.com').first()
-    #else:
+    # else:
     #    g.user = current_user   # agregamos a g.user al usuario de la sesión actual antes de cada request.
-    if g.user.is_authenticated:                 # Si el usuario está autenticado,
-        g.user.last_seen = datetime.utcnow()    # registramos su última visita
-        db.session.add(g.user)                  # cargamos a la BD toda la información del usuario
-        db.session.commit()                     # y confirmamos la persistencia en la BD.
+    if g.user.is_authenticated:  # Si el usuario está autenticado,
+        g.user.last_seen = datetime.utcnow()  # registramos su última visita
+        db.session.add(g.user)  # cargamos a la BD toda la información del usuario
+        db.session.commit()  # y confirmamos la persistencia en la BD.
         g.search_form = SearchForm()
     g.locale = get_locale()
 
@@ -118,17 +119,17 @@ def loginform():
 
 # Inicio de sesión del usuario
 @app.route('/loginoid', methods=['GET', 'POST'])
-@oid.loginhandler       # Comunica a Flask-OpenID que es la función de Inicio de Sesión
+@oid.loginhandler  # Comunica a Flask-OpenID que es la función de Inicio de Sesión
 def loginoid():
     # Se utiliza la variable "g" de Flask para guardar valores globales. En este caso la sesión del usuario se guarda
     # en la variable g.user
-    #if g.user is not None and g.user.is_authenticated:  # Verifica si el usuario ya inició sesión previamente
-        #return redirect(url_for('index'))               # Si se cumple envia al inicio
+    # if g.user is not None and g.user.is_authenticated:  # Verifica si el usuario ya inició sesión previamente
+    # return redirect(url_for('index'))               # Si se cumple envia al inicio
     # Caso contrario se prepara el formulario de sesión
     form = LoginForm()
-    if form.validate_on_submit():                                               # Si el formulario es válido,
-        session['remember_me'] = form.remember_me.data                          # se carga el valor de Recuerdame y
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])   # se intenta iniciar sesión con OID
+    if form.validate_on_submit():  # Si el formulario es válido,
+        session['remember_me'] = form.remember_me.data  # se carga el valor de Recuerdame y
+        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])  # se intenta iniciar sesión con OID
     return render_template('login.html',
                            title='Ingresar',
                            form=form,
@@ -142,58 +143,60 @@ def load_user(id):
 
 def conae_after_login(datos):
     user = User.query.filter_by(email=datos['email']).first()
-    if user is None:                                    # Si no existe, registraremos al nuevo usuario en la BD.
+    if user is None:  # Si no existe, registraremos al nuevo usuario en la BD.
         print('Nombre')
         print(datos['nombre'])
-        nickname = datos['nombre']+' '+datos['apellido']# Se intenta obtener el nickname de la respuesta.
+        nickname = datos['nombre'] + ' ' + datos['apellido']  # Se intenta obtener el nickname de la respuesta.
         print(nickname)
-        if nickname is None or nickname == "":          # Si no se obtiene de la respuesta "resp",
-            nickname = datos['email'].split('@')[0]     # se entresaca el nickname desde el email hasta el '@'
-        nickname = User.make_valid_nickname(nickname)   # Validaciones previas a la aceptacion del nickname.
+        if nickname is None or nickname == "":  # Si no se obtiene de la respuesta "resp",
+            nickname = datos['email'].split('@')[0]  # se entresaca el nickname desde el email hasta el '@'
+        nickname = User.make_valid_nickname(nickname)  # Validaciones previas a la aceptacion del nickname.
         nickname = User.make_unique_nickname(nickname)  # No aceptar duplicados.
         uid = User.query.order_by(User.id.desc()).first().id + 1
         nombre = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", nickname)  # Separar CamelCase con espacios
-        user = User(social_id='sinredsocial'+str(uid), nickname=nickname, email=datos['email'], nombre=nombre)# Obtenidos los datos, creamos User con el nickname y email
-        db.session.add(user)        # Agregamos a la sesión de la Base de Datos
-        db.session.commit()         # Confirmamos la persistencia del nuevo Usuario en la BD.
+        user = User(social_id='sinredsocial' + str(uid), nickname=nickname, email=datos['email'],
+                    nombre=nombre)  # Obtenidos los datos, creamos User con el nickname y email
+        db.session.add(user)  # Agregamos a la sesión de la Base de Datos
+        db.session.commit()  # Confirmamos la persistencia del nuevo Usuario en la BD.
         ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
         db.session.add(user.follow(user))
         db.session.commit()
     # Se crea una variable para guardar el dato recuerdame
     remember_me = False
-    if 'remember_me' in session:                # Si recuerdame está en la sesión,
-        remember_me = session['remember_me']    # se guarda el valor de la variable
-        session.pop('remember_me', None)        # y luego se saca del array de la sesión
-    login_user(user, remember=remember_me)       # Iniciamos sesión con el Usuario y recordamos si se indica
+    if 'remember_me' in session:  # Si recuerdame está en la sesión,
+        remember_me = session['remember_me']  # se guarda el valor de la variable
+        session.pop('remember_me', None)  # y luego se saca del array de la sesión
+    login_user(user, remember=remember_me)  # Iniciamos sesión con el Usuario y recordamos si se indica
     # Finalmente redigimos al inicio con sesión iniciada.
     return redirect(request.args.get('next') or url_for('index'))
 
 
 # Recibiendo la respuesta del intento de inicio de sesión
 def after_login(resp):
-    if resp.email is None or resp.email == "":          # Si la respuesta "resp" devuelve vacío el campo email, no se
-        flash('Inicio de sesión inválido. Por favor intente de nuevo.', 'error') # inició sesión y se pide de vuelta
-        return redirect(url_for('login'))                               # otro intento
+    if resp.email is None or resp.email == "":  # Si la respuesta "resp" devuelve vacío el campo email, no se
+        flash('Inicio de sesión inválido. Por favor intente de nuevo.', 'error')  # inició sesión y se pide de vuelta
+        return redirect(url_for('login'))  # otro intento
     # En caso exitoso se busca al usuario en la BD por email.
     user = User.query.filter_by(email=resp.email).first()
-    if user is None:                                    # Si no existe, registraremos al nuevo usuario en la BD.
-        nickname = resp.nickname                        # Se intenta obtener el nickname de la respuesta.
-        if nickname is None or nickname == "":          # Si no se obtiene de la respuesta "resp",
-            nickname = resp.email.split('@')[0]         # se entresaca el nickname desde el email hasta el '@'
-        nickname = User.make_valid_nickname(nickname)   # Validaciones previas a la aceptacion del nickname.
+    if user is None:  # Si no existe, registraremos al nuevo usuario en la BD.
+        nickname = resp.nickname  # Se intenta obtener el nickname de la respuesta.
+        if nickname is None or nickname == "":  # Si no se obtiene de la respuesta "resp",
+            nickname = resp.email.split('@')[0]  # se entresaca el nickname desde el email hasta el '@'
+        nickname = User.make_valid_nickname(nickname)  # Validaciones previas a la aceptacion del nickname.
         nickname = User.make_unique_nickname(nickname)  # No aceptar duplicados.
-        user = User(social_id='sinredsocial',nickname=nickname, email=resp.email)# Obtenidos los datos, creamos User con el nickname y email
-        db.session.add(user)        # Agregamos a la sesión de la Base de Datos
-        db.session.commit()         # Confirmamos la persistencia del nuevo Usuario en la BD.
+        user = User(social_id='sinredsocial', nickname=nickname,
+                    email=resp.email)  # Obtenidos los datos, creamos User con el nickname y email
+        db.session.add(user)  # Agregamos a la sesión de la Base de Datos
+        db.session.commit()  # Confirmamos la persistencia del nuevo Usuario en la BD.
         ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
         db.session.add(user.follow(user))
         db.session.commit()
     # Se crea una variable para guardar el dato recuerdame
     remember_me = False
-    if 'remember_me' in session:                # Si recuerdame está en la sesión,
-        remember_me = session['remember_me']    # se guarda el valor de la variable
-        session.pop('remember_me', None)        # y luego se saca del array de la sesión
-    login_user(user, remember=remember_me)       # Iniciamos sesión con el Usuario y recordamos si se indica
+    if 'remember_me' in session:  # Si recuerdame está en la sesión,
+        remember_me = session['remember_me']  # se guarda el valor de la variable
+        session.pop('remember_me', None)  # y luego se saca del array de la sesión
+    login_user(user, remember=remember_me)  # Iniciamos sesión con el Usuario y recordamos si se indica
     # Finalmente redigimos a la siguient pag o al inicio con sesión iniciada.
     return redirect(request.args.get('next') or url_for('index'))
 
@@ -204,6 +207,7 @@ def oauth_authorize(provider):
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
+
 
 @oid.after_login
 @app.route('/callback/<provider>')
@@ -227,14 +231,14 @@ def oauth_callback(provider):
 # Cerrando sesión del usuario
 @app.route('/logout')
 def logout():
-    logout_user()                       # Usamos la función de cerrar sesión de Flask
+    logout_user()  # Usamos la función de cerrar sesión de Flask
     session.pop('id', None)
     try:
         requests.get(DEVLOGOUT + session['userid'])
     except:
         pass
     session.pop('userid', None)
-    return redirect(url_for('index'))   # Redirigimos al inicio de sesión
+    return redirect(url_for('index'))  # Redirigimos al inicio de sesión
 
 
 # Vista del perfil de usuario
@@ -243,11 +247,11 @@ def logout():
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()  # Carga datos del usuario desde la BD en "user".
-    if user is None:                                    # Si no existe el usuario,
-        flash(gettext('Usuario %s no encontrado.' % nickname), 'info')   # muestra un mensaje y
-        return redirect(url_for('index'))               # envia de vuelta al inicio de sesión.
+    if user is None:  # Si no existe el usuario,
+        flash(gettext('Usuario %s no encontrado.' % nickname), 'info')  # muestra un mensaje y
+        return redirect(url_for('index'))  # envia de vuelta al inicio de sesión.
     posts = user.posts.paginate(page, POST_PER_PAGE, False)
-    return render_template('user.html',     # Envía el template html del usuario con sus datos y posteos
+    return render_template('user.html',  # Envía el template html del usuario con sus datos y posteos
                            user=user,
                            posts=posts)
 
@@ -256,16 +260,16 @@ def user(nickname, page=1):
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = EditForm(g.user.nickname, g.user.nombre)   # Cargamos un formulario del tipo EditForm
-    if form.validate_on_submit():               # Si el formulario es válido
-        g.user.nickname = form.nickname.data    # cargamos el valor del nombre en nickname global
-        g.user.about_me = form.about_me.data    # y la descripción personal correspondiente.
-        db.session.add(g.user)          # Agregamos a la sesión de la BD para actualizarla
-        db.session.commit()             # y confirmamos los cambios en la BD.
-        flash('Sus cambios han sido guardados.', 'success')    # Se emite un mensaje de confirmación al usuario
-        return redirect(url_for('edit'))     # y se redirige a la misma página
-    else:   # caso contrario
-        form.nickname.data = g.user.nickname    # se dejan los datos como están en la sesión actual
+    form = EditForm(g.user.nickname, g.user.nombre)  # Cargamos un formulario del tipo EditForm
+    if form.validate_on_submit():  # Si el formulario es válido
+        g.user.nickname = form.nickname.data  # cargamos el valor del nombre en nickname global
+        g.user.about_me = form.about_me.data  # y la descripción personal correspondiente.
+        db.session.add(g.user)  # Agregamos a la sesión de la BD para actualizarla
+        db.session.commit()  # y confirmamos los cambios en la BD.
+        flash('Sus cambios han sido guardados.', 'success')  # Se emite un mensaje de confirmación al usuario
+        return redirect(url_for('edit'))  # y se redirige a la misma página
+    else:  # caso contrario
+        form.nickname.data = g.user.nickname  # se dejan los datos como están en la sesión actual
         form.about_me.data = g.user.about_me
         form.nombre.data = g.user.nombre
     return render_template('edit.html', form=form)  # Finalmente se redirige a la pag de edición con el formulario
@@ -280,15 +284,16 @@ def not_found_error(error):
 # Contemplando error Internal Error - 500
 @app.errorhandler(500)
 def internal_error(error):
-    db.session.rollback()       # Deshacer cambios en la BD
+    db.session.rollback()  # Deshacer cambios en la BD
     error_notification(g.user)  # Enviar mail al admin
     return render_template('500.html'), 500
 
 
 @app.route('/error')
 def error_test():
-    e = 1/0
+    e = 1 / 0
     return render_template(url_for('index'))
+
 
 # Vista de seguir a un usuario
 @app.route('/follow/<nickname>')
@@ -296,19 +301,19 @@ def error_test():
 def follow(nickname):
     user = User.query.filter_by(nickname=nickname).first()  # Traemos el usuario requerido desde la BD
     if user is None:
-        flash('Usuario %s no encontrado.' % nickname, 'info')       # Si no se encuentra, se muestra un mensaje y se reenvia
-        return redirect(url_for('index'))                   # al inicio.
+        flash('Usuario %s no encontrado.' % nickname, 'info')  # Si no se encuentra, se muestra un mensaje y se reenvia
+        return redirect(url_for('index'))  # al inicio.
     if user == g.user:
-        flash('No puede seguirse a si mismo!', 'error')              # Evitamos volver a seguirse ya que se encuentra seguido
-        return redirect(url_for('user', nickname=nickname)) # por si mismo al crear al usuario.
+        flash('No puede seguirse a si mismo!', 'error')  # Evitamos volver a seguirse ya que se encuentra seguido
+        return redirect(url_for('user', nickname=nickname))  # por si mismo al crear al usuario.
     u = g.user.follow(user)
     if u is None:
-        flash('No puede seguir a '+nickname+'.', 'error')            # Si se produce un error
+        flash('No puede seguir a ' + nickname + '.', 'error')  # Si se produce un error
         return redirect(url_for('user', nickname=nickname))
-    db.session.add(u)                                       # en caso que esté correcto, agregamos a la BD,
-    db.session.commit()                                     # confirmamos las modificaciones y
-    flash('Ahora est&aacutes siguiendo a '+nickname+'.', 'success')    # mostramos un mensaje de seguimiento.
-    follower_notification(url_for('user', nickname=nickname))# Enviamos una notificacion de mail.
+    db.session.add(u)  # en caso que esté correcto, agregamos a la BD,
+    db.session.commit()  # confirmamos las modificaciones y
+    flash('Ahora est&aacutes siguiendo a ' + nickname + '.', 'success')  # mostramos un mensaje de seguimiento.
+    follower_notification(url_for('user', nickname=nickname))  # Enviamos una notificacion de mail.
     return redirect(url_for('user', nickname=nickname))
 
 
@@ -325,11 +330,11 @@ def unfollow(nickname):
         return redirect(url_for('user', nickname=nickname))
     u = g.user.unfollow(user)
     if u is None:
-        flash('No puedes dejar de seguir a '+nickname+'.', 'error')
+        flash('No puedes dejar de seguir a ' + nickname + '.', 'error')
         return redirect(url_for('user', nickname=nickname))
     db.session.add(u)
     db.session.commit()
-    flash('Has dejado de seguir a '+nickname+'.', 'success')
+    flash('Has dejado de seguir a ' + nickname + '.', 'success')
     return redirect(url_for('user', nickname=nickname))
 
 
@@ -350,6 +355,7 @@ def search_results(query):
     return render_template('search_results.html',
                            query=query,
                            results=results)
+
 
 # Vista de idiomas
 @babel.localeselector
@@ -399,11 +405,13 @@ def resp():
 def cargar():
     return render_template('cargar.html')
 
+
 # Gestiones Administrativas
 @app.route('/administrativo', methods=['GET'])
 @login_required
 def administrativo():
     return render_template('administrativo.html')
+
 
 # Carga de campaña paso 1
 @app.route('/cargar/nueva', methods=['GET', 'POST'])
@@ -428,6 +436,7 @@ def nueva():
                 flash('Campaña guardada.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('cargar_n.html',
                            form_n=form_n)
 
@@ -439,9 +448,9 @@ def nueva():
 def muestra(page=1):
     id = int(request.args.get('id').split('-')[0])
     form = ini_muestra_form(id)
-    muestras = Muestra.query.join(Cobertura, TipoCobertura).filter(Muestra.id_campania==id, Muestra.deleted==False).\
+    muestras = Muestra.query.join(Cobertura, TipoCobertura).filter(Muestra.id_campania == id, Muestra.deleted == False). \
         order_by(Muestra.nombre).paginate(page, POST_PER_PAGE, False)
-    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==id).first()
+    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id == id).first()
     camp.responsables = limpia_responsables(camp.responsables)
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -451,6 +460,7 @@ def muestra(page=1):
                 flash('Muestra guardada.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('muestra.html', form=form, muestras=muestras, camp=camp)
 
 
@@ -467,6 +477,7 @@ def borrar_muestra(id):
     db.session.commit()
     flash(gettext('La muestra ha sido borrada.'), 'success')
     return redirect(url_for('muestra', id=muestra.id_campania))
+
 
 # Actualizar la cobertura
 @app.route('/cargar/actualizarcob')
@@ -503,11 +514,11 @@ def punto(page=1):
     idm = int(request.args.get('idm').split('-')[0])
     idc = int(request.args.get('idc').split('-')[0])
     form = PuntoForm()
-    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra==idm, Punto.deleted==False).order_by(Punto.id)\
+    puntos = Punto.query.join(Muestra).filter(Punto.id_muestra == idm, Punto.deleted == False).order_by(Punto.id) \
         .paginate(page, POST_PER_PAGE, False)
-    muestra = Muestra.query.join(Cobertura).filter(Muestra.id==idm).first()
+    muestra = Muestra.query.join(Cobertura).filter(Muestra.id == idm).first()
     tp = TipoCobertura.query.filter_by(id=muestra.cobertura_muestra.id_tipocobertura).first()
-    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==idc).first()
+    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id == idc).first()
     camp.responsables = limpia_responsables(camp.responsables)
     form.muestra.data = muestra.id
     latlngs = geom2latlng(puntos.items)
@@ -534,96 +545,96 @@ def punto(page=1):
                 flash('Punto guardado.', 'success')
             else:
                 print('Error')
+        return redirect(request.url)
     return render_template('punto.html', form=form, puntos=puntos, muestra=muestra, camp=camp, tp=tp, latlngs=latlngs)
+
 
 # Borrar una muestra existente
 @app.route('/cargar/campania/muestra/punto/borrar/<int:id>')
 @login_required
 def borrar_punto(id):
-    punto = Punto.query.join(Muestra).filter(Punto.id==id, Muestra.id == Punto.id_muestra).first()
+    punto = Punto.query.join(Muestra).filter(Punto.id == id, Muestra.id == Punto.id_muestra).first()
     if punto is None:
-        flash('No se ha podido eliminar el Punto '+punto.nombre, 'error')
+        flash('No se ha podido eliminar el Punto ' + punto.nombre, 'error')
         return redirect(url_for('punto', idc=punto.punto.id_campania, idp=punto.id, idm=punto.id_muestra))
     punto.deleted = True
     db.session.add(punto)
     db.session.commit()
-    flash('El Punto ha sido borrado.\nPunto -'+punto.nombre, 'success')
+    flash('El Punto ha sido borrado.\nPunto -' + punto.nombre, 'success')
     return redirect(url_for('punto', idp=punto.id, idc=punto.punto.id_campania, idm=punto.id_muestra))
 
+
 # carga archivos de radiancia
-@app.route('/cargar/campania/muestra/punto/archivos', methods=['GET','POST'])
+@app.route('/cargar/campania/muestra/punto/archivos', methods=['GET', 'POST'])
 @login_required
 def archivos():
     idm = int(request.args.get('idm').split('-')[0])
     idc = int(request.args.get('idc').split('-')[0])
     idp = int(request.args.get('idp').split('-')[0])
     archivoform = ArchivoForm()
-    punto = Punto.query.join(Muestra).filter(Punto.id==idp, Punto.deleted==False).first()
-    muestra = Muestra.query.join(Cobertura).filter(Muestra.id==idm).first()
+    punto = Punto.query.join(Muestra).filter(Punto.id == idp, Punto.deleted == False).first()
+    muestra = Muestra.query.join(Cobertura).filter(Muestra.id == idm).first()
     tp = TipoCobertura.query.filter_by(id=muestra.cobertura_muestra.id_tipocobertura).first()
-    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id==idc).first()
+    camp = Campania.query.join(Proyecto, Localidad).filter(Campania.id == idc).first()
     camp.responsables = limpia_responsables(camp.responsables)
+    ruta = str(UPLOAD_FOLDER+',C'+str(camp.id)+',M'+str(muestra.id)+',P'+str(punto.id)).split(',')
+    lugar = os.path.join(*ruta)
+    carpetas = None
+    archivos = {}
+    if os.path.exists(lugar):
+        carpetas = os.listdir(lugar)
+    if carpetas is not None:
+        for c in carpetas:
+            archivos[c] = os.listdir(os.path.join(lugar, c))
     if request.method == 'POST':
-        if archivoform.validate_on_submit():
-            archivos = request.files.getlist('archivo')
-            lugar = UPLOAD_FOLDER + re.findall("'([^']*)'", str(g.user))[0]
-            count_rad=0
-            count_radavg=0
-            count_radstd=0
-            count_ref=0
-            count_refavg=0
-            count_refstd=0
-            count_img=0
-            for a in archivos:
-                file_name = secure_filename(a.filename)
-                if len(file_name) > 0:
-                    tipo = archivoform.validate_archivo(file_name)
-                    if tipo:
-                        verif = cargar_archivo(lugar, file_name, tipo, a)
-                        if verif == 1:
-                            flash('Archivo Radiancia cargado: '+file_name, 'success')
-                            count_rad +=1
-                        elif verif == 2:
-                            flash('Archivo Radiancia Promedio cargado: '+file_name, 'success')
-                            count_radavg +=1
-                        elif verif == 3:
-                            flash('Archivo Radiancia Desviación Estándar cargado: '+file_name, 'success')
-                            count_radstd +=1
-                        elif verif == 4:
-                            flash('Archivo Reflectancia cargado: '+file_name, 'success')
-                            count_ref +=1
-                        elif verif == 5:
-                            flash('Archivo Reflectancia Promerdio cargado: '+file_name, 'success')
-                            count_refavg += 1
-                        elif verif == 6:
-                            flash('Archivo Reflectancia Desviación Estándar cargado: '+file_name, 'success')
-                            count_refstd +=1
-                        elif verif == 7:
-                            flash('Archivo Imagen cargado: '+file_name, 'success')
-                            count_img += 1
-                    else:
-                        flash('El archivo: '+file_name+' no es archivo de Radiancia, Reflectancia o Imagen válido.\n'+
-                              'Radiancia: ".rad.txt", ".md.txt", ".st.txt"\n'+
-                              'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n'+
-                              'Imagen: ".png", ".jpg", ".jpeg"', 'error')
-            if count_rad == 0:
-                flash('No ingresó ningún archivo de Radiancia', 'info')
-            if count_radavg == 0:
-                flash('No ingresó ningún archivo de Radiancia Promedio', 'info')
-            if count_radstd == 0:
-                flash('No ingresó ningún archivo de Radiancia Desviación Estándar', 'info')
-            if count_ref == 0:
-                flash('No ingresó ningún archivo de Reflectancia', 'info')
-            if count_refavg == 0:
-                flash('No ingresó ningún archivo de Reflectancia Promedio', 'info')
-            if count_refstd == 0:
-                flash('No ingresó ningún archivo de Reflectancia Desviación Estándar', 'info')
-            if count_img == 0:
-                flash('No ingresó ningún archivo de Imagen', 'info')
-            # if count_rad>0 and count_radavg>0 and count_radstd>0 and count_ref>0 and count_refavg>0 and count_refstd>0 and form_e.validate_on_submit():
-        if not archivoform.validate_on_submit():
-            flash('Falta Completar:', 'error')
-    return render_template('archivos.html', camp=camp, muestra=muestra, tp=tp, archivoform=archivoform, punto=punto)
+        if 'archivos' not in request.files:
+            flash('El formulario no contiene archivos', 'error')
+            return redirect(request.url)
+        files = request.files.getlist('archivos')
+        contador = 0
+        for f in files:
+            if f.filename != "":
+                contador += 1
+        if contador == 0:
+            flash('No se encontró ningún archivo. Seleccione los archivos que desea guardar.', 'error')
+            return redirect(request.url)
+        guardados = []
+        for f in files:
+            file_name = secure_filename(f.filename)
+            if len(file_name) > 0:
+                tipo = archivoform.validate_archivo(file_name)
+                if tipo:
+                    verif = cargar_archivo(lugar, file_name, tipo, f)
+                    if verif['t'] == 1:
+                        flash('Archivo Radiancia cargado: ' + file_name, 'success')
+                    elif verif['t'] == 2:
+                        flash('Archivo Radiancia Promedio cargado: ' + file_name, 'success')
+                    elif verif['t'] == 3:
+                        flash('Archivo Radiancia Desviación Estándar cargado: ' + file_name, 'success')
+                    elif verif['t'] == 4:
+                        flash('Archivo Reflectancia cargado: ' + file_name, 'success')
+                    elif verif['t'] == 5:
+                        flash('Archivo Reflectancia Promerdio cargado: ' + file_name, 'success')
+                    elif verif['t'] == 6:
+                        flash('Archivo Reflectancia Desviación Estándar cargado: ' + file_name, 'success')
+                    elif verif['t'] == 7:
+                        flash('Archivo Imagen cargado: ' + file_name, 'success')
+                    elif verif['t'] == 8:
+                        flash('Archivo Fotometría cargado: ' + file_name, 'success')
+                    guardados.append(verif['f'])
+                else:
+                    flash('El archivo: ' + file_name + ' no es archivo de Radiancia, Reflectancia o Imagen válido.\n' +
+                          'Radiancia: ".rad.txt", ".md.txt", ".st.txt"\n' +
+                          'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n' +
+                          'Imagen: ".png", ".jpg", ".jpeg"', 'error')
+        # Carga Asincrona de datos de los archivos guardados
+        guardar_async(app, guardados)
+        flash('Se han recibido %s archivos\n' % len(guardados), 'info')
+        flash('En %s minutos se verá reflejado en la Base\n\n' % round(31*len(guardados)/60, 2), 'info')
+        flash('Cada archivo tiene una demora de carga de aproximadamente 34 segundos', 'info')
+        return redirect(request.url)
+    return render_template('archivos.html', camp=camp, muestra=muestra, tp=tp, archivoform=archivoform, punto=punto, archivos=archivos)
+
 
 @app.route('/editar/nueva_cobertura', methods=['GET', 'POST'])
 @login_required
@@ -668,8 +679,9 @@ def editar(id):
     form_e = ini_nuevo_form()
     camp = Campania.query.filter_by(id=id).first()
     camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre)
-    camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre).paginate(get_page(camp, camps, POST_PER_PAGE),
-                                                                                POST_PER_PAGE, False)
+    camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre).paginate(
+        get_page(camp, camps, POST_PER_PAGE),
+        POST_PER_PAGE, False)
     if request.method == 'POST':
         form_e.id.data = id
         if form_e.ncampania.raw_data[0] != '':
@@ -695,6 +707,7 @@ def editar(id):
                 print('Error')
         return render_template('editar.html', form_e=form_e, camps=camps, camp=camp)
     return render_template('editar.html', form_e=form_e, camps=camps, camp=camp)
+
 
 # mapa consulta
 @app.route('/consultar/mapa', methods=['GET', 'POST'])
@@ -726,19 +739,22 @@ def loc():
                 "geometry": json.loads(value),
                 "properties": {"name": key},
             } for key, value in jloc.items()
-        ]
+            ]
     }
     return jsonify(gloc)
+
 
 # Consulta de datos
 @app.route('/consultar', methods=['GET', 'POST'])
 def consultar():
     form = ConsultarForm()
-    form.cobertura.choices = [(cob.id, cob.nombre) for cob in Cobertura.query.filter_by(deleted=False).order_by('nombre')]
+    form.cobertura.choices = [(cob.id, cob.nombre) for cob in
+                              Cobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.cobertura.choices.insert(0, (0, ''))
     form.localidad.choices = [(l.id, l.nombre) for l in Localidad.query.filter_by(deleted=False).order_by('nombre')]
     form.localidad.choices.insert(0, (0, ''))
-    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
+    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in
+                                   TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
     if request.method == 'POST':
         loc = form.localidad.data
@@ -761,7 +777,7 @@ def consultar():
             criterios['Fecha Fin'] = ff
         if loc > 0 and tp > 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
-                                                                   #Campania.deleted == False, Cobertura.deleted == False,
+                                                                   # Campania.deleted == False, Cobertura.deleted == False,
                                                                    Cobertura.id_tipocobertura == tp).all()
             print(camps)
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -793,7 +809,7 @@ def consultar():
         if tp > 0 and loc == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
-        if tp > 0 and fi is not None and ff is not None and loc == 0  and cob == 0:
+        if tp > 0 and fi is not None and ff is not None and loc == 0 and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.fecha >= fi, Campania.fecha <= ff,
                                                                    Cobertura.id_tipocobertura == tp).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
@@ -865,10 +881,12 @@ def descargas():
         if fi is not None and ff is None:
             descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi).all()
         if fi is not None and ff is not None:
-            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi, Descarga.fecha_descarga <= ff).all()
+            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi,
+                                                         Descarga.fecha_descarga <= ff).all()
         tabla = tabular_descargas(descargas)
         return render_template('consultar_descargas.html', form=form, tabla=tabla)
     return render_template('consultar_descargas.html', form=form)
+
 
 # Vista del Foro
 @app.route('/', methods=['GET', 'POST'])
@@ -876,7 +894,7 @@ def descargas():
 @app.route('/foro/<int:page>', methods=['GET', 'POST'])
 @login_required
 def foro(page=1):
-    user = g.user   # Se asigna el usuario de sesión actual
+    user = g.user  # Se asigna el usuario de sesión actual
     form = PostForm()
     if form.validate_on_submit():
         language = guessLanguage(form.post.data)
@@ -905,12 +923,14 @@ def documents():
     detalles = detalle_archivos(docs, DOCUMENTS_FOLDER)
     return render_template('docs.html', list=docs, folder='/docs', detalles=detalles)
 
+
 # Vista de Documentos
 @app.route('/fichas')
 def fichas():
     docs = sorted(os.listdir(FICHAS_FOLDER))
     detalles = detalle_archivos(docs, FICHAS_FOLDER)
     return render_template('docs.html', list=docs, folder='/fichas', detalles=detalles)
+
 
 # Vista de Documentos
 @app.route('/protocolos')
@@ -919,16 +939,18 @@ def protocolos():
     detalles = detalle_archivos(docs, PROTOCOLOS_FOLDER)
     return render_template('docs.html', list=docs, folder='/protocolos', detalles=detalles)
 
+
 # Muestra de documentos online
 @app.route('/<folder>/<filename>')
 def show_file(folder, filename):
-    url = ''
     if folder == 'docs':
         url = DOCUMENTS_FOLDER
-    if folder == 'fichas':
+    elif folder == 'fichas':
         url = FICHAS_FOLDER
-    if folder == 'protocolos':
+    elif folder == 'protocolos':
         url = PROTOCOLOS_FOLDER
+    else:
+        url = folder
     return send_from_directory(url, str(filename))
 
 
@@ -968,9 +990,9 @@ def localidad():
         uname = utf_to_ascii(name.encode('utf-8').decode('utf-8').upper())
         loc = Localidad().agregar(lat=lat, lng=lng, nombre=uname)
         if loc is True:
-            return jsonify(json.loads('{"info":"Se agregado la localidad", "loc":"'+str(name)+'"}'))
+            return jsonify(json.loads('{"info":"Se agregado la localidad", "loc":"' + str(name) + '"}'))
         if loc == 'Ya existe':
-            return jsonify(json.loads('{"info":"La localidad ya existe", "loc":"'+str(name)+'"}'))
+            return jsonify(json.loads('{"info":"La localidad ya existe", "loc":"' + str(name) + '"}'))
         else:
             return jsonify(json.loads('{"error":"No se ha podido agregar"}'))
     return render_template('localidad.html', locs=locs)
@@ -994,7 +1016,9 @@ def metodologia(page=1):
                 flash('Metodología guardada.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('metod_form.html', form=form, metods=metods, panel=panel)
+
 
 # Borrar una metodologia existente
 @app.route('/cargar/metodologia/borrar/<int:id>')
@@ -1029,7 +1053,9 @@ def proyecto(page=1):
                 flash('Proyecto guardado.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('proyecto_form.html', form=form, proyectos=proyectos, panel=panel)
+
 
 # Borrar un proyecto existente
 @app.route('/cargar/proyecto/borrar/<int:id>')
@@ -1063,7 +1089,9 @@ def tp():
                 flash('Tipo de cobertura guardada.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('tp_form.html', form=form, tps=tps, panel=panel)
+
 
 # Borrar un tipo de cobertura existente
 @app.route('/cargar/tp/borrar/<int:id>')
@@ -1086,8 +1114,10 @@ def borrar_tp(id):
 @login_required
 def cobertura(page=1):
     form = CobForm()
-    coberturas = Cobertura.query.filter_by(deleted=False).order_by(Cobertura.nombre).paginate(page, POST_PER_PAGE, False)
-    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
+    coberturas = Cobertura.query.filter_by(deleted=False).order_by(Cobertura.nombre).paginate(page, POST_PER_PAGE,
+                                                                                              False)
+    form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in
+                                   TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
     if request.args.get('c') == 'n':
         panel = 'none'
@@ -1100,7 +1130,9 @@ def cobertura(page=1):
                 flash('Cobertura guardada.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('cobertura_form.html', form=form, coberturas=coberturas, panel=panel)
+
 
 # Borrar una cobertura existente
 @app.route('/cargar/cobertura/borrar/<int:id>')
@@ -1134,6 +1166,7 @@ def radiometro():
                 flash('Espectro-radiómetro guardado.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('radiometro_form.html', form=form, radiometros=radiometros, panel=panel)
 
 
@@ -1169,7 +1202,9 @@ def patron():
                 flash('Patrón guardado.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('patron_form.html', form=form, patrones=patrones, panel=panel)
+
 
 # Borrar un Espectralon existente
 @app.route('/cargar/patron/borrar/<int:id>')
@@ -1203,7 +1238,9 @@ def fotometro():
                 flash('Fotómetro guardado.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('fotometro_form.html', form=form, fotometros=fotometros, panel=panel)
+
 
 # Borrar un Fotometro existente
 @app.route('/cargar/fotometro/borrar/<int:id>')
@@ -1237,7 +1274,9 @@ def camara():
                 flash('Cámara guardada.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('camara_form.html', form=form, camaras=camaras, panel=panel)
+
 
 # Borrar una Cámara existente
 @app.route('/cargar/camara/borrar/<int:id>')
@@ -1271,7 +1310,9 @@ def gps():
                 flash('GPS guardado.', 'success')
             else:
                 print('Error')
+            return redirect(request.url)
     return render_template('gps_form.html', form=form, gpses=gpses, panel=panel)
+
 
 # Borrar un Fotometro existente
 @app.route('/cargar/gps/borrar/<int:id>')
@@ -1287,6 +1328,7 @@ def borrar_gps(id):
     flash(gettext('El GPS ha sido borrado.'), 'success')
     return redirect(url_for('gps'))
 
+
 # Pagina de Contacto
 @app.route('/contacto', methods=['GET', 'POST'])
 def contacto():
@@ -1300,3 +1342,66 @@ def contacto():
         else:
             flash('Indique que No es un robot', 'error')
     return render_template('contacto.html', form=form, siteKey=SITE_KEY_CAPTCHA)
+
+
+# Descarga o Borrado de archivos guardados
+@app.route('/archivos/manipular', methods=['GET', 'POST'])
+@login_required
+def manipular_archivos():
+    if 'args' in request.args:
+        try:
+            args = json.loads(request.args.get('args'))
+            if 'lista' in args and 'c' in args and 'm' in args and 'p' in args and 'ax' in args and 'k' in args:
+                ruta = os.path.join(*[UPLOAD_FOLDER, args['c'], args['m'], args['p'], args['k']])
+                if args['ax'] == 'desc':
+                    nombre = "%s.zip" % (args['c']+'_'+args['m']+'_'+args['p']+'_'+args['k'])
+                    if zipdir(ruta, nombre):
+                        file_url = url_for('show_file', filename=nombre, folder=ruta)
+                        return jsonify({'file': file_url})
+                if args['ax'] == 'elim':
+                    borrar_async(ruta, args['lista'])
+                    return jsonify({"accion": "eliminado"})
+            else:
+                return jsonify({"error": "Argumentos incorrectos"})
+        except:
+            return jsonify({"error": "Formato de argumento incorrecto"})
+    else:
+        return jsonify({"error": "Argumento inesperado"})
+
+
+
+# Eliminar archivo temporal despues de un tiempo
+@app.route('/archivos/eliminar', methods=['GET', 'POST'])
+@login_required
+def eliminar_archivo():
+    time.sleep(5)
+    if 'args' in request.args:
+        try:
+            args = json.loads(request.args.get('args'))
+            if 'lista' in args and 'c' in args and 'm' in args and 'p' in args and 'ax' in args and 'k' in args:
+                ruta = os.path.join(*[UPLOAD_FOLDER, args['c'], args['m'], args['p'], args['k']])
+                if args['ax'] == 'elim':
+                    for l in args['lista']:
+                        os.remove(os.path.join(ruta, l))
+                    return jsonify({"accion": "eliminado"})
+            else:
+                return jsonify({"error": "Argumentos incorrectos"})
+        except:
+            return jsonify({"error": "Formato de argumento incorrecto"})
+    else:
+        return jsonify({"error": "Argumento inesperado"})
+
+
+# Progress Bar
+@app.route('/progress/<status>')
+def progress(status):
+    if status == 'start':
+        def generate():
+            x = 0
+            while x < 100:
+                x += 10
+                time.sleep(0.2)
+                yield "data:" + str(x) + "\n\n"
+        return Response(generate(), mimetype="text/event-stream")
+    else:
+        return ("", 204)

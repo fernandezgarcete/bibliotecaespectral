@@ -24,7 +24,7 @@ function habilitar(item, boton){
         $(boton+' i')[0].classList.remove('glyphicon-pencil');
         $(boton+' i')[0].classList.add('glyphicon-check');
         $(item)[0].disabled = false;
-        if (($(item)[0].id).indexOf('fech') !== -1){
+        if (($(item)[0].id).indexOf('fech') !== -1 && ($(item)[0].id).indexOf('fecha_hora') === -1){
             pickerdate_pub(item);
         }
         return
@@ -1251,4 +1251,156 @@ function logueo(){
 // Descargar url
 function descargar(url){
     window.location.href = url;
+}
+
+// seleccionar items de checkboxes para manipular
+function marcar(id){
+    var item = document.getElementById(id);
+    $(item).prop("checked", !$(item).prop("checked"));
+    var key = $(item).prop("class").split("_")[1];
+    cont(key);
+}
+
+// contar checkboxes seleccionados
+function cont(key){
+    var cant = $(".check_"+key+":checked").length;
+    $("#cont_"+key).text(" "+cant);
+}
+
+// manipular items a descargar o eliminar
+function manipular(key, accion, c, m, p){
+    var items = $(".check_"+key+":checked");
+    var lista = [];
+    if (items.length > 0 ){
+        $(items).each(function(){lista.push(this.id)});
+    } else {
+        $("#alert0").modal("show");
+        return;
+    }
+    var data = JSON.stringify({lista: lista, c: c, m: m, p: p, k: key, ax: accion});
+    if (accion == "elim"){
+        $('#confirm-delete1').on('show.bs.modal', function(e){
+            var modal = $(this);
+            $(this).find('.btn-ok').on('click', function(){
+                modal.modal('hide');
+                modal.on('hidden.bs.modal', function(e){modal.remove();});
+                // Accion especifica del boton
+                manipular_archivos(data);
+            });
+            // Mensaje para Rellenar el Body del Modal
+            var msg = "<p>Est&aacute; seguro de eliminar?</p>";
+            if(lista.length > 1){
+                msg += "<ul>";
+                lista.forEach(function(item){
+                    msg += "<li>"+item+"</li>";
+                });
+                msg += "</ul>";
+            } else {
+                msg += "<p>"+lista[0]+"</p>";
+            }
+            msg += "<br><p>Cantidad de archivos: <strong>"+lista.length+"</strong></p>";
+            $(this).find('.modal-body').empty().append(msg);
+        }).modal('show');
+    } else {
+        manipular_archivos(data);
+    }
+}
+
+// Accion especifica de la manipulacion de archivos
+function manipular_archivos(data){
+    progress("start");
+    $.ajax({url:"/archivos/manipular?args="+encodeURIComponent(data)})
+        .done(function(resp, status, xhr){
+            if (resp.accion === "eliminado"){
+                // realiza un F5 de la pag
+                location.reload(true);
+            } else {
+                var URL = window.URL || window.webkitURL;
+                if (resp.file) {
+                    // usa el atributo a[download] de HTML5 para especificar nombre de archivo
+                    var downloadURL = resp.file;
+                    var a = document.createElement("a");
+                    // Safari aun no lo soporta
+                    if (typeof a.download === 'undefined'){
+                        // Descargar
+                        window.location = downloadURL;
+                    } else {
+                        // Descargar
+                        a.id = "eliminame";
+                        a.href = resp.file;
+                        document.body.appendChild(a);
+                        a.click();
+                        eliminar_archivo(resp);
+                    }
+                } else {
+                    console.log("no se pudo descargar");
+                }
+                setTimeout(function(){URL.revokeObjectURL(downloadURL);}, 100); // Limpiar
+            }
+        }).fail(function (resp) {
+            console.log(resp);
+        });
+}
+
+// Eliminar el archivo temporal
+function eliminar_archivo(resp){
+    var split1 = resp.file.split('/');
+    progress("stop");
+    $('#eliminame').remove();
+    if(split1.length == 3){
+        var dir = split1[1].split('%5C');
+        if (dir.length > 0){
+            var data = JSON.stringify({
+                lista: [split1[split1.length-1]],
+                c: dir[dir.length-4],
+                m: dir[dir.length-3],
+                p: dir[dir.length-2],
+                k: dir[dir.length-1],
+                ax: 'elim'});
+            $.ajax({url:"/archivos/eliminar?args="+encodeURIComponent(data)})
+                .done(function(resp){
+                    if (resp.accion !== "eliminado") {
+                        console.log(resp);
+                    }
+                }).fail(function (resp) {
+                    console.log(resp);
+                });
+        }
+    }
+}
+
+// llama a la url /progress para iterar
+function progress(status){
+    var bar = $(".progress-bar");
+    if (status == 'start'){
+        $('#progress99').modal('show');
+    } else if (status == 'stop'){
+        $('#progress99').modal('hide');
+    }
+    var source = new EventSource("/progress/" + status);
+    source.onmessage = function(ev){
+        bar.css("width", ev.data + "%").attr("aria-valuenow", ev.data);
+    }
+
+}
+
+// Crea el elemento div que aloja el progress bar
+function makeProgressBar(){
+    crearModal('99', 'progress');
+    var content = $('#progress99 .modal-content');
+    content.empty();
+    var divp = document.createElement("div");
+    divp.classList.add("progress");
+    divp.style = "width: 50%; margin: 50px; position: absolute; z-index: 1000;";
+    var div = document.createElement("div");
+    div.classList.add("progress-bar");
+    div.classList.add("progress-bar-striped");
+    div.classList.add("active");
+    div.setAttribute("role", "progressbar");
+    div.setAttribute("aria-valuenow", "0");
+    div.setAttribute("aria-valuemin", "0");
+    div.setAttribute("aria-valuemax", "100");
+    div.style = "width: 0%";
+    divp.appendChild(div);
+    content.append(divp);
 }
