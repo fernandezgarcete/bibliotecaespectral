@@ -1405,3 +1405,12 @@ def progress(status):
         return Response(generate(), mimetype="text/event-stream")
     else:
         return ("", 204)
+
+
+# Detalle de la Muestra
+@app.route('/consultar/campania/<int:idc>/muestras', methods=['GET', 'POST'])
+@login_required
+def detalle_muestra(idc):
+    camp = Campania.query.get(idc)
+    muestras = camp.get_muestras()
+    return render_template('detalle_muestra.html', camp=camp, muestras=muestras, archivo=request.args.get('archivo'))

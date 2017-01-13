@@ -1,0 +1,128 @@
+<!-- extiende de base.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+<meta charset="UTF-8">
+</head>
+<script>navegador('#consulta')</script>
+
+<br>
+
+
+<h2>Campaña</h2>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>{{ camp.nombre }}</strong></div>
+    <div class="panel-body">
+        <p><strong>Objetivo:</strong> {{ camp.objetivo }}</p>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Tipo de Cobertura</th>
+                <th>Cobertura/s</th>
+                <th>Ubicación</th>
+                <th>Tipo de Calibración</th>
+                <th>Fecha</th>
+                <th>Nombre de Campaña</th>
+                <th>Responsables</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>{% if camp.muestras.all()|length > 0 %}
+                <td>{{ camp.muestras.all()[0].cobertura_muestra.cobertura.nombre }}</td>
+                <td>{% if camp.muestras.all()[0].cobertura_muestra.cobertura.nombre == "AGRICULTURA" %}
+                    {% for c in camp.muestras.all() %}
+                    {{ c.cobertura_muestra.nombre }}<br>
+                    {% endfor %}
+                    {% else %}
+                    {{ camp.muestras.all()[0].cobertura_muestra.nombre }}
+                    {% endif %}</td>
+                <td>{{ camp.localidad_campania.nombre }}</td>
+                <td>{{ camp.muestras.all()[0].patron_muestra.nombre }}</td>
+                <td>{{ camp.fecha.date() }}</td>
+                <td>{{ camp.nombre }}</td>
+                <td>{{ camp.responsables }}</td>
+                {% else %}
+                <td></td>
+                <td></td>
+                <td>{{ camp.localidad_campania.nombre }}</td>
+                <td></td>
+                <td>{{ camp.fecha.date() }}</td>
+                <td>{{ camp.nombre }}</td>
+                <td>{{ camp.responsables }}</td>
+            </tr>{% endif %}
+            </tbody>
+        </table>
+        <div style="font-size: 23px;border-radius: 1em;">
+            <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Campaña" onclick="descargar('{{ url_for('show_campaign', filename=archivo) }}')">
+                &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
+            </span>
+        </div>
+    </div>
+</div>
+
+{% if muestras|length > 0 %}
+<h3>Muestras</h3>
+<div class="list-group">
+    {% for muestra in muestras %}
+    <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pmues{{ loop.index }}">
+        <strong>{{ muestra.nombre }}</strong>
+        <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Muestra"></span>
+        <div id="pmues{{ loop.index }}" class="collapse panel panel-default">
+            <div class="panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Nombre de Campaña</th>
+                        <td>{{ camp.nombre }}</td>
+                    </tr><tr>
+                        <th>Id</th>
+                        <td>{{ camp.id }}</td>
+                    </tr><tr>
+                        <th>Fecha</th>
+                        <td>{{ camp.fecha.date() }}</td>
+                    </tr><tr>
+                        <th>Ubicación</th>
+                        <td>{{ camp.localidad_campania.nombre }}</td>
+                    </tr><tr>
+                        <th>Proyecto</th>
+                        <td>{{ camp.proyecto_campania.nombre }}</td>
+                    </tr><tr>
+                        <th>Responsables</th>
+                        <td>{{ camp.responsables }}</td>
+                    </tr><tr>
+                        <th>Objetivo</th>
+                        <td>{{ camp.objetivo }}</td>
+                    </tr><tr>
+                        <th>Pregunta de Teledetección</th>
+                        <td></td>
+                    </tr><tr>
+                        <th>Pregunta de Especialidad</th>
+                        <td></td>
+                    </tr><tr>
+                        <th>Espectro-radiómetro</th>
+                        <td>{{ muestra.radiometro_muestra.nombre }}</td>
+                    </tr><tr>
+                        <th>Otros Instrumentos</th>
+                        <td><ul>
+                            <li>Fotómetro<br>{{ muestra.fotometro_muestra.nombre }}</li>
+                            <li>Cámara<br>{{ muestra.camara_muestra.nombre }}</li>
+                            <li>GPS<br>{{ muestra.gps_muestra.nombre }}</li>
+                            <li>Patrón<br>{{ muestra.patron_muestra.nombre}}</li>
+                            </ul>
+                        </td>
+                    </tr><tr>
+                        <th>Metodología</th>
+                        <td>{{ muestra.metodo_muestra.nombre }}</td>
+                    </tr><tr>
+                        <th>Puntos</th>
+                        <td>{{ muestra.puntos.all()|length }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
