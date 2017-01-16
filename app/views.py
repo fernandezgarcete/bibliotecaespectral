@@ -756,10 +756,11 @@ def consultar():
     form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in
                                    TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
+    args = request.args.get('args')
     if request.method == 'POST':
-        loc = form.localidad.data
-        cob = form.cobertura.data
-        tp = form.tipo_cobertura.data
+        loc = form.localidad.data or 0
+        cob = form.cobertura.data or 0
+        tp = form.tipo_cobertura.data or 0
         fi = form.fecha_inicio.data
         ff = form.fecha_fin.data
         camps = []
@@ -862,7 +863,7 @@ def consultar():
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         return resultado(criterios, camps)
-    return render_template('consultar.html', form=form)
+    return render_template('consultar.html', form=form, args=args)
 
 
 # Consultar Descargas
@@ -1413,4 +1414,6 @@ def progress(status):
 def detalle_muestra(idc):
     camp = Campania.query.get(idc)
     muestras = camp.get_muestras()
-    return render_template('detalle_muestra.html', camp=camp, muestras=muestras, archivo=request.args.get('archivo'))
+    archivo = request.args.get('archivo')
+    criterios = json.loads(request.args.get('criterios'))
+    return render_template('detalle_muestra.html', camp=camp, muestras=muestras, archivo=archivo, criterios=criterios)

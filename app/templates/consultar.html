@@ -136,6 +136,32 @@ $('#consultarform').submit(function(e){
                 location.reload(true);
             });
 });
+
+{% if args is not none %}
+var criterios = {{ args|safe }};
+(function() {
+    $.each(criterios, function(key, val){
+        switch (key){
+            case 'Cobertura':
+                $('[name=cobertura] option').filter(function(){return this.text == val}).prop('selected', true);
+                break;
+            case 'Tipo Cobertura':
+                $('[name=tipo_cobertura] option').filter(function(){return this.text == val}).prop('selected', true);
+                break;
+            case 'Localidad':
+                $('[name=localidad] option').filter(function(){return this.text == val}).prop('selected', true);
+                break;
+            case 'Fecha Inicio':
+                $('[name=fecha_inicio]').datepicker('update', new Date(val));
+                break;
+            case 'Fecha Fin':
+                $('[name=fecha_fin]').datepicker('update', new Date(val));
+                break;
+        }
+    });
+    $('#consultarform').submit();
+})();
+{% endif%}
 </script>
 <script src="/static/js/mapas.js" charset="UTF-8"></script>
 {% endblock %}

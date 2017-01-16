@@ -5,9 +5,17 @@
 <head>
 <meta charset="UTF-8">
 </head>
-<script>navegador('#consulta')</script>
+<script>navegador('#consultar')</script>
+
 
 <br>
+<a class="btn" data-toggle="tooltip" title="Volver atrás" href="/consultar?args={{ criterios }}">
+    <span class="glyphicon glyphicon-share-alt" style="-webkit-transform: scale(-1, 1);
+-moz-transform: scale(-1, 1);
+-ms-transform: scale(-1, 1);
+-o-transform: scale(-1, 1);
+transform: scale(-1, 1);"></span>&nbsp; Volver
+</a>
 
 
 <h2>Campaña</h2>
@@ -67,7 +75,7 @@
 <div class="list-group">
     {% for muestra in muestras %}
     <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pmues{{ loop.index }}">
-        <strong>{{ muestra.nombre }}</strong>
+        <strong>{{ muestra.cobertura_muestra.nombre }}</strong>
         <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Muestra"></span>
         <div id="pmues{{ loop.index }}" class="collapse panel panel-default">
             <div class="panel-body">

@@ -47,7 +47,7 @@
                                         <td>{{ pair[0].muestras.all()[0].patron_muestra.nombre }}</td>
                                         <td>{{ pair[0].fecha.date() }}</td>
                                         <td>{{ pair[0].nombre }}</td>
-                                        <td><a href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1]) }}">Detalles</a></td>
+                                        <td><a href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=criterios|tojson|safe) }}">Detalles</a></td>
                                         {% else %}
                                         <td></td>
                                         <td></td>
@@ -55,7 +55,7 @@
                                         <td></td>
                                         <td>{{ pair[0].fecha.date() }}</td>
                                         <td>{{ pair[0].nombre }}</td>
-                                        <td><a href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1]) }}">Detalle</a></td>
+                                        <td><a href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=criterios|tojson|safe) }}">Detalle</a></td>
                                     </tr>{% endif %}
                                 </tbody>
                             </table><div style="font-size: 23px;border-radius: 1em;">
