@@ -61,3 +61,17 @@ header.navbar.well-lg.info.bs-docs-nav{
     background: linear-gradient(#d0e0f0, #a2c9dd); /* Standard syntax */
 }
 
+.detalle:hover {
+    transition: all 0.3s;
+    font-size: x-large;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.panel-heading:hover {
+    opacity: .8;
+}
+
+a:hover {
+    text-decoration: none;
+}

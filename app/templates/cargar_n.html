@@ -73,7 +73,23 @@
             <span id="bdesc" class="badge">300</span>
         </div>
     </div>
-    <div class="form-group" id="nf">
+    <div class="form-group" id="t">
+        <label class="col-xs-2">Pregunta Teledetección</label>
+        <div class="col-xs-10">
+            {{ form_n.teledeteccion(placeholder="Describa la pregunta de teledetección si corresponde", class="form-control",
+            onkeyup="contador(this,'#btele',600);") }}
+            <span id="btele" class="badge">600</span>
+        </div>
+    </div>
+    <div class="form-group" id="e">
+        <label class="col-xs-2">Pregunta Especialidad</label>
+        <div class="col-xs-10">
+            {{ form_n.especialidad(placeholder="Describa la pregunta de especialidad si corresponde", class="form-control",
+            onkeyup="contador(this,'#bespe',600);") }}
+            <span id="bespe" class="badge">600</span>
+        </div>
+    </div>
+    <div class="form-group" id="nfp">
         <label class="col-xs-2">Fecha de Publicación</label>
         <div class="col-xs-10">
             <div id="fechap" class="input-group date">

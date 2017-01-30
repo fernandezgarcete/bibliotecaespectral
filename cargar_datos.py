@@ -143,8 +143,8 @@ met3 = Metodologia(nombre='AYSA-CLOROFILA-CIANO',
                  angulo_azimutal=90)
 met4 = Metodologia(nombre='LOTE-VARIABILIDAD',
                  descripcion='Se toman puntos de muestreo en todo el lote para captar la variabilidad del mismo. '
-                             'En cada punto de muestreo se define una parcela de 5x5 m, en la cual, se tomaron datos '
-                             'sistemáticamente. Los datos promediados compondrán la firma espectral del área sensada.',
+                             'En cada punto de muestreo se define una parcela de 5x5 m, en la cual, se tomaron valores '
+                             'sistemáticamente. Los valores promediados compondrán la firma espectral del área sensada.',
                  angulo_azimutal=90)
 db.session.add(met1)
 db.session.add(met2)

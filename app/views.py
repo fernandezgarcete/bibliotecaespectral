@@ -4,6 +4,7 @@ from datetime import datetime
 import json, time
 import os
 import re
+from itsdangerous import BadSignature
 import requests
 import traceback
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory, \
@@ -23,9 +24,11 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
     actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
-    get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async
+    get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async, \
+    get_serializer, datos_reflectancia
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
-    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER, SECRET_KEY_CAPTCHA, SITE_KEY_CAPTCHA
+    CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER, SECRET_KEY_CAPTCHA, SITE_KEY_CAPTCHA, \
+    LOGOUT
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
 import geoalchemy2.functions as geofunc
@@ -107,7 +110,7 @@ def login():
                 return redirect(url_for('login'))
         else:
             flash('Falta Completar:', 'error')
-    return render_template('login.html')
+    return render_template('login.html') or redirect(request.args.get('next'))
 
 
 # Renderizar Formulario Login
@@ -155,7 +158,7 @@ def conae_after_login(datos):
         uid = User.query.order_by(User.id.desc()).first().id + 1
         nombre = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", nickname)  # Separar CamelCase con espacios
         user = User(social_id='sinredsocial' + str(uid), nickname=nickname, email=datos['email'],
-                    nombre=nombre)  # Obtenidos los datos, creamos User con el nickname y email
+                    nombre=nombre)  # Obtenidos los valores, creamos User con el nickname y email
         db.session.add(user)  # Agregamos a la sesión de la Base de Datos
         db.session.commit()  # Confirmamos la persistencia del nuevo Usuario en la BD.
         ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
@@ -185,7 +188,7 @@ def after_login(resp):
         nickname = User.make_valid_nickname(nickname)  # Validaciones previas a la aceptacion del nickname.
         nickname = User.make_unique_nickname(nickname)  # No aceptar duplicados.
         user = User(social_id='sinredsocial', nickname=nickname,
-                    email=resp.email)  # Obtenidos los datos, creamos User con el nickname y email
+                    email=resp.email)  # Obtenidos los valores, creamos User con el nickname y email
         db.session.add(user)  # Agregamos a la sesión de la Base de Datos
         db.session.commit()  # Confirmamos la persistencia del nuevo Usuario en la BD.
         ### hagamos al usuario seguidor de si mismo para visualizar sus post ###
@@ -235,6 +238,7 @@ def logout():
     session.pop('id', None)
     try:
         requests.get(DEVLOGOUT + session['userid'])
+        requests.get(LOGOUT + session['userid'])
     except:
         pass
     session.pop('userid', None)
@@ -246,12 +250,12 @@ def logout():
 @app.route('/user/<nickname>/<int:page>')
 @login_required
 def user(nickname, page=1):
-    user = User.query.filter_by(nickname=nickname).first()  # Carga datos del usuario desde la BD en "user".
+    user = User.query.filter_by(nickname=nickname).first()  # Carga valores del usuario desde la BD en "user".
     if user is None:  # Si no existe el usuario,
         flash(gettext('Usuario %s no encontrado.' % nickname), 'info')  # muestra un mensaje y
         return redirect(url_for('index'))  # envia de vuelta al inicio de sesión.
     posts = user.posts.paginate(page, POST_PER_PAGE, False)
-    return render_template('user.html',  # Envía el template html del usuario con sus datos y posteos
+    return render_template('user.html',  # Envía el template html del usuario con sus valores y posteos
                            user=user,
                            posts=posts)
 
@@ -269,7 +273,7 @@ def edit():
         flash('Sus cambios han sido guardados.', 'success')  # Se emite un mensaje de confirmación al usuario
         return redirect(url_for('edit'))  # y se redirige a la misma página
     else:  # caso contrario
-        form.nickname.data = g.user.nickname  # se dejan los datos como están en la sesión actual
+        form.nickname.data = g.user.nickname  # se dejan los valores como están en la sesión actual
         form.about_me.data = g.user.about_me
         form.nombre.data = g.user.nombre
     return render_template('edit.html', form=form)  # Finalmente se redirige a la pag de edición con el formulario
@@ -606,28 +610,29 @@ def archivos():
                 if tipo:
                     verif = cargar_archivo(lugar, file_name, tipo, f)
                     if verif['t'] == 1:
-                        flash('Archivo Radiancia cargado: ' + file_name, 'success')
+                        flash('Archivo Radiancia guardado: ' + file_name, 'success')
                     elif verif['t'] == 2:
-                        flash('Archivo Radiancia Promedio cargado: ' + file_name, 'success')
+                        flash('Archivo Radiancia Promedio guardado: ' + file_name, 'success')
                     elif verif['t'] == 3:
-                        flash('Archivo Radiancia Desviación Estándar cargado: ' + file_name, 'success')
+                        flash('Archivo Radiancia Desviación Estándar guardado: ' + file_name, 'success')
                     elif verif['t'] == 4:
-                        flash('Archivo Reflectancia cargado: ' + file_name, 'success')
+                        flash('Archivo Reflectancia guardado: ' + file_name, 'success')
                     elif verif['t'] == 5:
-                        flash('Archivo Reflectancia Promerdio cargado: ' + file_name, 'success')
+                        flash('Archivo Reflectancia Promerdio guardado: ' + file_name, 'success')
                     elif verif['t'] == 6:
-                        flash('Archivo Reflectancia Desviación Estándar cargado: ' + file_name, 'success')
+                        flash('Archivo Reflectancia Desviación Estándar guardado: ' + file_name, 'success')
                     elif verif['t'] == 7:
-                        flash('Archivo Imagen cargado: ' + file_name, 'success')
+                        flash('Archivo Imagen guardado: ' + file_name, 'success')
                     elif verif['t'] == 8:
-                        flash('Archivo Fotometría cargado: ' + file_name, 'success')
+                        flash('Archivo Fotometría guardado: ' + file_name, 'success')
                     guardados.append(verif['f'])
                 else:
-                    flash('El archivo: ' + file_name + ' no es archivo de Radiancia, Reflectancia o Imagen válido.\n' +
-                          'Radiancia: ".rad.txt", ".md.txt", ".st.txt"\n' +
-                          'Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"\n' +
-                          'Imagen: ".png", ".jpg", ".jpeg"', 'error')
-        # Carga Asincrona de datos de los archivos guardados
+                    flash('El archivo: ' + file_name + ' no es archivo de Radiancia, Reflectancia, Fotometría o Imagen válido.', 'error')
+                    flash('Radiancia: ".rad.txt", ".md.txt", ".st.txt"', 'error')
+                    flash('Reflectancia: ".rts.txt", "-refl.md.txt", "-refl.st.txt"', 'error')
+                    flash('Fotometría: "FOT.txt"', 'error')
+                    flash('Imagen: ".png", ".jpg", ".jpeg"', 'error')
+        # Carga Asincrona de valores de los archivos guardados
         guardar_async(app, guardados)
         flash('Se han recibido %s archivos\n' % len(guardados), 'info')
         flash('En %s minutos se verá reflejado en la Base\n\n' % round(31*len(guardados)/60, 2), 'info')
@@ -744,7 +749,7 @@ def loc():
     return jsonify(gloc)
 
 
-# Consulta de datos
+# Consulta de valores
 @app.route('/consultar', methods=['GET', 'POST'])
 def consultar():
     form = ConsultarForm()
@@ -756,7 +761,11 @@ def consultar():
     form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in
                                    TipoCobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.tipo_cobertura.choices.insert(0, (0, ''))
-    args = request.args.get('args')
+    s = get_serializer()
+    try:
+        args = s.loads(request.args.get('args'))
+    except:
+        args = None
     if request.method == 'POST':
         loc = form.localidad.data or 0
         cob = form.cobertura.data or 0
@@ -968,7 +977,9 @@ def resultado(criterios, camps):
                 break
         if find == 0:
             lista.append([c, ""])
-    return render_template('resultado.html', list=lista, criterios=criterios)
+    s = get_serializer()
+    args = s.dumps(criterios)
+    return render_template('resultado.html', list=lista, criterios=criterios, args=args)
 
 
 # Muestra archivo de campaña
@@ -1415,5 +1426,26 @@ def detalle_muestra(idc):
     camp = Campania.query.get(idc)
     muestras = camp.get_muestras()
     archivo = request.args.get('archivo')
-    criterios = json.loads(request.args.get('criterios'))
+    criterios = request.args.get('criterios')
     return render_template('detalle_muestra.html', camp=camp, muestras=muestras, archivo=archivo, criterios=criterios)
+
+
+# Detalle del Punto
+@app.route('/consultar/campania/<int:idc>/muestra/<int:idm>/puntos', methods=['GET', 'POST'])
+@login_required
+def detalle_punto(idc, idm):
+    camp = Campania.query.get(idc)
+    muestra = Muestra.query.get(idm)
+    puntos = muestra.get_puntos()
+    archivo = request.args.get('archivo')
+    datos = datos_reflectancia(puntos)
+    criterios = request.args.get('criterios')
+    return render_template('detalle_punto.html',
+                           camp=camp,
+                           muestra=muestra,
+                           puntos=puntos,
+                           archivo=archivo,
+                           datos=datos,
+                           criterios=criterios)
+
+

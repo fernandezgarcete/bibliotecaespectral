@@ -399,7 +399,7 @@ function crearModalBorrar(id, tit, mensaje){
 
 // Crear Modal Nueva Cobertura
 function crearModalNuevaCobertura(id){
-    crearModal(id, 'nueva-cob', 'Nueva Cobertura', 'Cargar los datos de la nueva cobertura', 'Guardar', 'btn-primary');
+    crearModal(id, 'nueva-cob', 'Nueva Cobertura', 'Cargar los valores de la nueva cobertura', 'Guardar', 'btn-primary');
 
     var body = $('#nueva-cob'+id+' .modal-body')[0];
 
@@ -521,9 +521,9 @@ function tipocobertura(){
     });
 }
 
-// Llamado que crea y amplia una tabla de datos, instancia el grafico de tortas, pasa el dato y lo dibuja.
+// Llamado que crea y amplia una tabla de valores, instancia el grafico de tortas, pasa el dato y lo dibuja.
 function dibujarGrafico(){
-    // Crear la tabla de datos
+    // Crear la tabla de valores
     var data = new google.visualization.DataTable();
     data.addColumn('number', 'X');
     data.addColumn('number', 'Cebolla');
@@ -735,8 +735,12 @@ function rellenar_camp(nombre){
             $('#nfecha').val(camps[i].fecha);
             $('#nresponsable').val(camps[i].resp);
             $('#nobjetivo').val(camps[i].obj);
+            $('#teledeteccion').val(camps[i].tele);
+            $('#especialidad').val(camps[i].espe);
             $('#nfecha_pub').val(camps[i].fecha_pub);
             contador(document.getElementById('nobjetivo'),'#bdesc',300);
+            contador(document.getElementById('teledeteccion'),'#btele',600);
+            contador(document.getElementById('especialidad'),'#bespe',600);
             limpiaResponsables();
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
@@ -1001,8 +1005,12 @@ function limpiar_camp() {
     $('#nfecha').val('');
     $('#nresponsable').val('');
     $('#nobjetivo').val('');
+    $('#teledeteccion').val('');
+    $('#especialidad').val('');
     $('#nfecha_pub').val('');
     contador(document.getElementById('nobjetivo'), '#bdesc', 300);
+    contador(document.getElementById('teledeteccion'), '#btele', 600);
+    contador(document.getElementById('especialidad'), '#bespe', 600);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
     location.href = "#n_camp";
@@ -1203,18 +1211,24 @@ function loadjscssfile(filename, filetype){
 }
 
 // Modal de Logueo
-function modal_login(){
+function modal_login(criterios){
     crearModal(-1, 'modal-login', 'Ingresar', '');
     var body = $('#modal-login-1 .modal-body')[0];
 
-    $.ajax({url:$SCRIPT_ROOT+'/loginform'})
+    $.ajax({url: $SCRIPT_ROOT+'/loginform'})
     .done(function(res) {
         body.innerHTML = res;
     });
 }
 
-function abrir_login(){
+function abrir_login(criterios){
     $('#modal-login-1').modal('show');
+    if(!$.isEmptyObject(criterios)){
+        var form = $('#loginform');
+        var action = form.attr('action');
+        action += '/consultar?args=' + JSON.stringify(criterios);
+        form.attr('action', action);
+    }
 }
 
 // Realizar el login

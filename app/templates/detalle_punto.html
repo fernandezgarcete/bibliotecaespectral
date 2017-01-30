@@ -4,12 +4,14 @@
 {% block content %}
 <head>
 <meta charset="UTF-8">
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
 </head>
 <script>navegador('#consultar')</script>
 
 
 <br>
-<a class="btn" data-toggle="tooltip" title="Volver atrás" href="/consultar?args={{ criterios }}">
+<a class="btn" data-toggle="tooltip" title="Volver atrás" href="{{ url_for('detalle_muestra', idc=camp.id, archivo=archivo, criterios=criterios) }}">
     <span class="glyphicon glyphicon-share-alt" style="-webkit-transform: scale(-1, 1);
 -moz-transform: scale(-1, 1);
 -ms-transform: scale(-1, 1);
@@ -18,12 +20,22 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
 </a>
 
 
+
+<div id="div_dt" style="width: 100%; height: 300px;"></div>
+<div id="btn_guardar"></div>
+
+<br>
+
 <h2>Campaña</h2>
 
 <div class="panel panel-default">
-    <div class="panel-heading"><strong>{{ camp.nombre }}</strong></div>
+    <div class="panel-heading" data-toggle="collapse" data-target="#pcamp">
+        <a id="c_nombre" href="#pcamp"> <strong>{{ camp.nombre }}</strong></a>
+        <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
+    </div>
     <div class="panel-body">
-        <p><strong>Objetivo:</strong> {{ camp.objetivo }}</p>
+        <p><strong>Objetivo:</strong> {{ camp.objetivo or '' }}</p>
+        <div class="collapse" id="pcamp">
         <table class="table">
             <tr>
                 <th>Tipo de Cobertura</th>
@@ -69,6 +81,7 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
                 <td>{{ camp.responsables }}</td>
             </tr>
         </table>
+            </div>
         <div style="font-size: 23px;border-radius: 1em;">
             <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Campaña" onclick="descargar('{{ url_for('show_campaign', filename=archivo) }}')">
                 &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
@@ -77,16 +90,15 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
     </div>
 </div>
 
-{% if muestras|length > 0 %}
-<h2>Muestras</h2>
-<div class="list-group">
-    {% for muestra in muestras %}
-    <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pmues{{ loop.index }}">
-        <strong>{{ muestra.cobertura_muestra.nombre }}{% if muestra.cobertura_muestra.cobertura.nombre == "HIDROLOGIA" %} {{ loop.index }}{% endif %}</strong>
-        <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Muestra"></span>
-        <div id="pmues{{ loop.index }}" class="collapse panel panel-default">
-            <div class="panel-body">
-                <table class="table">
+<h2>Muestra</h2>
+<div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#pmues">
+        <a id="m_nombre" href="#pmues"> <strong>{{ muestra.cobertura_muestra.nombre }}</strong></a>
+        <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de la Muestra"></span>
+    </div>
+    <div class="panel-body">
+        <div class="collapse" id="pmues">
+            <table class="table">
                     <tr>
                         <th>Nombre de Campaña</th>
                         <td>{{ camp.nombre }}</td>
@@ -128,13 +140,56 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
                         </td>
                     </tr><tr>
                         <th>Metodología</th>
-                        <td>{{ muestra.metodo_muestra.nombre }}<br>
-                            <p>{{ muestra.metodo_muestra.descripcion }}</p>
-                        </td>
+                        <td>{{ muestra.metodo_muestra.nombre }}</td>
                     </tr><tr>
                         <th>Puntos</th>
-                        <td>{{ muestra.puntos.all()|length }}<br>{% if muestra.puntos.all()|length > 0 %}
-                        <a class="detalle" href="{{ url_for('detalle_punto', idc=camp.id, idm=muestra.id, archivo=archivo, criterios=criterios) }}">Detalles</a>{% endif %}
+                        <td>{{ muestra.puntos.all()|length }}</td>
+                    </tr>
+                </table>
+        </div>
+    </div>
+</div>
+
+{% if puntos|length > 0 %}
+<h2>Puntos</h2>
+<div class="list-group">
+    {% for punto in puntos %}
+    <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#ppunto{{ loop.index }}">
+        <strong>{{ punto.nombre }}</strong>
+        <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles del Punto"></span>
+        <div id="ppunto{{ loop.index }}" class="collapse panel panel-default">
+            <div class="panel-body">
+                <table class="table">
+                    <tr>
+                        <th>Punto</th>
+                        <td>{{ punto.nombre }}</td>
+                    </tr><tr>
+                        <th>Hora</th>
+                        <td>{{ punto.fecha_hora.timetz() }} ART</td>
+                    </tr><tr>
+                        <th>Ubicación</th>
+                        <td>{{ camp.localidad_campania.nombre }}</td>
+                    </tr><tr>
+                        <th>Nubosidad</th>
+                        <td>{{ punto.nubosidad }} %</td>
+                    </tr><tr>
+                        <th>Estado</th>{% set e = {'M':'Malo','A':'Aceptable','B':'Bueno','MB':'Muy Bueno','E':'Excelente'} %}
+                        <td>{{ e[punto.estado|upper] or '-' }}</td>
+                    </tr><tr>
+                        <th>Observaciones</th>
+                        <td>{{ punto.observaciones or '-' }}</td>
+                    </tr><tr>
+                        <th>Cobertura</th>
+                        <td>{{ muestra.cobertura_muestra.nombre }}</td>
+                    </tr>{% if muestra.cobertura_muestra.cobertura.nombre == 'AGRICULTURA' %}<tr>
+                        <th>Malezas</th>
+                        <td></td>
+                    </tr>{% endif %}<tr>
+                        <th>Gráfico Promedio Radiancias</th>
+                        <td><div id="div_{{ punto.id }}" style="width: 100%; height: 100%;"></div></td>
+                    </tr><tr>
+                        <th>Valores Radiancia Promedio</th>
+                        <td><a href="#txt">TXT</a>
                         </td>
                     </tr>
                 </table>
@@ -143,5 +198,10 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
     </a>
     {% endfor %}
 </div>
+<script>
+var datos = {{ datos|tojson|safe }};
+</script>
+<script type="text/javascript" charset="ISO-8859-1" src="/static/js/gcharts.js"></script>
+<script>detalle_punto();</script>
 {% endif %}
 {% endblock %}

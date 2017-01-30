@@ -69,6 +69,8 @@ class NuevaCampForm(Form):
                       format='%Y-%m-%d')
     nresponsable = StringField('responsable', validators=[DataRequired(message=u'Responsable requerido')])
     nobjetivo = TextAreaField('objetivo')#, validators=[DataRequired(message=u'Ingrese un objetivo')])
+    teledeteccion = TextAreaField('teledeteccion')
+    especialidad = TextAreaField('especialidad')
     nfecha_pub = DateField(u'fecha', validators=[DataRequired(message=u'Ingrese una fecha de publicación del dato en formato YYYY-MM-DD')],
                       format='%Y-%m-%d')
 

@@ -1,4 +1,4 @@
-<form class="form-signin" id="loginform" action="{{ url_for('login', ext=request.args.get('next', '')) }}" method="POST" style="border-color: #101010; margin-left: 0; padding: 0; width: auto;">
+<form class="form-signin" id="loginform" action="{{ url_for('login', next=request.args.get('next', '')) }}" method="POST" style="border-color: #101010; margin-left: 0; padding: 0; width: auto;">
     <div style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
         {{ form.username(placeholder="Usuario de Email", style="display: inline-block; vertical-align: middle; width: auto; background-color: #fff; border-radius: 4px; color: #555; font-size: 14px; padding: 6px 12px; transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;", required="true", maxlength="128") }}
     </div>

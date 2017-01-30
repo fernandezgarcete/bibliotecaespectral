@@ -17,47 +17,54 @@
             {% if g.user.is_authenticated %}
                 {% if pair[1] != "" %}
                 <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pcamp{{ loop.index }}">
-                {{ pair[1] }}
+                <strong>{{ pair[1] }}</strong>
                     <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
                     <div id="pcamp{{ loop.index }}" class="collapse panel panel-default">
                         <div class="panel-body">
                             <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Tipo de Cobertura</th>
-                                        <th>Cobertura/s</th>
-                                        <th>Ubicación</th>
-                                        <th>Tipo de Calibración</th>
-                                        <th>Fecha</th>
-                                        <th>Nombre de Campaña</th>
-                                        <th>Muestras</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>{% if pair[0].muestras.all()|length > 0 %}
+                                <tr>
+                                    <th>Tipo de Cobertura</th>
+                                    {% if pair[0].muestras.all()|length > 0 %}
                                         <td>{{ pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre }}</td>
-                                        <td>{% if pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre == "AGRICULTURA" %}
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                </tr><tr>
+                                    <th>Cobertura/s</th>
+                                    {% if pair[0].muestras.all()|length > 0 %}
+                                    <td>{% if pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre == "AGRICULTURA" %}
+                                            <ul>
                                             {% for p in pair[0].muestras.all() %}
-                                                {{ p.cobertura_muestra.nombre }}<br>
+                                                <li>{{ p.cobertura_muestra.nombre }}</li>
                                             {% endfor %}
+                                            </ul>
                                         {% else %}
                                             {{ pair[0].muestras.all()[0].cobertura_muestra.nombre }}
                                         {% endif %}</td>
-                                        <td>{{ pair[0].localidad_campania.nombre }}</td>
-                                        <td>{{ pair[0].muestras.all()[0].patron_muestra.nombre }}</td>
-                                        <td>{{ pair[0].fecha.date() }}</td>
-                                        <td>{{ pair[0].nombre }}</td>
-                                        <td><a href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=criterios|tojson|safe) }}">Detalles</a></td>
-                                        {% else %}
+                                    {% else %}
                                         <td></td>
+                                    {% endif %}
+                                </tr><tr>
+                                    <th>Ubicación</th>
+                                    <td>{{ pair[0].localidad_campania.nombre }}</td>
+                                </tr><tr>
+                                    <th>Tipo de Calibración</th>
+                                    {% if pair[0].muestras.all()|length > 0 %}
+                                    <td>{{ pair[0].muestras.all()[0].patron_muestra.nombre }}</td>
+                                    {% else %}
                                         <td></td>
-                                        <td>{{ pair[0].localidad_campania.nombre }}</td>
-                                        <td></td>
-                                        <td>{{ pair[0].fecha.date() }}</td>
-                                        <td>{{ pair[0].nombre }}</td>
-                                        <td><a href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=criterios|tojson|safe) }}">Detalle</a></td>
-                                    </tr>{% endif %}
-                                </tbody>
+                                    {% endif %}
+                                </tr><tr>
+                                    <th>Fecha</th>
+                                    <td>{{ pair[0].fecha.date() }}</td>
+                                </tr><tr>
+                                    <th>Nombre de Campaña</th>
+                                    <td>{{ pair[0].nombre }}</td>
+                                </tr><tr>
+                                    <th>Muestras</th>
+                                    <td><a class="detalle" href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=args) }}">Detalles</a></td>
+                                </tr>
+
                             </table><div style="font-size: 23px;border-radius: 1em;">
                             <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=pair[1]) }}')">
                                 &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
@@ -67,7 +74,7 @@
                 </a>{% endif %}
             {% else %}
                 {% if pair[1] != "" %}
-                <a class="list-group-item" href="#resul" style="padding: 20px 25px;" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login()">
+                <a class="list-group-item" href="#resul" style="padding: 20px 25px;" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login({{ criterios }})">
                 {{ pair[1] }}
                     <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
                 </a>{% endif %}

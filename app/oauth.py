@@ -3,7 +3,7 @@ import traceback
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
 import ssl
-from config import TOKEN, LOGUEO, DATOS
+from config import DEVDATOS, DEVTOKEN, DEVLOGUEO, TOKEN, LOGUEO, DATOS
 import requests
 
 __author__ = 'Juanjo'
@@ -120,11 +120,11 @@ class ConaeSignIn():
         session['userid'] = requests.utils.dict_from_cookiejar(rt.cookies)['PHPSESSID']
         data = {'username': form.username.data, 'password': form.password.data, 'userId': session['userid']}
         try:
-            s.post(LOGUEO + session['userid'], data=data)
+            s.post(LOGUEO + session['userid']+'/', data=data)
         except:
             print(traceback.print_exc())
             pass
-        rd = s.get(DATOS + session['userid'])
+        rd = s.get(DATOS + session['userid']+'/')
         if rd.content == b'false':
             return False
         else:

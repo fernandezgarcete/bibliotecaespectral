@@ -7,6 +7,7 @@ import zipfile
 
 from app.decorators import async
 from app.archivos import guardar_archivo, borrar_datos
+from itsdangerous import URLSafeSerializer
 import requests
 from app import db, app
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
@@ -443,3 +444,96 @@ def checkRecaptcha(response, secretkey):
     except Exception as e:
         print(e)
         return False
+
+
+# Serializar URLs con itsdangerous
+def get_serializer(secret_key=None):
+    if secret_key is None:
+        secret_key = app.secret_key
+    return URLSafeSerializer(secret_key)
+
+
+# valores de reflectancia de los puntos
+def datos_reflectancia(puntos):
+    p = {}
+    cp = 0
+    datos_t = [['Longitud_Onda']]
+    for punto in puntos:
+        datos = []
+        refs = Reflectancia.query.filter_by(id_punto=punto.id).order_by('longitud_onda').all()
+        cp += 1
+        if len(refs) == 0:
+            datos = [[0]*2]*2151
+        else:
+            datos_t[0].append('Punto '+str(punto.id))
+            k = 0
+            j = 0
+            d = [0, 0]
+            for r in refs:
+                if r.longitud_onda != refs[0].longitud_onda:
+                    break
+                k += 1
+            for i, r in enumerate(refs):
+                if k > 1:
+                    if cp == 1 and len(datos_t) == 1:
+                        datos_t.append([r.longitud_onda, float(r.reflectancia)])
+                    if j == k:
+                        j = 0
+                        d[1] = d[1]/k
+                        if i == k:
+                            if len(datos_t[0]) == 2:
+                                datos_t[1] = list(d)
+                            else:
+                                datos_t[1].append(d[1])
+                        elif len(datos_t[0]) == 2:
+                            datos_t.append(list(d))
+                        else:
+                            datos_t[round(i/k)].append(d[1])
+                        datos.append(list(d))
+                        d = [0, 0]
+                    d[0] = r.longitud_onda
+                    d[1] += float(r.reflectancia)
+                    j += 1
+                    if i == len(refs)-1:
+                        d[1] = d[1]/k
+                        if len(datos_t[0]) == 2:
+                            datos_t.append(list(d))
+                        else:
+                            datos_t[round((i+1)/k)].append(d[1])
+                        datos.append(list(d))
+                        d = [0, 0]
+                else:
+                    d1 = [r.longitud_onda, float(r.reflectancia)]
+                    datos.append(list(d1))
+                    if cp == 1:
+                        datos_t.append(list(d1))
+                    else:
+                        datos_t[i+1].append(d1[1])
+        p['Punto '+str(punto.id)] = list(datos)
+    p['dt'] = list(datos_t)
+    return p
+
+
+# Valores de reflectancia de las muestras
+def detalle_muestra(muestras):
+    m = {}
+    cm = 0
+    datosM = []
+    datosM.append(['Longitud_Onda'])
+    for m in muestras:
+        datosP = []
+        datosP.append(['Longitud_Onda'])
+        cp = 0
+        puntos = m.get_puntos()
+        for p in puntos:
+            refs = Reflectancia.query.filter_by(id_punto=p.id).order_by('longitud_onda').all()
+            cp += 1
+            if len(refs) > 0:
+                datosP[0].append(m.cobertura_muestra.nombre)
+            for i, r in refs:
+                if cp < 2:
+                    datosP.append([r.longitud_onda, float(r.reflectancia)])
+                else:
+                    datosP[i+1].append(float(r.reflectancia))
+            m[str(p.id)] = datosP
+    return m

@@ -114,6 +114,30 @@
                         <i class="glyphicon glyphicon-pencil"></i></button>
         </div>
     </div>
+    <div class="form-group" id="et">
+        <label class="col-xs-2">Pregunta Teledetección</label>
+        <div class="col-xs-9">
+                {{ form_e.teledeteccion(placeholder="Describa la pregunta de teledetección si corresponde", class="form-control", disabled=true,
+            onkeyup="contador(this,'#btele',600);") }}
+            <span id="btele" class="badge">600</span>
+        </div>
+        <div class="col-xs-1">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#teledeteccion', '#bt')" id="bt">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
+    <div class="form-group" id="ee">
+        <label class="col-xs-2">Pregunta Especialidad</label>
+        <div class="col-xs-9">
+                {{ form_e.especialidad(placeholder="Describa la pregunta de especialidad si corresponde", class="form-control", disabled=true,
+            onkeyup="contador(this,'#bespe',600);") }}
+            <span id="bespe" class="badge">600</span>
+        </div>
+        <div class="col-xs-1">
+                    <button class="btn btn-primary" type="button" onclick="habilitar('#especialidad', '#be')" id="be">
+                        <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
+    </div>
     <div class="form-group" id="efp">
         <label class="col-xs-2">Fecha de Publicación</label>
         <div class="col-xs-9">
@@ -164,6 +188,8 @@ var camps = [];
         fecha:"{{ c.fecha.date() }}",
         fecha_pub:"{{ c.fecha_publicacion.date() }}",
         obj:"{{ c.objetivo }}",
+        tele:"{{ c.teledeteccion }}",
+        espe:"{{ c.especialidad }}",
         resp:"{{ c.responsables }}"
     };
     camps.push(camp);

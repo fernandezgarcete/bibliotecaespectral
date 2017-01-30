@@ -147,6 +147,8 @@ class Campania(db.Model):
     responsables = db.Column(db.String(340))
     id_localidad = db.Column(db.Integer, db.ForeignKey('localidad.id'))
     objetivo = db.Column(db.String(300))
+    teledeteccion = db.Column(db.String(600))
+    especialidad = db.Column(db.String(600))
     id_proyecto = db.Column(db.Integer, db.ForeignKey('proyecto.id'))
     muestras = db.relationship('Muestra', backref='campania_muestra', lazy='dynamic',
                                           cascade="save-update, merge, delete")
@@ -162,6 +164,8 @@ class Campania(db.Model):
             camp.responsables = form.nresponsable.data
             camp.id_localidad = form.nlocalidad.data
             camp.objetivo = str(form.nobjetivo.data).replace('\r\n', ' ')
+            camp.teledeteccion = str(form.teledeteccion.data).replace('\r\n', ' ')
+            camp.especialidad = str(form.especialidad.data).replace('\r\n', ' ')
             camp.id_proyecto = form.nproyecto.data
         else:
             loc = Localidad.query.filter_by(id=form.nlocalidad.data).first()
@@ -171,6 +175,8 @@ class Campania(db.Model):
             camp.responsables = form.nresponsable.data
             camp.id_localidad = form.nlocalidad.data
             camp.objetivo = str(form.nobjetivo.data).replace('\r\n', ' ')
+            camp.teledeteccion = str(form.teledeteccion.data).replace('\r\n', ' ')
+            camp.especialidad = str(form.especialidad.data).replace('\r\n', ' ')
             camp.id_proyecto = form.nproyecto.data
         try:
             db.session.add(camp)
@@ -424,7 +430,7 @@ class Muestra(db.Model):
             return self
 
     def get_puntos(self):
-        return Punto.query.filter(Punto.id_muestra == self.id).all()
+        return Punto.query.filter(Punto.id_muestra == self.id).order_by('id').all()
 
     def __repr__(self): # pragma: no cover
         return '<Muestra %r>' % (self.nombre)
