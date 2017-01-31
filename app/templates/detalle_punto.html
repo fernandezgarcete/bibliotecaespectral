@@ -5,9 +5,14 @@
 <head>
 <meta charset="UTF-8">
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
 </head>
 <script>navegador('#consultar')</script>
+
+<ol class="breadcrumb">
+<li><a href="{{ url_for('consultar', args=criterios) }}">Campañas</a></li>
+<li><a href="{{ url_for('detalle_muestra', idc=camp.id, archivo=archivo, criterios=criterios) }}">Muestras</a></li>
+<li class="active">Puntos</li>
+</ol>
 
 
 <br>
@@ -22,7 +27,15 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
 
 
 <div id="div_dt" style="width: 100%; height: 300px;"></div>
-<div id="btn_guardar"></div>
+<div class="dropdown" style="float: right;">
+    <button class="btn btn-info dropdown-toggle" type="button" id="guardar_img" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="true">Guardar <span class="caret"></span></button>
+    <ul class="dropdown-menu" aria-labelledby="guardar_img">
+        <li><div id="guardar_png"></div></li>
+        <li><div id="guardar_svg"></div></li>
+    </ul>
+</div>
+
 
 <br>
 
@@ -140,7 +153,9 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
                         </td>
                     </tr><tr>
                         <th>Metodología</th>
-                        <td>{{ muestra.metodo_muestra.nombre }}</td>
+                        <td>{{ muestra.metodo_muestra.nombre }}<br>
+                            <p>{{ muestra.metodo_muestra.descripcion }}</p>
+                        </td>
                     </tr><tr>
                         <th>Puntos</th>
                         <td>{{ muestra.puntos.all()|length }}</td>
@@ -185,11 +200,58 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
                         <th>Malezas</th>
                         <td></td>
                     </tr>{% endif %}<tr>
+                        <th>Fotos</th>{% set ploop = loop %}
+                        <td>
+                        {% for name in archivos_ref['P'~ploop.index][3] %}
+                        <div class="col-md-3 col-xs-6">
+                            <div {#href="#punto_carousel_{{ ploop.index }}"#} class="thumbnail" {#data-target="#modal_fotos_{{ ploop.index }}" data-toggle="modal"#}>
+                            <img src="{{ url_for('show_foto', folder=archivos_ref['P'~ploop.index][2],
+                                                    filename=name) }}" alt="{{ name }}" width="100" height="100">
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    <div id="modal_fotos_{{ ploop.index }}" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button class="close" data-dismiss="modal" title="Close" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="punto_carousel_{{ ploop.index }}" class="carousel slide">
+                                        <div class="carousel-inner">
+                                            {% for name in archivos_ref['P'~ploop.index][3] %}
+                                            <div class="item">
+                                                <img src="{{ url_for('show_foto', folder=archivos_ref['P'~ploop.index][2],
+                                                    filename=name) }}" alt="{{ name }}">
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        <a class="left carousel-control" href="#punto_carousel_{{ ploop.index }}" role="button" data-slide="prev">
+                                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                        </a>
+                                        <a class="right carousel-control" href="#punto_carousel_{{ ploop.index }}" role="button" data-slide="next">
+                                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </td>
+                    {##}
+                    </tr><tr>
                         <th>Gráfico Promedio Radiancias</th>
-                        <td><div id="div_{{ punto.id }}" style="width: 100%; height: 100%;"></div></td>
+                        <td><div id="div_{{ loop.index }}" style="width: 100%; height: 100%;"></div>
+                            <!--<div style="float: right;"><button onclick="ampliar()" data-toggle="tooltip" title="Ampliar">-->
+                                <!--<span class="glyphicon glyphicon-zoom-in"></span></button>-->
+                            <!--</div>-->
+                        </td>
                     </tr><tr>
                         <th>Valores Radiancia Promedio</th>
-                        <td><a href="#txt">TXT</a>
+                        <td><a href="{{ url_for('show_file', folder=archivos_ref['P'~loop.index][0],
+                        filename=archivos_ref['P'~loop.index][1]) }}"
+                               download="{{ archivos_ref['P'~loop.index][1] }}">{{ archivos_ref['P'~loop.index][1] }}</a>
                         </td>
                     </tr>
                 </table>

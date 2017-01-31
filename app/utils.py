@@ -7,6 +7,7 @@ import zipfile
 
 from app.decorators import async
 from app.archivos import guardar_archivo, borrar_datos
+from config import UPLOAD_FOLDER
 from itsdangerous import URLSafeSerializer
 import requests
 from app import db, app
@@ -85,7 +86,7 @@ def cargar_archivo(lugar, name, tipo, archivo):
         try:
             if not os.path.exists(lugar):
                 os.makedirs(lugar)
-            file_url = os.path.join(lugar, name)
+            file_url = os.path.join(lugar, name.lower())
             archivo.save(file_url)                          # Guarda archivo en disco
             return {'t': 7, 'f': file_url}
         except:
@@ -455,31 +456,41 @@ def get_serializer(secret_key=None):
 
 # valores de reflectancia de los puntos
 def datos_reflectancia(puntos):
-    p = {}
-    cp = 0
-    datos_t = [['Longitud_Onda']]
+    p = {}                          # Diccionario que contendra puntos individuales y grupales
+    cp = 0                          # Contador de puntos
+    datos_t = [['Longitud_Onda']]   # Lista de puntos grupales
     for punto in puntos:
-        datos = []
+        # Recorrido para tomar los datos de cada punto
+        datos = []                  # Lista para los datos del punto dado
+        # Consulta todos los datos de Reflectancia md del punto
         refs = Reflectancia.query.filter_by(id_punto=punto.id).order_by('longitud_onda').all()
         cp += 1
+        # Si no hay datos para el punto se rellena con 0
         if len(refs) == 0:
             datos = [[0]*2]*2151
         else:
-            datos_t[0].append('Punto '+str(punto.id))
-            k = 0
-            j = 0
-            d = [0, 0]
+            datos_t[0].append('Punto '+str(cp))       # Agregamos el nombre del punto a la lista grupal
+            k = 0                   # Contador de archivos
+            j = 0                   # Contador auxiliar para el recorrido de datos por archivos y punto
+            d = [0, 0]              # Lista que aloja la Long_Onda y su dato
+            # Recorrido que indica cantidad de archivos de rts.md por punto
             for r in refs:
                 if r.longitud_onda != refs[0].longitud_onda:
                     break
                 k += 1
+            # Conociendo la cantidad de archivos, se recorre todos los datos del punto
             for i, r in enumerate(refs):
+                # Si hay mas de 1 archivo se rellena haciendo un promedio de todos los datos por archivo para cada WL
                 if k > 1:
+                    # Condicion para el primer dato
                     if cp == 1 and len(datos_t) == 1:
                         datos_t.append([r.longitud_onda, float(r.reflectancia)])
+                    # Condicion cuando el aux sea igual a la cantidad de archivos
                     if j == k:
                         j = 0
+                        # Promedio de los datos sobre la cantidad de archivos
                         d[1] = d[1]/k
+                        # Se agrega el dato a la lista grupal de datos
                         if i == k:
                             if len(datos_t[0]) == 2:
                                 datos_t[1] = list(d)
@@ -489,11 +500,14 @@ def datos_reflectancia(puntos):
                             datos_t.append(list(d))
                         else:
                             datos_t[round(i/k)].append(d[1])
+                        # se agrega el dato a la lista de datos del punto
                         datos.append(list(d))
                         d = [0, 0]
+                    # Suma de datos en la lista d para posterior promedio
                     d[0] = r.longitud_onda
                     d[1] += float(r.reflectancia)
                     j += 1
+                    # Condicion para el último dato del recorrido
                     if i == len(refs)-1:
                         d[1] = d[1]/k
                         if len(datos_t[0]) == 2:
@@ -502,6 +516,7 @@ def datos_reflectancia(puntos):
                             datos_t[round((i+1)/k)].append(d[1])
                         datos.append(list(d))
                         d = [0, 0]
+                # Si hay un solo archivo con los datos
                 else:
                     d1 = [r.longitud_onda, float(r.reflectancia)]
                     datos.append(list(d1))
@@ -509,7 +524,9 @@ def datos_reflectancia(puntos):
                         datos_t.append(list(d1))
                     else:
                         datos_t[i+1].append(d1[1])
-        p['Punto '+str(punto.id)] = list(datos)
+        # Agregamos al diccionario de puntos, al punto con sus datos
+        p['Punto '+str(cp)] = list(datos)
+    # Al finalizar todos los puntos se agrega el grupo de puntos al diccionario
     p['dt'] = list(datos_t)
     return p
 
@@ -537,3 +554,37 @@ def detalle_muestra(muestras):
                     datosP[i+1].append(float(r.reflectancia))
             m[str(p.id)] = datosP
     return m
+
+
+# Archivos de Reflectancia rts.md
+def archivos_reflectancia(puntos):
+    archivos = {}
+    for i, p in enumerate(puntos):
+        ruta = os.path.join(UPLOAD_FOLDER, 'C'+str(p.punto.id_campania))
+        ruta = os.path.join(ruta, 'M'+str(p.punto.id))
+        ruta = os.path.join(ruta, 'P'+str(p.id))
+        ruta_r = os.path.join(ruta, 'ref')
+        ruta_f = os.path.join(ruta, 'img')
+        try:
+            files = os.listdir(ruta_r)
+            if len(files) > 1:
+                if zipdir(ruta_r, 'reflectancias_punto_'+str(i+1)+'.zip'):
+                    for file in os.listdir(ruta_r):
+                        if file.endswith('.zip'):
+                            archivos['P'+str(i+1)] = [ruta_r, file]
+            else:
+                archivos['P'+str(i+1)] = [ruta_r, files[0]]
+            files_f = os.listdir(ruta_f)
+            if len(files_f) > 1:
+                archivos['P'+str(i+1)].append(ruta_f)
+                archivos['P'+str(i+1)].append(os.listdir(ruta_f))
+        except:
+            archivos['P'+str(i+1)] = [ruta, '']
+    return archivos
+
+def fotos_punto(puntos):
+    fotos = {}
+    for i, p in enumerate(puntos):
+        ruta = os.path.join(UPLOAD_FOLDER, 'C'+str(p.punto.id_campania))
+        ruta = os.path.join(ruta, 'M'+str(p))
+    return fotos

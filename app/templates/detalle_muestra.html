@@ -7,6 +7,10 @@
 </head>
 <script>navegador('#consultar')</script>
 
+<ol class="breadcrumb">
+<li><a href="{{ url_for('consultar', args=criterios) }}">Campañas</a></li>
+<li class="active">Muestras</li>
+</ol>
 
 <br>
 <a class="btn" data-toggle="tooltip" title="Volver atrás" href="/consultar?args={{ criterios }}">

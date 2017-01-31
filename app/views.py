@@ -25,7 +25,7 @@ from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
     actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
     get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async, \
-    get_serializer, datos_reflectancia
+    get_serializer, datos_reflectancia, archivos_reflectancia
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER, SECRET_KEY_CAPTCHA, SITE_KEY_CAPTCHA, \
     LOGOUT
@@ -1440,12 +1440,18 @@ def detalle_punto(idc, idm):
     archivo = request.args.get('archivo')
     datos = datos_reflectancia(puntos)
     criterios = request.args.get('criterios')
+    archivos_ref = archivos_reflectancia(puntos)
     return render_template('detalle_punto.html',
                            camp=camp,
                            muestra=muestra,
                            puntos=puntos,
                            archivo=archivo,
                            datos=datos,
-                           criterios=criterios)
+                           criterios=criterios,
+                           archivos_ref=archivos_ref)
 
 
+@app.route('/foto/<path:folder>/<path:filename>')
+@login_required
+def show_foto(folder, filename):
+    return send_from_directory(folder, filename)
