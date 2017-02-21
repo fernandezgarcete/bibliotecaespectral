@@ -426,7 +426,7 @@ function crearModalNuevaCobertura(id){
                         infoMensaje(id, 'info', res["cob"],$('#nueva-cob'+id)[0]);
                         setTimeout(function() {$('#nueva-cob'+id).modal('hide');}, 2500);
                         var cober = document.getElementById('ecobertura_nueva');
-                        $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
+                        $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcobloc', method:'GET',
                             data:{id:$('#campania').val(), idtp:$('#tipo_cobertura').val()}, success: function(resp) {
                                 cober.innerHTML = resp;
                             }
@@ -515,14 +515,17 @@ function pickerdate_pub(item) {
 // Actualiza la Cobertura al cambiar el Tipo de Cobertura
 function tipocobertura(tp){
     var cober = document.getElementById('ecobertura_nueva');
+    var loc = document.getElementById('localidad');
     if (cober == null){
         cober = document.getElementById('cobertura');
     }
     var idtp = $('#tipo_cobertura').val();
     if($.type(idtp) === "array"){ idtp = tp }
-    $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
+    $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcobloc', method:'GET',
         data:{id:$('#campania').val(), idtp:idtp}, success: function(resp) {
-            cober.innerHTML = resp;
+            var resps = resp.trim('\t').split('\n');
+            cober.innerHTML = resps[0];
+            loc.innerHTML = resps[1];
         }
     });
 }

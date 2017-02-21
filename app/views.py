@@ -23,7 +23,7 @@ from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, P
     Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto, FuenteDatos
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
-    actualizar_cob, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
+    actualizar_cob_loc, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
     get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async, \
     get_serializer, datos_reflectancia, archivos_reflectancia, actualizar_tp
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
@@ -486,14 +486,14 @@ def borrar_muestra(id):
 
 
 # Actualizar la cobertura
-@app.route('/cargar/actualizarcob')
-def actualizarcob():
+@app.route('/cargar/actualizarcobloc')
+def actualizarcobloc():
     arg = request.args.get('id')
     if 'idtp' in request.args:
         idtp = int(request.args.get('idtp'))
         if arg is None:
-            form = actualizar_cob(idtp)
-            return render_template('actualizarcob.html', form=form)
+            form = actualizar_cob_loc(idtp)
+            return render_template('actualizarcobloc.html', form=form)
     return render_template('404.html'), 404
 
 

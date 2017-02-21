@@ -77,11 +77,27 @@ var options = {
 function redibujar(){
      mimapa = L.map('mapid', {
         center: [-38.15, -65.91],
-        zoom: 4
+        zoom: 4,
+        layers: [ign]
     });
+    mimapa.removeControl(layerControl);
+    layerControl.addTo(mimapa);
     mimapa.addControl(layerControl);
-    mimapa.removeLayer(ign);
-    mimapa.addLayer(ign);
+    checkLayer('OSM Calles');
+    checkLayer('IGN');
+}
+
+function checkLayer(label){
+    var labels = document.querySelectorAll('.leaflet-control-layers-base label span');
+    for(var i= 0, l=labels.length; i<l; i++){
+        if(labels[i].textContent.trim(' ') == label){
+            labels[i].parentNode
+                .getElementsByClassName('leaflet-control-layers-selector')[0]
+                .click();
+            return true;
+        }
+    }
+    return false;
 }
 // agregar controles pm al mapa
 //map.pm.addControls(options);
