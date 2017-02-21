@@ -432,6 +432,9 @@ function crearModalNuevaCobertura(id){
                             }
                         });
                     }
+                })
+                .fail(function(){
+
                 });
         });
     }});
@@ -509,15 +512,41 @@ function pickerdate_pub(item) {
     });
 }
 
-function tipocobertura(){
+// Actualiza la Cobertura al cambiar el Tipo de Cobertura
+function tipocobertura(tp){
     var cober = document.getElementById('ecobertura_nueva');
     if (cober == null){
         cober = document.getElementById('cobertura');
     }
+    var idtp = $('#tipo_cobertura').val();
+    if($.type(idtp) === "array"){ idtp = tp }
     $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizarcob', method:'GET',
-        data:{id:$('#campania').val(), idtp:$('#tipo_cobertura').val()}, success: function(resp) {
+        data:{id:$('#campania').val(), idtp:idtp}, success: function(resp) {
             cober.innerHTML = resp;
         }
+    });
+}
+
+// Actualiza el Tipo de Cobertura al cambiar la Fuente de Datos
+function fuente_datos(){
+    var tp = document.getElementById('tipo_cobertura');
+    $.ajax({url:$SCRIPT_ROOT+'/cargar/actualizartp', method:'GET',
+        data:{idfd:$('#fuente').val()}
+    }).done(function(resp){
+        tp.innerHTML = resp;
+        var n3 = $('#n3_tp');
+        n3.empty();
+        var tps = '';
+        $('#tipo_cobertura > option').each(function() {
+            if (this.value > 0) {
+                tps += '<label class="flat-butt btn-info btn" onclick="bN4(event,' + this.value + ')">' +
+                    '<input type="radio" id="b_' + this.text + '" >' + this.text +
+                    '</label>';
+            }
+        });
+        n3.append($.parseHTML(tps));
+        // Muestra los items de niveles 3
+        $('#n3').css('display', 'block');
     });
 }
 
@@ -663,6 +692,7 @@ function rellenar_tp(nombre){
         if(tps[i].nombre == nombre){
             $('#id').val(tps[i].id);
             $('#nombre').val(tps[i].nombre);
+            $('#id_fuente').val(tps[i].id_fuente);
             $('.form-control').prop('disabled',true);
             $('.col-xs-1').css('display','block');
         }
@@ -751,10 +781,10 @@ function rellenar_camp(nombre){
 // Rellena formulario Muestra
 function rellenar_mues(nombre){
     var nom = $('#nom');
-    nom.empty();
+    //nom.empty();
     for(var i=0; i<mues.length; i++){
         if(mues[i].nombre == nombre){
-            nom.append(document.createTextNode(mues[i].nombre));
+            //nom.append(document.createTextNode(mues[i].nombre));
             $('#nombre').val(mues[i].nombre);
             $('#id').val(mues[i].id);
             $('#metodologia').val(mues[i].id_met);
@@ -933,6 +963,7 @@ function limpiar_rad() {
 function limpiar_tp(){
     $('#id').val(0);
     $('#nombre').val('');
+    $('#id_fuente').val(0);
     $('.form-control').prop('disabled',false);
     $('.col-xs-1').css('display','none');
     location.href = "#tp_form";
@@ -955,7 +986,7 @@ function limpiar_pat() {
 
 // Limpia Formulario de Muestra
 function limpiar_mues() {
-    $('#nom').empty();
+    //$('#nom').empty();
     $('#nombre').val('');
     $('#id').val(0);
     $('#metodologia').val(0);
@@ -1244,20 +1275,7 @@ function logueo(){
             },
             url = $form.attr('action');
         $.post(url,data).done(function(){
-            /*let vars = $('#consultarform').serialize();
-            if(vars !== ""){
-                $('#modal-login-1').modal('hide');
-                $.ajax("/consultar").done(function(html){
-                    let navbar = html.substring(html.indexOf('menubar')-9, html.indexOf('</nav>',1)+6);
-                    $("#menubar").empty().append(navbar);
-                   $.post("/consultar", vars)
-                    .done(function(resp) {
-                        $('#result').empty().append(resp);
-                    });
-                });
-            } else {*/
-                window.location = $SCRIPT_ROOT;
-            //}
+            window.location = $SCRIPT_ROOT;
         });
     });
 }
@@ -1418,3 +1436,25 @@ function makeProgressBar(){
     divp.appendChild(div);
     content.append(divp);
 }
+
+
+// Back-to-Top click function
+function to_top(e){
+    e.preventDefault();
+    var duration = 300;
+    jQuery('html, body').animate({scrollTop: 0}, duration);
+    return false;
+}
+
+jQuery(document).ready(function () {
+    var offset = 250;
+    var duration = 300;
+    jQuery(window).scroll(function(){
+        if (jQuery(this).scrollTop() > offset){
+            jQuery('.back-to-top').fadeIn(duration);
+        } else {
+            jQuery('.back-to-top').fadeOut(duration);
+        }
+    });
+});
+

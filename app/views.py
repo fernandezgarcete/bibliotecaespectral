@@ -20,15 +20,15 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
     MetodologiaForm, DescargaForm, ProyectoForm, TPForm, CobForm, RadiometroForm, PatronForm, FotometroForm, CamaraForm, \
     GPSForm, PuntoForm, ContactoForm
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
-    Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto
+    Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto, FuenteDatos
 from .translate import microsoft_translate
 from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
-    actualizar_tp, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
+    actualizar_cob, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
     get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async, \
-    get_serializer, datos_reflectancia, archivos_reflectancia
+    get_serializer, datos_reflectancia, archivos_reflectancia, actualizar_tp
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \
     CAMPAIGNS_FOLDER, DATABASE_QUERY_TIMEOUT, PROTOCOLOS_FOLDER, FICHAS_FOLDER, SECRET_KEY_CAPTCHA, SITE_KEY_CAPTCHA, \
-    LOGOUT
+    LOGOUT, basedir
 from guess_language import guessLanguage
 from .oauth import OAuthSignIn, ConaeSignIn
 import geoalchemy2.functions as geofunc
@@ -460,6 +460,8 @@ def muestra(page=1):
         if form.validate_on_submit():
             m = Muestra()
             form.operador.data = camp.responsables
+            if len(form.nombre.raw_data) > 0:
+                form.nombre.data = form.nombre.raw_data[0]
             if m.agregar(form):
                 flash('Muestra guardada.', 'success')
             else:
@@ -490,15 +492,27 @@ def actualizarcob():
     if 'idtp' in request.args:
         idtp = int(request.args.get('idtp'))
         if arg is None:
-            form = actualizar_tp(idtp)
+            form = actualizar_cob(idtp)
             return render_template('actualizarcob.html', form=form)
+    return render_template('404.html'), 404
+
+
+# Actualizar el tipo de cobertura
+@app.route('/cargar/actualizartp')
+def actualizartp():
+    arg = request.args.get('id')
+    if 'idfd' in request.args:
+        idfd = int(request.args.get('idfd'))
+        if arg is None:
+            form = actualizar_tp(idfd)
+            return render_template('actualizartp.html', form=form)
     return render_template('404.html'), 404
 
 
 @app.route('/cargar/existente', methods=['GET', 'POST'])
 @login_required
 def consulta_existente():
-    form_c = ini_consulta_camp()
+    form_c, choices = ini_consulta_camp()
     if request.method == 'POST':
         if form_c.validate_on_submit():
             id = form_c.campania.data
@@ -506,9 +520,9 @@ def consulta_existente():
         else:
             flash('Falta Completar:', 'error')
             return render_template('cargar_c.html',
-                                   form_c=form_c)
+                                   form_c=form_c, choices=choices)
     return render_template('cargar_c.html',
-                           form_c=form_c)
+                           form_c=form_c, choices=choices)
 
 
 @app.route('/cargar/campania/muestra/punto', methods=['GET', 'POST'])
@@ -633,6 +647,11 @@ def archivos():
                     flash('Fotometría: "FOT.txt"', 'error')
                     flash('Imagen: ".png", ".jpg", ".jpeg"', 'error')
         # Carga Asincrona de valores de los archivos guardados
+        nombre = muestra.campania_muestra.nombre.replace(muestra.campania_muestra.nombre.split('-')[0],
+                                                         muestra.cobertura_muestra.cobertura.nombre) + '.zip'
+        lugar = os.path.join(UPLOAD_FOLDER, 'C'+str(muestra.campania_muestra.id))
+        if zipdir(lugar, nombre, CAMPAIGNS_FOLDER):
+            print('CAMPAÑA GENERADA : ', nombre)
         guardar_async(app, guardados)
         flash('Se han recibido %s archivos\n' % len(guardados), 'info')
         flash('En %s minutos se verá reflejado en la Base\n\n' % round(31*len(guardados)/60, 2), 'info')
@@ -720,7 +739,9 @@ def mapa():
     if request.method == 'POST':
         nom = request.form.get('loc')
         loc = Localidad.query.filter_by(nombre=nom, deleted=False).first()
-        camps = Campania.query.filter(Campania.id_localidad == loc.id, Campania.deleted == False).all()
+        camps = Campania.query.filter(Campania.id_localidad == loc.id,
+                                      Campania.fecha_publicacion <= datetime.now(),
+                                      Campania.deleted == False).all()
         criterios = {'Localidad': loc.nombre}
         return resultado(criterios, camps)
     return redirect(url_for('consultar'))
@@ -735,7 +756,24 @@ def punto_map():
 # enviar localidades
 @app.route('/consultar/mapa/loc', methods=['GET'])
 def loc():
-    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom)).filter_by(deleted=False).all())
+    jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
+                .filter(Localidad.deleted == False).all())
+    if 'fuente' in request.args and not 'tp' in request.args:
+        fuente = int(request.args.get('fuente'))
+        jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
+                .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
+                .filter(Localidad.deleted == False, FuenteDatos.id == fuente).all())
+    if 'tp' in request.args and not 'fuente' in request.args:
+        tp =int(request.args.get('tp'))
+        jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
+                .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
+                .filter(Localidad.deleted == False, TipoCobertura.id == tp).all())
+    if 'tp' in request.args and 'fuente' in request.args:
+        tp =int(request.args.get('tp'))
+        fuente = int(request.args.get('fuente'))
+        jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
+                .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
+                .filter(Localidad.deleted == False, TipoCobertura.id == tp, FuenteDatos.id == fuente).all())
     gloc = {
         "type": "FeatureCollection",
         "features": [
@@ -753,6 +791,8 @@ def loc():
 @app.route('/consultar', methods=['GET', 'POST'])
 def consultar():
     form = ConsultarForm()
+    form.fuente.choices = [(fd.id, fd.nombre) for fd in FuenteDatos.query.filter_by(deleted=False).order_by('nombre')]
+    form.fuente.choices.insert(0, (0, ''))
     form.cobertura.choices = [(cob.id, cob.nombre) for cob in
                               Cobertura.query.filter_by(deleted=False).order_by('nombre')]
     form.cobertura.choices.insert(0, (0, ''))
@@ -767,6 +807,7 @@ def consultar():
     except:
         args = None
     if request.method == 'POST':
+        fue = form.fuente.data or 0
         loc = form.localidad.data or 0
         cob = form.cobertura.data or 0
         tp = form.tipo_cobertura.data or 0
@@ -774,64 +815,88 @@ def consultar():
         ff = form.fecha_fin.data
         camps = []
         criterios = {}
-        if loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter_by(deleted=False).order_by(Campania.nombre.desc()).all()
+        if fue == 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
+            camps = Campania.query.filter(Campania.deleted == False,
+                                          Campania.fecha_publicacion <= datetime.now()).order_by(Campania.nombre.desc()).all()
+        if fue > 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
+            camps = Campania.query.join(Muestra, Cobertura, TipoCobertura, FuenteDatos).filter(FuenteDatos.id == fue)\
+                .order_by(Campania.nombre.desc()).all()
+            criterios['Fuente Datos'] = FuenteDatos.query.get(fue).nombre
         if loc > 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.deleted == False).all()
+            camps = Campania.query.filter(Campania.id_localidad == loc,
+                                          Campania.deleted == False,
+                                          Campania.fecha_publicacion <= datetime.now()).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if loc > 0 and fi is not None and ff is not None and cob == 0 and tp == 0:
-            camps = Campania.query.filter(Campania.id_localidad == loc, Campania.fecha >= fi, Campania.fecha <= ff,
+            camps = Campania.query.filter(Campania.id_localidad == loc,
+                                          Campania.fecha_publicacion <= datetime.now(),
+                                          Campania.fecha >= fi, Campania.fecha <= ff,
                                           Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
         if loc > 0 and tp > 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    # Campania.deleted == False, Cobertura.deleted == False,
                                                                    Cobertura.id_tipocobertura == tp).all()
             print(camps)
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if loc > 0 and cob > 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra).filter(Campania.id_localidad == loc, Campania.deleted is False,
+            camps = Campania.query.join(Muestra).filter(Campania.id_localidad == loc, Campania.deleted == False,
+                                                        Campania.fecha_publicacion <= datetime.now(),
                                                         Muestra.id_cobertura == cob).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if fi is not None and loc == 0 and tp == 0 and cob == 0 and ff is None:
-            camps = Campania.query.filter(Campania.fecha >= fi).all()
+            camps = Campania.query.filter(Campania.fecha >= fi,
+                                          Campania.fecha_publicacion <= datetime.now(),
+                                          Campania.deleted == False).all()
             criterios['Fecha Inicio'] = fi
         if ff is not None and loc == 0 and cob == 0 and tp == 0 and fi is None:
-            camps = Campania.query.filter(Campania.fecha <= ff).all()
+            camps = Campania.query.filter(Campania.fecha <= ff,
+                                          Campania.fecha_publicacion <= datetime.now(),
+                                          Campania.deleted == False).all()
             criterios['Fecha Fin'] = ff
         if fi is not None and ff is not None and cob == 0 and tp == 0 and loc == 0:
-            camps = Campania.query.filter(Campania.fecha >= fi, Campania.fecha <= ff).all()
+            camps = Campania.query.filter(Campania.fecha >= fi,
+                                          Campania.fecha <= ff,
+                                          Campania.fecha_publicacion <= datetime.now(),
+                                          Campania.deleted == False).all()
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
         if cob > 0 and loc == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob).all()
+            camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob,
+                                                        Campania.fecha_publicacion <= datetime.now()).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if cob > 0 and fi is not None and ff is not None and loc == 0 and tp == 0:
             camps = Campania.query.join(Muestra).filter(Campania.fecha >= fi, Campania.fecha <= ff,
+                                                        Campania.fecha_publicacion <= datetime.now(),
                                                         Muestra.id_cobertura == cob).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
         if tp > 0 and loc == 0 and cob == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp).all()
+            camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
+                                                                   Campania.fecha_publicacion <= datetime.now()).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if tp > 0 and fi is not None and ff is not None and loc == 0 and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.fecha >= fi, Campania.fecha <= ff,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Fecha Inicio'] = fi
             criterios['Fecha Fin'] = ff
         if tp > 0 and cob > 0 and loc == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Muestra.id_cobertura == cob).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and cob > 0 and loc > 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -839,6 +904,7 @@ def consultar():
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and loc > 0 and fi is not None and ff is not None and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -847,6 +913,7 @@ def consultar():
             criterios['Fecha Fin'] = ff
         if tp > 0 and cob > 0 and fi is not None and ff is not None and loc == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Muestra.id_cobertura == cob,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
@@ -855,6 +922,7 @@ def consultar():
             criterios['Fecha Fin'] = ff
         if loc > 0 and cob > 0 and fi is not None and ff is not None and tp == 0:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob, Campania.id_localidad == loc,
+                                                        Campania.fecha_publicacion <= datetime.now(),
                                                         Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -862,6 +930,7 @@ def consultar():
             criterios['Fecha Fin'] = ff
         if tp > 0 and cob > 0 and loc > 0 and fi is not None and ff is not None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
+                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Campania.fecha >= fi,
                                                                    Campania.fecha <= ff,
                                                                    Cobertura.id_tipocobertura == tp,
@@ -1090,6 +1159,9 @@ def borrar_proyecto(id):
 def tp():
     form = TPForm()
     tps = TipoCobertura.query.filter_by(deleted=False).order_by('nombre').all()
+    form.id_fuente.choices = [(fd.id, fd.nombre) for fd in
+                              FuenteDatos.query.filter_by(deleted=False).order_by('nombre')]
+    form.id_fuente.choices.insert(0, (0, ''))
     if request.args.get('c') == 'n':
         panel = 'none'
     else:
@@ -1421,7 +1493,6 @@ def progress(status):
 
 # Detalle de la Muestra
 @app.route('/consultar/campania/<int:idc>/muestras', methods=['GET', 'POST'])
-@login_required
 def detalle_muestra(idc):
     camp = Campania.query.get(idc)
     muestras = camp.get_muestras()
@@ -1432,7 +1503,6 @@ def detalle_muestra(idc):
 
 # Detalle del Punto
 @app.route('/consultar/campania/<int:idc>/muestra/<int:idm>/puntos', methods=['GET', 'POST'])
-@login_required
 def detalle_punto(idc, idm):
     camp = Campania.query.get(idc)
     muestra = Muestra.query.get(idm)
@@ -1451,7 +1521,6 @@ def detalle_punto(idc, idm):
                            archivos_ref=archivos_ref)
 
 
-@app.route('/foto/<path:folder>/<path:filename>')
-@login_required
-def show_foto(folder, filename):
-    return send_from_directory(folder, filename)
+@app.route('/archivo/<path:folder>/<path:filename>')
+def show_archivo(folder, filename):
+    return send_from_directory(os.path.join(basedir, folder), filename)

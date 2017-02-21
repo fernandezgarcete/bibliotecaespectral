@@ -157,59 +157,58 @@ class ArchivoForm(Form):
 
     def validate_img(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     def validate_radtxt(self, filename):
         return '.' in filename and \
-            (filename.rsplit('.', 2)[1].lower() == 'rad' or filename.rsplit('.', 2)[1].lower() == 'asd') and \
-           filename.rsplit('.', 1)[1].lower() == 'txt'
+               (filename.rsplit('.', 2)[1].lower() == 'rad' or filename.rsplit('.', 2)[1].lower() == 'asd') and \
+               filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_radavgtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1].lower() == 'md' and \
-           filename.rsplit('.', 1)[1].lower() == 'txt'
+               filename.rsplit('.', 3)[1].lower() != 'rts' and \
+               filename.rsplit('.', 2)[1].lower() == 'md' and \
+               filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_radstdtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1].lower() == 'st' and \
-           filename.rsplit('.', 1)[1].lower() == 'txt'
+               filename.rsplit('.', 3)[1].lower() != 'rts' and \
+               filename.rsplit('.', 2)[1].lower() == 'st' and \
+               filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_reftxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1].lower() == 'rts' and \
-           filename.rsplit('.', 1)[1].lower() == 'txt'
+               (filename.rsplit('.', 3)[1].lower() != 'sd' and filename.rsplit('.', 3)[1].lower() != 'md') and \
+               filename.rsplit('.', 2)[1].lower() == 'rts' and \
+               filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_refavgtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1].lower() == 'md' and \
-           filename.rsplit('.', 1)[1].lower() == 'txt'
+               (filename.rsplit('.', 3)[1].lower() == 'rts' and filename.rsplit('.', 2)[1].lower() == 'md') or \
+               (filename.rsplit('.', 3)[1].lower() == 'md' and filename.rsplit('.', 2)[1].lower() == 'rts') and \
+               filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_refstdtxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 2)[1].lower() == 'st' and \
-           filename.rsplit('.', 1)[1].lower() == 'txt'
+               (filename.rsplit('.', 3)[1].lower() == 'rts' and filename.rsplit('.', 2)[1].lower() == 'st') or \
+               (filename.rsplit('.', 3)[1].lower() == 'st' and filename.rsplit('.', 2)[1].lower() == 'rts') and \
+               filename.rsplit('.', 1)[1].lower() == 'txt'
 
     def validate_fottxt(self, filename):
         return '.' in filename and \
-           filename.rsplit('-', 1)[1].lower() == 'fot.txt'
+               (filename.rsplit('-', 1)[1].lower() == 'fot.txt' or len(filename.rsplit('FOT')) > 1)
 
 # Formulario de consulta
 class ConsultarForm(Form):
     filtro = SelectMultipleField('filtro', choices=['Proyecto', 'Localidad', 'Fecha', 'Tipo Cobertura',
                                                     'Cobertura'])
-    proyecto = SelectField('proyecto', coerce=int)#, validators=[DataRequired(message=u'Proyecto requerido')])
-    localidad = SelectField('localidad', coerce=int)#, validators=[DataRequired(message=u'Localidad requerida')])
-    # campania = SelectField('campania', coerce=int)#, validators=[DataRequired(message=u'Campaña requerida')])
-    fecha_inicio = DateField(u'fecha_inicio', format='%d-%m-%Y')
-    fecha_fin = DateField(u'fecha_fin',  format='%d-%m-%Y')
+    fuente = SelectField('fuente', coerce=int)
     tipo_cobertura = SelectField('tipo_cobertura', coerce=int)
     cobertura = SelectField('cobertura', coerce=int)
-    # radiancia = BooleanField('radiancia', default=True)
-    # radiancia_avg = BooleanField('radiancia_avg', default=False)
-    # radiancia_std = BooleanField('radiancia_std', default=False)
-    # reflectancia = BooleanField('reflectancia', default=False)
-    # reflectancia_avg = BooleanField('reflectancia_avg', default=False)
-    # reflectancia_std = BooleanField('reflectancia_std', default=False)
+    localidad = SelectField('localidad', coerce=int)
+    fecha_inicio = DateField(u'fecha_inicio', format='%d-%m-%Y')
+    fecha_fin = DateField(u'fecha_fin',  format='%d-%m-%Y')
+
 
 # Formulario de Metodologias
 class MetodologiaForm(Form):
@@ -237,6 +236,7 @@ class DescargaForm(Form):
 class TPForm(Form):
     id = StringField('id', validators=[DataRequired(message=u'Falta id')])
     nombre = StringField('nombre', validators=[DataRequired(message=u'Ingrese un nombre al tipo de cobertura')])
+    id_fuente = SelectField('fuente', coerce=int, validators=[DataRequired(message=u'Seleccione una Fuente de Datos')])
 
 # Formulario de Tipo Cobertura
 class CobForm(Form):

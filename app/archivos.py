@@ -3,19 +3,21 @@ import fnmatch
 import os
 import traceback
 from app import db
-from .models import Fotometria, Punto, Radiometria, Reflectancia, RadianciaAvg, RadianciaStd
+from .models import Fotometria, Punto, Radiometria, Reflectancia, RadianciaAvg, RadianciaStd, ReflectanciaStd, \
+    ReflectanciaAvg
 
 __author__ = 'Juanjo'
 
+# Cargas de Fotometrías
 def cargar_fotometria(uri, punto, archivo):
     try:
         with open(uri, 'r') as f:
+            flag = False
             for i, line in enumerate(f):
-                if i == 1:
-                    print(line.split(',')[25:39])
-                if i > 1 and line != '\n':
+                ls = line.split(',')
+                if flag and line != '\n' and ls[0] != '':
                     fot = Fotometria()
-                    v = line.split(',')
+                    v = ls
                     fot.sig380 = float(v[25])
                     fot.sig500 = float(v[26])
                     fot.sig675 = float(v[27])
@@ -35,6 +37,8 @@ def cargar_fotometria(uri, punto, archivo):
                     fot.archivo = archivo
                     db.session.add(fot)
                     db.session.commit()
+                if ls[0].upper() == 'SN' and ls[1].upper() == 'DATE' and ls[2].upper() == 'TIME':
+                    flag = True
         print('Archivo cargado : %s' % archivo)
         print(datetime.now())
     except:
@@ -42,20 +46,24 @@ def cargar_fotometria(uri, punto, archivo):
         db.session.rollback()
         return False
 
-
+# Carga de Radiancias
 def cargar_radiometria(uri, punto, archivo):
     try:
         with open(uri, 'r') as file:
-            file.readline()
+            flag = False
             for line in file:
-                rad = Radiometria()
-                ref = line.split('\t')
-                rad.longitud_onda = int(ref[0])
-                rad.radiancia = float(ref[1].replace(',', '.'))
-                rad.id_punto = punto.id
-                rad.archivo = archivo
-                db.session.add(rad)
-                db.session.commit()
+                ls = line.split('\t')
+                if flag and ls[0] != '':
+                    rad = Radiometria()
+                    ref = ls
+                    rad.longitud_onda = int(ref[0])
+                    rad.radiancia = float(ref[1].replace(',', '.'))
+                    rad.id_punto = punto.id
+                    rad.archivo = archivo
+                    db.session.add(rad)
+                    db.session.commit()
+                if ls[0] == 'Wavelength':
+                    flag = True
         print('Archivo cargado : %s' % archivo)
         print(datetime.now())
     except:
@@ -64,39 +72,60 @@ def cargar_radiometria(uri, punto, archivo):
         return False
 
 
-# Carga de Reflectancia, Radiancia Avg o Radiancia Std
+# Carga de Reflectancia, Reflectancia Avg, Reflectancia Std, Radiancia Avg o Radiancia Std
 def cargar_prod_rad(ur1, punto, archivo, producto):
     try:
         with open(ur1, 'r') as file1:
-            file1.readline()
+            flag = False
             for line in file1:
-                if producto == 'ref':
+                ls = line.split('\t')
+                if producto == 'ref' and flag and ls[0] != '':
                     prod = Reflectancia()
-                    ref = line.split('\t')
+                    ref = ls
                     prod.longitud_onda = int(ref[0])
                     prod.reflectancia = float(ref[1].replace(',', '.'))
                     prod.id_punto = punto.id
                     prod.archivo = archivo
                     db.session.add(prod)
                     db.session.commit()
-                elif producto == 'radavg':
+                if producto == 'radavg' and flag and ls[0] != '':
                     prod = RadianciaAvg()
-                    ref = line.split('\t')
+                    ref = ls
                     prod.longitud_onda = int(ref[0])
                     prod.radiancia_avg = float(ref[1].replace(',', '.'))
                     prod.id_punto = punto.id
                     prod.archivo = archivo
                     db.session.add(prod)
                     db.session.commit()
-                else:
+                if producto == 'radstd' and flag and ls[0] != '':
                     prod = RadianciaStd()
-                    ref = line.split('\t')
+                    ref = ls
                     prod.longitud_onda = int(ref[0])
                     prod.radiancia_std = float(ref[1].replace(',', '.'))
                     prod.id_punto = punto.id
                     prod.archivo = archivo
                     db.session.add(prod)
                     db.session.commit()
+                if producto == 'refavg' and flag and ls[0] != '':
+                    prod = ReflectanciaAvg()
+                    ref = ls
+                    prod.longitud_onda = int(ref[0])
+                    prod.reflectancia = float(ref[1].replace(',', '.'))
+                    prod.id_punto = punto.id
+                    prod.archivo = archivo
+                    db.session.add(prod)
+                    db.session.commit()
+                if producto == 'refstd' and flag and ls[0] != '':
+                    prod = ReflectanciaStd()
+                    ref = ls
+                    prod.longitud_onda = int(ref[0])
+                    prod.reflectancia = float(ref[1].replace(',', '.'))
+                    prod.id_punto = punto.id
+                    prod.archivo = archivo
+                    db.session.add(prod)
+                    db.session.commit()
+                if ls[0] == 'Wavelength':
+                    flag = True
         print('Archivo cargado : %s' % archivo)
         print(datetime.now())
     except:
@@ -121,6 +150,10 @@ def guardar_archivo(file_url, idp):
         cargar_prod_rad(file_url, punto, folder[len(folder)-1], 'radavg')
     elif folder[len(folder)-2] == 'radstd':
         cargar_prod_rad(file_url, punto, folder[len(folder)-1], 'radstd')
+    elif folder[len(folder)-2] == 'refavg':
+        cargar_prod_rad(file_url, punto, folder[len(folder)-1], 'refavg')
+    elif folder[len(folder)-2] == 'refstd':
+        cargar_prod_rad(file_url, punto, folder[len(folder)-1], 'refstd')
     else:
         cargar_fotometria(file_url, punto, folder[len(folder)-1])
 
@@ -153,6 +186,12 @@ def borrar_prod_radiancia(punto, files, folder):
             db.session.commit()
         elif folder == 'radstd':
             RadianciaStd.query.filter(RadianciaStd.id_punto == punto.id, RadianciaStd.archivo == f).delete()
+            db.session.commit()
+        elif folder == 'refavg':
+            ReflectanciaAvg.query.filter(ReflectanciaAvg.id_punto == punto.id, ReflectanciaAvg.archivo == f).delete()
+            db.session.commit()
+        elif folder == 'refstd':
+            ReflectanciaStd.query.filter(ReflectanciaStd.id_punto == punto.id, ReflectanciaStd.archivo == f).delete()
             db.session.commit()
         elif folder == 'rad':
             Radiometria.query.filter(Radiometria.id_punto == punto.id, Radiometria.archivo == f).delete()

@@ -228,9 +228,7 @@ class Campania(db.Model):
                 l = c.nombre.rsplit('-', 1)[1]
                 break
         if l is '':
-            locs = loc.nombre.split(' ')
-            for ls in locs:
-                l += ls
+            l = loc.nombre.replace(' ', '_')
         return str(ult_id) + '-' + f + '-' + l
 
     def has_muestra(self, muestra):
@@ -251,9 +249,10 @@ class Campania(db.Model):
     def __repr__(self): # pragma: no cover
         return '<Campaña %r>' % (self.nombre)
 
-# Tabla tipo de cobertura
+# Tabla Tipo de Cobertura
 class TipoCobertura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    id_fuente = db.Column(db.Integer, db.ForeignKey('fuente_datos.id'))
     nombre = db.Column(db.String(80), nullable=False, unique=True)
     coberturas = db.relationship('Cobertura', backref='cobertura', lazy='dynamic',
                                  cascade="save-update, merge, delete")
@@ -269,8 +268,10 @@ class TipoCobertura(db.Model):
         tp = self
         if int(form.id.data) > 0:
             tp = self.query.filter_by(id=int(form.id.data)).first()
+            tp.id_fuente = int(form.id_fuente.data)
             tp.nombre = form.nombre.data.upper()
         else:
+            tp.id_fuente = int(form.id_fuente.data)
             tp.nombre = form.nombre.data.upper()
         try:
             db.session.add(tp)
@@ -294,6 +295,46 @@ class TipoCobertura(db.Model):
 
     def __repr__(self): # pragma: no cover
         return '<Tipo de Cobertura %r>' % (self.nombre)
+
+
+# Tabla Fuente de Datos
+class FuenteDatos(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(80), nullable=False, unique=True)
+    tipo_coberturas = db.relationship('TipoCobertura', backref='fuente', lazy='dynamic',
+                                 cascade="save-update, merge, delete")
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+
+    def agregar(self, form):
+        fd = self
+        if int(form.id.data) > 0:
+            fd = self.query.filter_by(id=int(form.id.data)).first()
+            fd.nombre = form.nombre.data.upper()
+        else:
+            fd.nombre = form.nombre.data.upper()
+        try:
+            db.session.add(fd)
+            db.session.commit()
+            return True
+        except:
+            traceback.print_exc()
+            db.session.rollback()
+            return False
+
+    def has_tipo_cobertura(self, tp):
+        return self.coberturas.filter(tp.id_fuente == self.id).count() > 0
+
+    def get_tipo_coberturas(self):
+        return TipoCobertura.query.filter(TipoCobertura.id_fuente == self.id).all()
+
+    def __repr__(self): # pragma: no cover
+        return '<Fuente de Datos %r>' % (self.nombre)
 
 # Tabla Cobertura
 class Cobertura(db.Model):
@@ -1011,6 +1052,42 @@ class Reflectancia(db.Model):
 
     def __repr__(self):     # pragma: no cover
         return '<Reflectancia %r>' % (str(self.id))
+
+# Tabla Reflectancia AVG
+class ReflectanciaAvg(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    longitud_onda = db.Column(db.Integer)
+    reflectancia = db.Column(db.DECIMAL(precision=20, scale=15))
+    id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    archivo = db.Column(db.String(120))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+
+    def __repr__(self):     # pragma: no cover
+        return '<Reflectancia AVG %r>' % (str(self.id))
+
+# Tabla Reflectancia
+class ReflectanciaStd(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    longitud_onda = db.Column(db.Integer)
+    reflectancia = db.Column(db.DECIMAL(precision=20, scale=15))
+    id_punto = db.Column(db.Integer, db.ForeignKey('punto.id'))
+    archivo = db.Column(db.String(120))
+    deleted = db.Column(db.Boolean, default=False)
+
+    @property
+    def is_deleted(self):
+        if self.deleted is True:
+            return True
+        return False
+
+    def __repr__(self):     # pragma: no cover
+        return '<Reflectancia STD %r>' % (str(self.id))
 
 # Tabla Radiancia Avg
 class RadianciaAvg(db.Model):

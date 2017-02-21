@@ -180,6 +180,9 @@ transform: scale(-1, 1);"></span></a>
     </ul>
 </div>
 {% endfor %}
+{% else %}
+<p>No hay archivos cargados</p>
+
 {% endif %}
 
 <form id="#archivo_form" method="post" enctype="multipart/form-data" action="/cargar/campania/muestra/punto/archivos?idm={{ muestra.id }}&idc={{ camp.id }}&idp={{ punto.id }}">
@@ -204,10 +207,10 @@ transform: scale(-1, 1);"></span></a>
             <label>Reflectancia TXT</label>
             {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".rts.txt") }}
         </div>
-        {#<div class="panel-group">
+        <div class="panel-group">
             <label>Reflectancia Promedio y Desviación Estandar TXT</label>
-            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".md.rts.txt, .st.rts.txt") }}
-        </div>#}
+            {{ archivoform.archivos(class="form-control", multiple="multiple", accept=".md.rts.txt, .st.rts.txt, .rts.md.txt, .rts.st.txt") }}
+        </div>
     </div>
 </div>
 

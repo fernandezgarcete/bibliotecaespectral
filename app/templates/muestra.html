@@ -59,6 +59,7 @@ transform: scale(-1, 1);"></span></a>
     <!--img src="/static/img/cobertura.png" style="width: 50px;height: 50px;"-->
     </div>
     <div class="list-group">
+        {% if muestras.items|length > 0 %}
         {% for m in muestras.items %}
         <a href="#form_muestra" class="list-group-item" onclick="rellenar_mues('{{ m.nombre }}')" data-toggle="tooltip" title="Modificar Item">
         {{ m.nombre }}
@@ -67,6 +68,9 @@ transform: scale(-1, 1);"></span></a>
         </span>
         </a>
         {% endfor %}
+        {% else %}
+        <p>No hay existentes</p>
+        {% endif%}
     </div>
 </div>
 {% if muestras.has_prev %}<nav><ul class="pager"><li><a href="{{ url_for('muestra', page=muestras.prev_num, id=camp.id) }}"><i class="glyphicon glyphicon-chevron-left"></i> Previos</a></li>{% else %}<nav><ul class="pager">{% endif %}
@@ -95,7 +99,13 @@ transform: scale(-1, 1);"></span></a>
 <form class="form-horizontal" action="" method="post" id="form_muestra">
     <div class="form-group">
         <label class="col-xs-2">Nombre</label>
-        <div id="nom" class="col-xs-9"></div>
+        <div id="nom" class="col-xs-9">
+            {{ form.nombre(placeholder="Nombre de la Muestra", class="form-control", disabled=true) }}
+        </div>
+        <div class="col-xs-1" style="display:none;">
+            <button class="btn btn-primary" type="button" onclick="habilitar('#nombre', '#bn')" id="bn">
+                <i class="glyphicon glyphicon-pencil"></i></button>
+        </div>
     </div>
     <div class="form-group" id="mmet">
         <label class="col-xs-2">Metodología</label>

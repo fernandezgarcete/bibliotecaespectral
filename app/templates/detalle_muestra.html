@@ -74,9 +74,15 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
             </tr>
         </table>
         <div style="font-size: 23px;border-radius: 1em;">
+            {% if g.user.is_authenticated %}
             <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Campaña" onclick="descargar('{{ url_for('show_campaign', filename=archivo) }}')">
                 &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
             </span>
+            {% else %}
+            <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login()">
+                &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
+            </span>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -86,7 +92,7 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
 <div class="list-group">
     {% for muestra in muestras %}
     <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pmues{{ loop.index }}">
-        <strong>{{ muestra.cobertura_muestra.nombre }}{% if muestra.cobertura_muestra.cobertura.nombre == "HIDROLOGIA" %} {{ loop.index }}{% endif %}</strong>
+        <strong>{{ muestra.cobertura_muestra.nombre }}{% if muestra.cobertura_muestra.cobertura.nombre != "TIERRA_AGR_GAN" %} {{ loop.index }}{% endif %}</strong>
         <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Muestra"></span>
         <div id="pmues{{ loop.index }}" class="collapse panel panel-default">
             <div class="panel-body">
@@ -147,5 +153,13 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
     </a>
     {% endfor %}
 </div>
+{% endif %}
+
+{% if not g.user.is_authenticated %}
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+$csrf_token = {{ csrf_token()|tojson|safe }};
+    modal_login();
+</script>
 {% endif %}
 {% endblock %}

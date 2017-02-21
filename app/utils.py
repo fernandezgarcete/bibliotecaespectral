@@ -7,13 +7,13 @@ import zipfile
 
 from app.decorators import async
 from app.archivos import guardar_archivo, borrar_datos
-from config import UPLOAD_FOLDER
+from config import UPLOAD_FOLDER, basedir, CAMPAIGNS_FOLDER
 from itsdangerous import URLSafeSerializer
 import requests
 from app import db, app
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
 from app.models import Campania, Muestra, Fotometria, Radiometria, Reflectancia, Proyecto, Localidad, \
-    TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro
+    TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro, RadianciaAvg, ReflectanciaAvg
 import geoalchemy2.functions as geofunc
 
 __author__ = 'Juanjo'
@@ -133,12 +133,22 @@ def list_dir(dir):
 
 
 # Zip Comprimir directorio
-def zipdir(path, nombre):
+def zipdir(path, nombre, path_alt=None):
+    if path_alt is None:
+        path_alt = path
     try:
-        zip = zipfile.ZipFile(os.path.join(path, nombre), 'w', zipfile.ZIP_DEFLATED)
-        for f in os.listdir(path):
-            if f.rsplit('.')[1] != 'zip':
-                zip.write(os.path.join(path, f))
+        zip = zipfile.ZipFile(os.path.join(path_alt, nombre), 'w', zipfile.ZIP_DEFLATED)
+        for fname, subf, files in os.walk(path):
+            if fname == path:
+                name = ''
+            else:
+                name = os.path.relpath(fname, path)
+                zip.write(fname, arcname=name)
+            for f in files:
+                n = f.rsplit('.')
+                if len(n) > 1:
+                    if n[1] != 'zip':
+                        zip.write(os.path.join(fname, f), arcname=os.path.join(name, f))
         zip.close()
         return True
     except:
@@ -285,6 +295,7 @@ def ini_muestra_form(id):
     view = db.session.query(Campania, Muestra, Cobertura).join(Muestra, Cobertura).\
             filter(Campania.id == id, Campania.deleted is False).all()
     form.campania.data = id
+    form.nombre.data = ''
     form.metodologia.choices = [(met.id, met.nombre) for met in Metodologia.query.filter_by(deleted=False).order_by('nombre')]
     form.metodologia.choices.insert(0, (0, ''))
     form.fotometro.choices = [(fot.id, fot.nombre) for fot in Fotometro.query.filter_by(deleted=False).order_by('nombre')]
@@ -338,7 +349,8 @@ def ini_actualizar_form(id, idtp):
     form_c.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
     return {'form': form, 'form_c': form_c, 'form_m': form_m}
 
-def actualizar_tp(idtp):
+# Actualiza las coberturas en base al tipo de cobertura elegido
+def actualizar_cob(idtp):
     form = ConsultarForm()
     if idtp > 0:
         form.cobertura.choices = [(cn.id, cn.nombre) for cn in
@@ -347,6 +359,19 @@ def actualizar_tp(idtp):
         form.cobertura.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
     form.cobertura.choices.insert(0, (0, ''))
     return form
+
+
+# Actualiza los tipos coberturas en base a la fuente de datos elegida
+def actualizar_tp(idfd):
+    form = ConsultarForm()
+    if idfd > 0:
+        form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in
+                                       TipoCobertura.query.filter(TipoCobertura.id_fuente == idfd).order_by('nombre')]
+    else:
+        form.tipo_cobertura.choices = [(tp.id, tp.nombre) for tp in TipoCobertura.query.order_by('nombre')]
+    form.tipo_cobertura.choices.insert(0, (0, ''))
+    return form
+
 
 # Iniciar Formulario Nueva Campaña
 def ini_nuevo_form():
@@ -362,10 +387,11 @@ def ini_nuevo_form():
 
 # Iniciar Formulario Consultar Campaña
 def ini_consulta_camp():
+    choices = [(c.id, c.nombre) for c in Campania.query.filter_by(deleted=False).order_by(Campania.id.desc())]
     form = ConsultaCampForm()
-    form.campania.choices = [(c.id, c.nombre) for c in Campania.query.filter_by(deleted=False).order_by(Campania.id.desc())]
+    form.campania.choices = choices
     form.campania.choices.insert(0, (0, ''))
-    return form
+    return form, choices
 
 
 def utf_to_ascii(utf):
@@ -388,35 +414,42 @@ def utf_to_ascii(utf):
 
 def tabular_descargas(descargas):
     descarga = {}
-    mes = {'cant': 0, 'mb': 0, 'y': 0, 'mes': 0, 'inst': ''}
+    mes = {'cant': 0, 'mb': 0, 'year': 0, 'mes': 0, 'inst': ''}
     for d in descargas:
         y = d.fecha_descarga.year
-        if d.fecha_descarga.year == y and d.fecha_descarga.month == mes['mes'] and d.institucion == 'CONAE.GOV.AR':
-            descarga[mes['mes']][0]['mb'] += round(d.tamanio_archivo/1024/1024, 2)
-            descarga[mes['mes']][0]['cant'] += 1
-        if d.fecha_descarga.year == y and d.fecha_descarga.month != mes['mes'] and d.institucion == 'CONAE.GOV.AR':
-            mes = {'cant': 0, 'mb': 0, 'y': 0, 'mes': 0, 'inst': ''}
+        if d.fecha_descarga.year == y and d.fecha_descarga.month == mes['mes']:
+            if d.institucion == 'CONAE.GOV.AR':
+                descarga[mes['mes']][0]['mb'] += round(d.tamanio_archivo/1024/1024, 2)
+                descarga[mes['mes']][0]['cant'] += 1
+            else:
+                descarga[mes['mes']][1]['mb'] += round(d.tamanio_archivo/1024/1024, 2)
+                descarga[mes['mes']][1]['cant'] += 1
+        if d.fecha_descarga.year == y and d.fecha_descarga.month != mes['mes']:
+            mes = {'cant': 0, 'mb': 0, 'year': 0, 'mes': 0, 'inst': ''}
             arr = []
-            mes['mb'] += round(d.tamanio_archivo/1024/1024, 2)
-            mes['cant'] += 1
-            mes['year'] = y
-            mes['inst'] = 'conae'
-            mes['mes'] = d.fecha_descarga.month
-            arr.append(mes)
-            descarga[mes['mes']] = arr
-        if d.fecha_descarga.year == y and d.fecha_descarga.month == mes['mes'] and d.institucion != 'CONAE.GOV.AR':
-            descarga[mes['mes']][1]['mb'] += round(d.tamanio_archivo/1024/1024, 2)
-            descarga[mes['mes']][1]['cant'] += 1
-        if d.fecha_descarga.year == y and d.fecha_descarga.month != mes['mes'] and d.institucion != 'CONAE.GOV.AR':
-            mes = {'cant': 0, 'mb': 0, 'y': 0, 'mes': 0, 'inst': ''}
-            arr = []
-            mes['mb'] += round(d.tamanio_archivo/1024/1024, 2)
-            mes['cant'] += 1
-            mes['year'] = y
-            mes['inst'] = 'otros'
-            mes['mes'] = d.fecha_descarga.month
-            arr.append(mes)
-            descarga[mes['mes']].append(mes)
+            if d.institucion == 'CONAE.GOV.AR':
+                mes['mb'] += round(d.tamanio_archivo/1024/1024, 2)
+                mes['cant'] += 1
+                mes['year'] = y
+                mes['inst'] = 'conae'
+                mes['mes'] = d.fecha_descarga.month
+                arr.append(mes)
+                descarga[mes['mes']] = arr
+                mes = {'cant': 0, 'mb': 0, 'year': y, 'mes': d.fecha_descarga.month, 'inst': 'otros'}
+                arr = []
+                arr.append(mes)
+                descarga[mes['mes']].append(mes)
+            else:
+                mes = {'cant': 0, 'mb': 0, 'year': y, 'mes': d.fecha_descarga.month, 'inst': 'conae'}
+                arr = []
+                arr.append(mes)
+                descarga[mes['mes']] = arr
+                mes = {'cant': 0, 'mb': 0, 'year': y, 'mes': d.fecha_descarga.month, 'inst': 'otros'}
+                arr = []
+                mes['mb'] += round(d.tamanio_archivo/1024/1024, 2)
+                mes['cant'] += 1
+                arr.append(mes)
+                descarga[mes['mes']].append(mes)
     return descarga
 
 def detalle_archivos(files, path):
@@ -463,9 +496,11 @@ def datos_reflectancia(puntos):
         # Recorrido para tomar los datos de cada punto
         datos = []                  # Lista para los datos del punto dado
         # Consulta todos los datos de Reflectancia md del punto
-        refs = Reflectancia.query.filter_by(id_punto=punto.id).order_by('longitud_onda').all()
+        refs = ReflectanciaAvg.query.filter_by(id_punto=punto.id).order_by('longitud_onda').all()
         cp += 1
         # Si no hay datos para el punto se rellena con 0
+        if len(refs) == 0:
+            refs = Reflectancia.query.filter_by(id_punto=punto.id).order_by('longitud_onda').all()
         if len(refs) == 0:
             datos = [[0]*2]*2151
         else:
@@ -560,31 +595,39 @@ def detalle_muestra(muestras):
 def archivos_reflectancia(puntos):
     archivos = {}
     for i, p in enumerate(puntos):
-        ruta = os.path.join(UPLOAD_FOLDER, 'C'+str(p.punto.id_campania))
+        ruta = os.path.join('subidas', 'C'+str(p.punto.id_campania))
         ruta = os.path.join(ruta, 'M'+str(p.punto.id))
         ruta = os.path.join(ruta, 'P'+str(p.id))
         ruta_r = os.path.join(ruta, 'ref')
+        ruta_ra = os.path.join(ruta, 'refavg')
         ruta_f = os.path.join(ruta, 'img')
         try:
-            files = os.listdir(ruta_r)
+            files = os.listdir(os.path.join(basedir, ruta_r))
             if len(files) > 1:
-                if zipdir(ruta_r, 'reflectancias_punto_'+str(i+1)+'.zip'):
-                    for file in os.listdir(ruta_r):
+                if zipdir(os.path.join(basedir, ruta_r), 'reflectancias_punto_'+str(i+1)+'.zip'):
+                    for file in os.listdir(os.path.join(basedir, ruta_r)):
                         if file.endswith('.zip'):
                             archivos['P'+str(i+1)] = [ruta_r, file]
             else:
                 archivos['P'+str(i+1)] = [ruta_r, files[0]]
-            files_f = os.listdir(ruta_f)
-            if len(files_f) > 1:
+        except:
+            try:
+                files = os.listdir(os.path.join(basedir, ruta_ra))
+                if len(files) > 1:
+                    if zipdir(os.path.join(basedir, ruta_ra), 'reflectancias_punto_'+str(i+1)+'.zip'):
+                        for file in os.listdir(os.path.join(basedir, ruta_ra)):
+                            if file.endswith('.zip'):
+                                archivos['P'+str(i+1)] = [ruta_ra, file]
+                else:
+                    archivos['P'+str(i+1)] = [ruta_ra, files[0]]
+            except:
+                archivos['P'+str(i+1)] = [ruta, '']
+        try:
+            files_f = os.listdir(os.path.join(basedir, ruta_f))
+            if len(files_f) > 0:
                 archivos['P'+str(i+1)].append(ruta_f)
-                archivos['P'+str(i+1)].append(os.listdir(ruta_f))
+                archivos['P'+str(i+1)].append(os.listdir(os.path.join(basedir, ruta_f)))
         except:
             archivos['P'+str(i+1)] = [ruta, '']
     return archivos
 
-def fotos_punto(puntos):
-    fotos = {}
-    for i, p in enumerate(puntos):
-        ruta = os.path.join(UPLOAD_FOLDER, 'C'+str(p.punto.id_campania))
-        ruta = os.path.join(ruta, 'M'+str(p))
-    return fotos

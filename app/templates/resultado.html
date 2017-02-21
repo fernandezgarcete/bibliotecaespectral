@@ -1,6 +1,6 @@
 
 <br>
-<div class="panel panel-default">
+<div id="result_busqueda" class="panel panel-default">
     <div class="panel-heading"><strong>Resultados para la búsqueda:</strong></div>
     <div class="panel-body">
         {% for name, value in criterios.items() %}
@@ -14,74 +14,80 @@
 {% if list|length > 0 %}
     <div class="list-group">
         {% for pair in list %}
-            {% if g.user.is_authenticated %}
-                {% if pair[1] != "" %}
-                <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pcamp{{ loop.index }}">
-                <strong>{{ pair[1] }}</strong>
-                    <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
-                    <div id="pcamp{{ loop.index }}" class="collapse panel panel-default">
-                        <div class="panel-body">
-                            <table class="table">
-                                <tr>
-                                    <th>Tipo de Cobertura</th>
-                                    {% if pair[0].muestras.all()|length > 0 %}
-                                        <td>{{ pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre }}</td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr><tr>
-                                    <th>Cobertura/s</th>
-                                    {% if pair[0].muestras.all()|length > 0 %}
-                                    <td>{% if pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre == "AGRICULTURA" %}
-                                            <ul>
-                                            {% for p in pair[0].muestras.all() %}
-                                                <li>{{ p.cobertura_muestra.nombre }}</li>
-                                            {% endfor %}
-                                            </ul>
-                                        {% else %}
-                                            {{ pair[0].muestras.all()[0].cobertura_muestra.nombre }}
-                                        {% endif %}</td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr><tr>
-                                    <th>Ubicación</th>
-                                    <td>{{ pair[0].localidad_campania.nombre }}</td>
-                                </tr><tr>
-                                    <th>Tipo de Calibración</th>
-                                    {% if pair[0].muestras.all()|length > 0 %}
-                                    <td>{{ pair[0].muestras.all()[0].patron_muestra.nombre }}</td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr><tr>
-                                    <th>Fecha</th>
-                                    <td>{{ pair[0].fecha.date() }}</td>
-                                </tr><tr>
-                                    <th>Nombre de Campaña</th>
-                                    <td>{{ pair[0].nombre }}</td>
-                                </tr><tr>
-                                    <th>Muestras</th>
-                                    <td><a class="detalle" href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=args) }}">Detalles</a></td>
-                                </tr>
 
-                            </table><div style="font-size: 23px;border-radius: 1em;">
-                            <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=pair[1]) }}')">
-                                &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
-                            </span></div>
+            {% if pair[1] != "" %}
+            <a class="list-group-item" style="padding: 20px 25px;" href="#resul" data-toggle="collapse" data-target="#pcamp{{ loop.index }}">
+            <strong>{{ pair[1] }}</strong>
+                <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
+                <div id="pcamp{{ loop.index }}" class="collapse panel panel-default">
+                    <div class="panel-body">
+                        <table class="table">
+                            <tr>
+                                <th>Tipo de Cobertura</th>
+                                {% if pair[0].muestras.all()|length > 0 %}
+                                    <td>{{ pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            </tr><tr>
+                                <th>Cobertura/s</th>
+                                {% if pair[0].muestras.all()|length > 0 %}
+                                <td>{% if pair[0].muestras.all()[0].cobertura_muestra.cobertura.nombre == "TIERRA_AGR_GAN" %}
+                                        <ul>
+                                        {% for p in pair[0].muestras.all() %}
+                                            <li>{{ p.cobertura_muestra.nombre }}</li>
+                                        {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        {{ pair[0].muestras.all()[0].cobertura_muestra.nombre }}
+                                    {% endif %}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            </tr><tr>
+                                <th>Ubicación</th>
+                                <td>{{ pair[0].localidad_campania.nombre }}</td>
+                            </tr><tr>
+                                <th>Tipo de Calibración</th>
+                                {% if pair[0].muestras.all()|length > 0 %}
+                                <td>{{ pair[0].muestras.all()[0].patron_muestra.nombre }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            </tr><tr>
+                                <th>Fecha</th>
+                                <td>{{ pair[0].fecha.date() }}</td>
+                            </tr><tr>
+                                <th>Nombre de Campaña</th>
+                                <td>{{ pair[0].nombre }}</td>
+                            </tr><tr>
+                                <th>Muestras</th>
+                                <td><a class="detalle" href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=args) }}">Detalles</a></td>
+                            </tr>
+
+                        </table>
+                        <div style="font-size: 23px;border-radius: 1em;">
+                        {% if g.user.is_authenticated %}
+                        <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=pair[1]) }}')">
+                            &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
+                        </span>
+                        {% else %}
+                        <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login({{ criterios }})">
+                            &nbsp;<span class="glyphicon glyphicon-arrow-down"></span>&nbsp;
+                        </span>
+                        {% endif %}
                         </div>
                     </div>
-                </a>{% endif %}
-            {% else %}
-                {% if pair[1] != "" %}
-                <a class="list-group-item" href="#resul" style="padding: 20px 25px;" data-toggle="tooltip" title="Ingrese para Descargar" onclick="abrir_login({{ criterios }})">
-                {{ pair[1] }}
-                    <span class="glyphicon glyphicon-chevron-down" style="float: right;" data-toggle="tooltip" title="Detalles de Campaña"></span>
-                </a>{% endif %}
-            {% endif %}
+                </div>
+            </a>{% endif %}
         {% endfor %}
     </div>
 {% elif list|length == 0 %}
-    &nbsp;No se encontraron campañas para su búsqueda.
+    &nbsp;<p>No se encontraron campañas para su búsqueda.</p>
     <br>
 {% endif %}
+
+<script>
+    $('#n2').css('display', 'block');
+    $('#busca').css('display', 'block');
+</script>

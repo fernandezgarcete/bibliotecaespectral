@@ -34,54 +34,86 @@
     <li id="f" onclick="item_consulta('#f')"><a href="#"><h2><span class="label label-info">Fecha</span></h2></a></li>
     <li id="m" ><a href="{{ url_for('mapa') }}"><h2><span class="label label-info">Geográfica</span></h2></a></li>
 </ul>#}
-<div class="col-md-6">
-<form class="form-horizontal" action="" method="post" id="consultarform">
 
-    <div class="form-group" id="fl" style="display: block;">
-        <label class="col-xs-2">Localidad</label>
-        <div class="col-xs-10">
-            {{ form.localidad(placeholder="Nombre de la Localidad", class="form-control") }}
+
+<div id="b_gral" class="row" style="display: block;">
+    <div class="col-md-12">
+        <button id="b_todo" class="flat-butt btn-primary btn-lg" onclick="$('#consultarform').submit();">Todos</button>
+    </div>
+    <br>
+    <div class="col-md-12" id="n2" style="display: none;">
+        <h3>Fuente de Datos</h3>
+        <br>
+        <div class="btn-group" data-toggle="buttons">
+            {% for f in form.fuente.choices %}
+            {% if f[0] > 0 %}
+            <label class="flat-butt btn-info btn" onclick="bfd_{{ f[0] }}(event, {{f[0]}})">
+                <input type="radio" id="b_{{ f[0] }}" autocomplete="off">{{ f[1] }}
+            </label>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <br>
+    </div>
+    <div class="col-md-12" id="n3" style="display: none;">
+        <h3>Tipo de Cobertura - Objeto</h3>
+        <div id="n3_tp" class="btn-group" data-toggle="buttons">
+            {% for tp in form.tipo_cobertura.choices %}
+            {% if tp[0] > 0 %}
+            <label class="flat-butt btn-info btn" onclick="bN4(event, '{{ tp[1] }}')">
+            <input type="radio" id="b_{{ tp[1] }}" >{{ tp[1] }}
+            </label>
+            {% endif %}
+            {% endfor %}
         </div>
     </div>
-    <div class="form-group" id="ff" style="display: block;">
-        <label class="col-xs-2">Fechas</label>
-        <div class="col-xs-10">
-            <div class="input-group input-daterange">
-                <span class="input-group-addon">Inicio</span>
-                {{ form.fecha_inicio(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
-                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                <span class="input-group-addon">Fin</span>
-                {{ form.fecha_fin(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
-                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" id="ft" style="display: block;">
-        <label class="col-xs-2">Tipo de Cobertura</label>
-        <div class="col-xs-10">
-            {{ form.tipo_cobertura(placeholder="Elija el Tipo de Cobertura", class="form-control", onchange="tipocobertura()") }}
-        </div>
-    </div>
-    <div class="form-group" id="fc" style="display: block;">
-        <label class="col-xs-2">Cobertura</label>
-        <div class="col-xs-10">
-            {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control") }}
-        </div>
-    </div>
-    <div class="form-group">
-        {{ form.hidden_tag() }}
-    </div>
-    <img id="buscando" style="display: none" src="/static/img/loading.gif"/>
-    <button id="busca" type="submit" class="btn btn-primary">
-        Consultar
-        <span class="glyphicon glyphicon-search"></span>
-    </button>
-{#    <input type="submit" value="Consultar" class="btn btn-primary">#}
-</form>
-<br>
 </div>
-<div class="col-md-6">
-<div id="mapid"></div>
+<hr>
+<div class="row">
+    <div id="div_consulta" class="col-md-6">
+        <form class="form-horizontal" action="" method="post" id="consultarform">
+            {{ form.fuente(style="display:none;", onchange="fuente_datos();") }}
+            {{ form.tipo_cobertura(style="display:none;", onchange="tipocobertura()") }}
+            <div class="form-group" id="fl" style="display: none;">
+                <label class="col-xs-2">Localidad</label>
+                <div class="col-xs-10">
+                    {{ form.localidad(placeholder="Nombre de la Localidad", class="form-control") }}
+                </div>
+            </div>
+            <div class="form-group" id="ff" style="display: none;">
+                <label class="col-xs-2">Fechas</label>
+                <div class="col-xs-10">
+                    <div class="input-group input-daterange">
+                        <span class="input-group-addon">Inicio</span>
+                        {{ form.fecha_inicio(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        <span class="input-group-addon">Fin</span>
+                        {{ form.fecha_fin(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="fc" style="display: none;">
+                <label class="col-xs-2">Cobertura</label>
+                <div class="col-xs-10">
+                    {{ form.cobertura(placeholder="Elija la Cobertura", class="form-control") }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.hidden_tag() }}
+            </div>
+            <img id="buscando" style="display: none" src="/static/img/loading.gif"/>
+            <button id="busca" style="display: none" type="submit" class="flat-butt btn-primary">
+                Consultar&nbsp;
+                <span class="glyphicon glyphicon-search"></span>
+            </button>
+
+        </form>
+        <br>
+    </div>
+    <div id="div_map" style="display: none;" class="col-md-6">
+        <div id="mapid"></div>
+    </div>
 </div>
 
 <div class="col-md-12" id="result"></div>
@@ -116,22 +148,19 @@ $csrf_token = {{ csrf_token()|tojson|safe }};
 {% if not g.user.is_authenticated %}
 modal_login();
 {% endif %}
-{#    $('#fp').hide();
-    $('#fl').hide();
-    $('#ft').hide();
-    $('#fc').hide();
-    $('#ff').hide();#}
+
 $('#consultarform').submit(function(e){
     var $form = $(this);
     e.preventDefault();
     $('#busca').hide();
     $('#buscando').show();
+
     $.post("{{ url_for('consultar') }}", $form.serialize())
             .done(function(resp) {
                 $('#result').empty().append(resp);
                 window.location.href = '#result';
                 $('#buscando').hide();
-                $('#busca').show();
+                //$('#busca').show();
             }).fail(function(){
                 location.reload(true);
             });
@@ -162,6 +191,38 @@ var criterios = {{ args|safe }};
     $('#consultarform').submit();
 })();
 {% endif%}
+
+{% for f in form.fuente.choices %}
+function bfd_{{f[0]}}(e, fd){
+    e.preventDefault();
+    // Oculta Nivel 4 de Criterios
+    $('#fl').css('display', 'none');
+    $('#ff').css('display', 'none');
+    $('#fc').css('display', 'none');
+    // Muestra boton Consultar
+    $('#busca').css('display', 'block');
+    // Selecciona el dato Campo
+    $('[name=fuente] option').filter(function(){return this.value == fd}).prop('selected', true);
+    fuente_datos();
+
+}
+{% endfor%}
+
+// bNivel4 de Consultar DATOS
+function bN4(e, tp){
+    e.preventDefault();
+    var div = document.createElement('div');
+    div.id = 'mapid';
+    $('#fl').css('display', 'block');
+    $('#ff').css('display', 'block');
+    $('#fc').css('display', 'block');
+    $('[name=tipo_cobertura] option').filter(function(){return this.value == tp}).prop('selected', true);
+    $('#div_map').empty().append(div).css('display', 'block');
+    redibujar();
+    agregarCapa('/consultar/mapa/loc', 'Muestreos');
+    tipocobertura(tp);
+}
+
 </script>
 <script src="/static/js/mapas.js" charset="UTF-8"></script>
 {% endblock %}

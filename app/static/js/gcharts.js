@@ -16,7 +16,7 @@ function detalle_punto(){
         var muestra = $('#m_nombre').children().text();
 
         // Configura las opciones del gráfico
-        var options = {title:'Reflectancia Promedio - '+ muestra +'\n' + $('#c_nombre').children().text(),
+        var options = {title:'REFLECTANCIA PROMEDIO - '+ muestra +'\n' + $('#c_nombre').children().text(),
             //'Campaña ' + $('#c_nombre').children().text(),
             hAxis: {title:'Longitud de Onda (nn)'},
             vAxis: {title:'Cantidades'},
@@ -29,9 +29,11 @@ function detalle_punto(){
         google.visualization.events.addListener(dt_chart, 'ready', function(){
 
             // Exporta el gráfico en un formato de imagen
-            document.getElementById('guardar_png').outerHTML = '<a href="' + dt_chart.getImageURI() +
-                '" download="reflectancia-'+muestra+'.png">PNG</a>';
-
+            var boton = document.getElementById('guardar_png');
+            if(boton) {
+                boton.outerHTML = '<a href="' + dt_chart.getImageURI() +
+                    '" download="reflectancia-' + muestra + '.png">PNG</a>';
+            }
             var e = document.getElementById('div_dt');
             var svg = e.getElementsByTagName('svg')[0].parentNode.innerHTML;
             guardar_svg(e, "reflectancia-"+muestra+".svg");
@@ -56,7 +58,7 @@ function detalle_punto(){
 
                     // Exporta el gráfico en un formato de imagen
                     //document.getElementById('btn_guardar').outerHTML = '<a href="' + chart.getImageURI() +
-                    //    '" download="reflectancia.png">' +
+                    //    '" download="radiancia.png">' +
                     //    '<button style="float:right;" type="button" class="btn btn-info">Guardar</button></a>';
                 });
 
@@ -93,7 +95,7 @@ function detalle_muestra(){
         //
         //    // Exporta el gráfico en un formato de imagen
         //    document.getElementById('btn_guardar').outerHTML = '<a href="' + dt_chart.getImageURI() +
-        //        '" download="reflectancia_muestras.png">' +
+        //        '" download="radiancia_muestras.png">' +
         //        '<button style="float:right;" type="button" class="btn btn-info">Guardar</button></a>';
         //});
         dt_chart.draw(dt_data, options);
@@ -121,8 +123,11 @@ function guardar_svg(svg, nombre){
     // convert svg source to URI data scheme
     var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
 
-    document.getElementById('guardar_svg').outerHTML = '<a href="' + url +
-                '" download="'+ nombre +'">SVG</a>';
+    var boton = document.getElementById('guardar_svg');
+    if(boton) {
+        boton.outerHTML = '<a href="' + url +
+            '" download="' + nombre + '">SVG</a>';
+    }
 }
 
 
