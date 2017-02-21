@@ -1461,3 +1461,13 @@ jQuery(document).ready(function () {
     });
 });
 
+// Consultar todos
+function todos(){
+    $('#fuente').val(0);
+    $('#tipo_cobertura').val(0);
+    $('#cobertura').val(0);
+    $('#localidad').val(0);
+    $('#fecha_inicio').val('');
+    $('#fecha_fin').val('');
+    $('#consultarform').submit();
+}
