@@ -4,6 +4,7 @@ from datetime import datetime
 import json, time
 import os
 import re
+from app.reporte import reporte_campania
 from itsdangerous import BadSignature
 import requests
 import traceback
@@ -647,6 +648,7 @@ def archivos():
                     flash('Fotometría: "FOT.txt"', 'error')
                     flash('Imagen: ".png", ".jpg", ".jpeg"', 'error')
         # Carga Asincrona de valores de los archivos guardados
+        reporte_campania(camp)      # Generar un reporte de resumen
         nombre = muestra.campania_muestra.nombre.replace(muestra.campania_muestra.nombre.split('-')[0],
                                                          muestra.cobertura_muestra.cobertura.nombre) + '.zip'
         lugar = os.path.join(UPLOAD_FOLDER, 'C'+str(muestra.campania_muestra.id))
@@ -762,18 +764,18 @@ def loc():
         fuente = int(request.args.get('fuente'))
         jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
                 .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
-                .filter(Localidad.deleted == False, FuenteDatos.id == fuente).all())
+                .filter(Localidad.deleted == False, FuenteDatos.id == fuente, Campania.fecha_publicacion <= datetime.now()).all())
     if 'tp' in request.args and not 'fuente' in request.args:
         tp =int(request.args.get('tp'))
         jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
                 .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
-                .filter(Localidad.deleted == False, TipoCobertura.id == tp).all())
+                .filter(Localidad.deleted == False, TipoCobertura.id == tp, Campania.fecha_publicacion <= datetime.now()).all())
     if 'tp' in request.args and 'fuente' in request.args:
         tp =int(request.args.get('tp'))
         fuente = int(request.args.get('fuente'))
         jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
                 .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
-                .filter(Localidad.deleted == False, TipoCobertura.id == tp, FuenteDatos.id == fuente).all())
+                .filter(Localidad.deleted == False, TipoCobertura.id == tp, FuenteDatos.id == fuente, Campania.fecha_publicacion <= datetime.now()).all())
     gloc = {
         "type": "FeatureCollection",
         "features": [
@@ -819,7 +821,8 @@ def consultar():
             camps = Campania.query.filter(Campania.deleted == False,
                                           Campania.fecha_publicacion <= datetime.now()).order_by(Campania.nombre.desc()).all()
         if fue > 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra, Cobertura, TipoCobertura, FuenteDatos).filter(FuenteDatos.id == fue)\
+            camps = Campania.query.join(Muestra, Cobertura, TipoCobertura, FuenteDatos)\
+                .filter(Campania.fecha_publicacion <= datetime.now(), FuenteDatos.id == fue)\
                 .order_by(Campania.nombre.desc()).all()
             criterios['Fuente Datos'] = FuenteDatos.query.get(fue).nombre
         if loc > 0 and cob == 0 and tp == 0 and fi is None and ff is None:

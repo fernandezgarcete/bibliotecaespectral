@@ -144,7 +144,7 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
                     </tr><tr>
                         <th>Puntos</th>
                         <td>{{ muestra.puntos.all()|length }}<br>{% if muestra.puntos.all()|length > 0 %}
-                        <a class="detalle" href="{{ url_for('detalle_punto', idc=camp.id, idm=muestra.id, archivo=archivo, criterios=criterios) }}">Detalles</a>{% endif %}
+                        <h4><a class="detalle" href="{{ url_for('detalle_punto', idc=camp.id, idm=muestra.id, archivo=archivo, criterios=criterios) }}">Detalles</a></h4>{% endif %}
                         </td>
                     </tr>
                 </table>

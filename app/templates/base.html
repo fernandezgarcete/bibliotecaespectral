@@ -82,19 +82,19 @@
                 <li id="contacto" class=""><a href="/contacto">CONTACTO</a></li>
             </ul>
             {% if g.user.is_authenticated %}
-                <ul class="nav navbar-nav navbar-right">
-                    <li id="user_menu" class="dropdown">
-                        <a href="#" id="d_user" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ g.user.nombre }}
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="d_user">
-                            <!-- li id="perfil" class=""><a href="{#  #} url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
-                                <li role="separator" class="divider"></li-->
-                            <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li id="user_menu" class="dropdown">
+                    <a href="#" id="d_user" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ g.user.nombre }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="d_user">
+                        <!-- li id="perfil" class=""><a href="{#  #} url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
+                            <li role="separator" class="divider"></li-->
+                        <li><a href="{{ url_for('logout') }}">Cerrar Sesión <span class="glyphicon glyphicon-off"></span></a></li>
+                    </ul>
+                </li>
+            </ul>
             {% endif %}
         </div>
     </div>

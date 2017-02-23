@@ -349,6 +349,7 @@ def ini_actualizar_form(id, idtp):
     form_c.ecobertura_nueva.choices.insert(ult, (ult, 'Nueva..'))
     return {'form': form, 'form_c': form_c, 'form_m': form_m}
 
+
 # Actualiza las coberturas en base al tipo de cobertura elegido
 def actualizar_cob_loc(idtp):
     form = ConsultarForm()
@@ -357,7 +358,8 @@ def actualizar_cob_loc(idtp):
                                   Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
         form.localidad.choices = [(loc.id, loc.nombre) for loc in
                                   Localidad.query.join(Campania, Muestra, Cobertura)
-                                      .filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
+                                      .filter(Cobertura.id_tipocobertura == idtp, Campania.fecha_publicacion <= datetime.now())
+                                      .order_by('nombre')]
     else:
         form.cobertura.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
         form.localidad.choices = [(loc.id, loc.nombre) for loc in Localidad.query.order_by('nombre')]
