@@ -57,14 +57,14 @@ def reporte_campania(camp):
             else:
                 cobs += m.cobertura_muestra.nombre + ', '
 
-    rawdata = [['Nombre', camp.nombre],
-               ['Objetivo', camp.objetivo],
-               ['Tipo de Cobertura', tp],
-               ['Cobertura/s', cobs],
-               ['Ubicación', camp.localidad_campania.nombre],
-               ['Tipo de Calibración', esp],
-               ['Fecha', str(camp.fecha.date())],
-               ['Responsables', camp.responsables]]
+    rawdata = [['<b>Nombre</b>', camp.nombre],
+               ['<b>Objetivo</b>', camp.objetivo],
+               ['<b>Tipo de Cobertura</b>', tp],
+               ['<b>Cobertura/s</b>', cobs],
+               ['<b>Ubicación</b>', camp.localidad_campania.nombre],
+               ['<b>Tipo de Calibración</b>', esp],
+               ['<b>Fecha</b>', str(camp.fecha.date())],
+               ['<b>Responsables</b>', camp.responsables]]
 
     table = style_camp(rawdata, styles)
     elements.append(table)
@@ -101,16 +101,16 @@ def reporte_campania(camp):
 
 # Retorna el conjunto de muestras
 def raw_muestra(muestra):
-    rawmuestra = [['Muestra', muestra.cobertura_muestra.nombre],
-                  ['Proyecto', muestra.campania_muestra.proyecto_campania.nombre],
-                  ['Pregunta de Teledectección', muestra.campania_muestra.teledeteccion],
-                  ['Pregunta de Especialidad', muestra.campania_muestra.especialidad],
-                  ['Espectro-radiómetro', muestra.radiometro_muestra.nombre],
-                  ['Otros Instrumentos', 'FOTOMETRO: '+muestra.fotometro_muestra.nombre +
-                   ', \nCAMARA: '+muestra.camara_muestra.nombre+', \nGPS: '+muestra.gps_muestra.nombre +
-                   ', \nPATRON: '+muestra.patron_muestra.nombre],
-                  ['Metodología', muestra.metodo_muestra.nombre],
-                  ['Puntos', str(len(muestra.get_puntos()))]]
+    rawmuestra = [['<b>Muestra</b>', muestra.cobertura_muestra.nombre],
+                  ['<b>Proyecto</b>', muestra.campania_muestra.proyecto_campania.nombre],
+                  ['<b>Pregunta de Teledectección</b>', muestra.campania_muestra.teledeteccion if muestra.campania_muestra.teledeteccion else '-'],
+                  ['<b>Pregunta de Especialidad</b>', muestra.campania_muestra.especialidad if muestra.campania_muestra.especialidad else '-'],
+                  ['<b>Espectro-radiómetro</b>', muestra.radiometro_muestra.nombre],
+                  ['<b>Otros Instrumentos</b>', '<b>FOTOMETRO:</b> '+muestra.fotometro_muestra.nombre +
+                   ', \n<b>CAMARA:</b> '+muestra.camara_muestra.nombre+', \n<b>GPS:</b> '+muestra.gps_muestra.nombre +
+                   ', \n<b>PATRON:</b> '+muestra.patron_muestra.nombre],
+                  ['<b>Metodología</b>', muestra.metodo_muestra.nombre],
+                  ['<b>Puntos</b>', str(len(muestra.get_puntos()))]]
     return rawmuestra
 
 
@@ -118,12 +118,12 @@ def raw_muestra(muestra):
 def raw_punto(punto, latlngs):
     latlng = json.loads(latlngs[punto.id])
     e = {'M': 'Malo', 'A': 'Aceptable', 'B': 'Bueno', 'MB': 'Muy Bueno', 'E': 'Excelente'}
-    rawpunto = [['Punto', 'P'+str(punto.id)],
-                ['Hora', str(punto.fecha_hora.timetz()) + ' ART'],
-                ['Ubicación', 'Latitud: '+str(latlng['lat']) + ' \nLongitud: '+str(latlng['lng'])],
-                ['Nubosidad', str(punto.nubosidad) + ' %' if punto.nubosidad else '-'],
-                ['Estado', e[punto.estado] if punto.estado in e else '-'],
-                ['Observaciones', punto.observaciones if punto.observaciones else '-']]
+    rawpunto = [['<b>Punto</b>', 'P'+str(punto.id)],
+                ['<b>Hora</b>', str(punto.fecha_hora.timetz()) + ' ART'],
+                ['<b>Ubicación</b>', 'Latitud: '+str(latlng['lat']) + ' \nLongitud: '+str(latlng['lng'])],
+                ['<b>Nubosidad</b>', str(punto.nubosidad) + ' %' if punto.nubosidad else '-'],
+                ['<b>Estado</b>', e[punto.estado] if punto.estado in e else '-'],
+                ['<b>Observaciones</b>', punto.observaciones if punto.observaciones else '-']]
     return rawpunto
 
 
@@ -154,6 +154,7 @@ def thumbnails(path):
 # Retorna la tabla Campania con su estilo
 def style_camp(rawcamp, styles):
     tstyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                         ('LINEBELOW', (0, 0), (-1, -2), 0.25, colors.lightgrey),
                          ('BOX', (0, 0), (-1, -1), 0.25, colors.black)])
     s = styles['BodyText']
     s.wordWrap = 'CJK'
@@ -166,6 +167,7 @@ def style_camp(rawcamp, styles):
 # Retorna tabla de Muestra con su estilo
 def style_muestra(rawmuestra, styles):
     tstyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                         ('LINEBELOW', (0, 0), (-1, -2), 0.25, colors.lightgrey),
                          ('BOX', (0, 0), (-1, -1), 0.25, colors.black)])
     s = styles['BodyText']
     s.wordWrap = 'CJK'
@@ -178,6 +180,7 @@ def style_muestra(rawmuestra, styles):
 # Retorna tabla de Muestra con su estilo
 def style_punto(rawpunto, styles):
     tstyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                         ('LINEBELOW', (0, 0), (-1, -2), 0.25, colors.lightgrey),
                          ('BOX', (0, 0), (-1, -1), 0.25, colors.black)])
     s = styles['BodyText']
     s.wordWrap = 'CJK'
