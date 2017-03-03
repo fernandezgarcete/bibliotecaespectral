@@ -68,6 +68,27 @@ class Localidad(db.Model):
                 return 'Ya existe'
             else:
                 return False
+        elif res is None:
+            res = db.engine.execute("SELECT ST_Contains(geom, punto) "
+                                    "FROM (SELECT ST_SetSRID(ST_MakePoint("+lng+","+lat+"),4326) AS punto, "
+                                    "geom FROM limite_arg) AS result;").fetchone()
+            if res[0]:
+                geom = db.engine.execute("SELECT ST_SetSRID(ST_MakePoint("+lng+","+lat+"),4326) AS result;").fetchone()
+                loc = self.query.filter_by(geom=geom[0]).first()
+                if loc is None:
+                    self.nombre = nombre
+                    self.nombre_dpto = nombre
+                    self.nombre_prov = nombre
+                    self.geom = geom[0]
+                    db.session.add(self)
+                    db.session.commit()
+                    return True
+                elif loc is not None:
+                    return 'Ya existe'
+                else:
+                    return False
+            else:
+                return False
         else:
             return False
 

@@ -19,7 +19,9 @@ def reporte_campania(camp):
     pdfdir = os.path.join(UPLOAD_FOLDER, 'C' + str(camp.id))
     doc = SimpleDocTemplate(os.path.join(pdfdir, camp.nombre+'.pdf'), rightMargin=72, leftMargin=72,
                             topMargin=72, bottomMargin=18)
-    elements = []
+    elements = []       # Lista que aloja todos los elementos del documento que se genera
+
+    # Imagen del Logo
     dir = os.path.join(basedir, 'app')
     dir = os.path.join(dir, 'static')
     dir = os.path.join(dir, 'img')
@@ -29,15 +31,18 @@ def reporte_campania(camp):
     elements.append(img)
     elements.append(Spacer(1, 12))
 
+    # Estilos de alinamiento de parrafos
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY))
     styles.add(ParagraphStyle(name='Center', alignment=TA_CENTER))
 
+    # Titulo del documento
     ptxt = '<font size=18>Biblioteca Nacional de Firmas Espectrales</font>'
     elements.append(Paragraph(ptxt, styles['Center']))
     elements.append(Spacer(1, 12))
     elements.append(Spacer(1, 12))
 
+    # Seccion de datos de Campaña
     ptxt = '<font size=18>Campaña</font>'
     elements.append(Paragraph(ptxt, styles['Normal']))
     elements.append(Spacer(1, 12))
@@ -69,6 +74,7 @@ def reporte_campania(camp):
     table = style_camp(rawdata, styles)
     elements.append(table)
 
+    # Seccion de datos de Muestras
     if muestras:
         for m in muestras:
             elements.append(Spacer(1, 12))
@@ -80,6 +86,7 @@ def reporte_campania(camp):
             elements.append(tabla_muestra)
             elements.append(Spacer(1, 12))
 
+            # Sección de datos de cada punto si tiene
             if puntos[m.id]:
                 ptxt = '<font size=16>Puntos</font>'
                 elements.append(Paragraph(ptxt, styles['Normal']))
@@ -99,35 +106,36 @@ def reporte_campania(camp):
     return True
 
 
-# Retorna el conjunto de muestras
+# Retorna la lista para la tabla de muestra
 def raw_muestra(muestra):
     rawmuestra = [['<b>Muestra</b>', muestra.cobertura_muestra.nombre],
+                  ['<b>Carpeta</b>', 'M'+str(muestra.id)],
                   ['<b>Proyecto</b>', muestra.campania_muestra.proyecto_campania.nombre],
                   ['<b>Pregunta de Teledectección</b>', muestra.campania_muestra.teledeteccion if muestra.campania_muestra.teledeteccion else '-'],
                   ['<b>Pregunta de Especialidad</b>', muestra.campania_muestra.especialidad if muestra.campania_muestra.especialidad else '-'],
                   ['<b>Espectro-radiómetro</b>', muestra.radiometro_muestra.nombre],
                   ['<b>Otros Instrumentos</b>', '<b>FOTOMETRO:</b> '+muestra.fotometro_muestra.nombre +
-                   ', \n<b>CAMARA:</b> '+muestra.camara_muestra.nombre+', \n<b>GPS:</b> '+muestra.gps_muestra.nombre +
-                   ', \n<b>PATRON:</b> '+muestra.patron_muestra.nombre],
-                  ['<b>Metodología</b>', muestra.metodo_muestra.nombre],
+                   ', <br/><b>CAMARA:</b> '+muestra.camara_muestra.nombre+', <br/><b>GPS:</b> '+muestra.gps_muestra.nombre +
+                   ', <br/><b>PATRON:</b> '+muestra.patron_muestra.nombre],
+                  ['<b>Metodología</b>', muestra.metodo_muestra.nombre + '<br/>' + muestra.metodo_muestra.descripcion],
                   ['<b>Puntos</b>', str(len(muestra.get_puntos()))]]
     return rawmuestra
 
 
-# Retorna el conjunto de muestras
+# Retorna la lista para la tabla de punto
 def raw_punto(punto, latlngs):
     latlng = json.loads(latlngs[punto.id])
     e = {'M': 'Malo', 'A': 'Aceptable', 'B': 'Bueno', 'MB': 'Muy Bueno', 'E': 'Excelente'}
     rawpunto = [['<b>Punto</b>', 'P'+str(punto.id)],
                 ['<b>Hora</b>', str(punto.fecha_hora.timetz()) + ' ART'],
-                ['<b>Ubicación</b>', 'Latitud: '+str(latlng['lat']) + ' \nLongitud: '+str(latlng['lng'])],
+                ['<b>Ubicación</b>', 'Latitud: '+str(latlng['lat']) + ' <br/>Longitud: '+str(latlng['lng'])],
                 ['<b>Nubosidad</b>', str(punto.nubosidad) + ' %' if punto.nubosidad else '-'],
                 ['<b>Estado</b>', e[punto.estado] if punto.estado in e else '-'],
                 ['<b>Observaciones</b>', punto.observaciones if punto.observaciones else '-']]
     return rawpunto
 
 
-# Retorna las foto del Punto
+# Retorna las fotos del Punto como vista previa
 def incluir_fotos(punto):
     fdir = os.path.join(UPLOAD_FOLDER, 'C'+str(punto.punto.campania_muestra.id))
     fdir = os.path.join(fdir, 'M'+str(punto.punto.id))
@@ -140,7 +148,7 @@ def incluir_fotos(punto):
     return fotos
 
 
-# Crear Vistas previas
+# Crea las vistas previas de fotos
 def thumbnails(path):
     from PIL import Image
     size = 384, 384
@@ -164,7 +172,7 @@ def style_camp(rawcamp, styles):
     return table
 
 
-# Retorna tabla de Muestra con su estilo
+# Retorna tabla Muestra con su estilo
 def style_muestra(rawmuestra, styles):
     tstyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
                          ('LINEBELOW', (0, 0), (-1, -2), 0.25, colors.lightgrey),
@@ -177,7 +185,7 @@ def style_muestra(rawmuestra, styles):
     return table
 
 
-# Retorna tabla de Muestra con su estilo
+# Retorna tabla Punto con su estilo
 def style_punto(rawpunto, styles):
     tstyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
                          ('LINEBELOW', (0, 0), (-1, -2), 0.25, colors.lightgrey),
