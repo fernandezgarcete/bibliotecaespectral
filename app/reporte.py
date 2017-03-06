@@ -61,6 +61,9 @@ def reporte_campania(camp):
                 cobs += m.cobertura_muestra.nombre
             else:
                 cobs += m.cobertura_muestra.nombre + ', '
+        if len(cobs.split(',')) > 1:
+            split = cobs.split(',')
+            cobs = split[0] if split[1] == split[0] else ''
 
     rawdata = [['<b>Nombre</b>', camp.nombre],
                ['<b>Objetivo</b>', camp.objetivo],
@@ -118,7 +121,7 @@ def raw_muestra(muestra):
                    ', <br/><b>CAMARA:</b> '+muestra.camara_muestra.nombre+', <br/><b>GPS:</b> '+muestra.gps_muestra.nombre +
                    ', <br/><b>PATRON:</b> '+muestra.patron_muestra.nombre],
                   ['<b>Metodología</b>', muestra.metodo_muestra.nombre + '<br/>' + muestra.metodo_muestra.descripcion],
-                  ['<b>Puntos</b>', str(len(muestra.get_puntos()))]]
+                  ['<b>Punto/s</b>', str(len(muestra.get_puntos()))]]
     return rawmuestra
 
 

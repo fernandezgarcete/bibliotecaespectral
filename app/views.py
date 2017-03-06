@@ -836,8 +836,8 @@ def consultar():
                                           Campania.fecha >= fi, Campania.fecha <= ff,
                                           Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if loc > 0 and tp > 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
                                                                    Campania.fecha_publicacion <= datetime.now(),
@@ -856,19 +856,19 @@ def consultar():
             camps = Campania.query.filter(Campania.fecha >= fi,
                                           Campania.fecha_publicacion <= datetime.now(),
                                           Campania.deleted == False).all()
-            criterios['Fecha Inicio'] = fi
+            criterios['Fecha Inicio'] = str(fi)
         if ff is not None and loc == 0 and cob == 0 and tp == 0 and fi is None:
             camps = Campania.query.filter(Campania.fecha <= ff,
                                           Campania.fecha_publicacion <= datetime.now(),
                                           Campania.deleted == False).all()
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Fin'] = str(ff)
         if fi is not None and ff is not None and cob == 0 and tp == 0 and loc == 0:
             camps = Campania.query.filter(Campania.fecha >= fi,
                                           Campania.fecha <= ff,
                                           Campania.fecha_publicacion <= datetime.now(),
                                           Campania.deleted == False).all()
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if cob > 0 and loc == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob,
                                                         Campania.fecha_publicacion <= datetime.now()).all()
@@ -878,8 +878,8 @@ def consultar():
                                                         Campania.fecha_publicacion <= datetime.now(),
                                                         Muestra.id_cobertura == cob).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if tp > 0 and loc == 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha_publicacion <= datetime.now()).all()
@@ -889,8 +889,8 @@ def consultar():
                                                                    Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if tp > 0 and cob > 0 and loc == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha_publicacion <= datetime.now(),
@@ -912,8 +912,8 @@ def consultar():
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if tp > 0 and cob > 0 and fi is not None and ff is not None and loc == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Muestra.id_cobertura == cob,
                                                                    Campania.fecha_publicacion <= datetime.now(),
@@ -921,16 +921,16 @@ def consultar():
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if loc > 0 and cob > 0 and fi is not None and ff is not None and tp == 0:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob, Campania.id_localidad == loc,
                                                         Campania.fecha_publicacion <= datetime.now(),
                                                         Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
         if tp > 0 and cob > 0 and loc > 0 and fi is not None and ff is not None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
                                                                    Campania.fecha_publicacion <= datetime.now(),
@@ -939,8 +939,8 @@ def consultar():
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
-            criterios['Fecha Inicio'] = fi
-            criterios['Fecha Fin'] = ff
+            criterios['Fecha Inicio'] = str(fi)
+            criterios['Fecha Fin'] = str(ff)
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         return resultado(criterios, camps)

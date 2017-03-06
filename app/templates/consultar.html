@@ -86,10 +86,10 @@
                     <div class="input-group input-daterange">
                         <span class="input-group-addon">Inicio</span>
                         {{ form.fecha_inicio(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        <span class="input-group-addon btn" onclick="$('#fecha_inicio').datepicker('show');"><i class="glyphicon glyphicon-calendar"></i></span>
                         <span class="input-group-addon">Fin</span>
                         {{ form.fecha_fin(placeholder='dd-mm-aaaa', class="input-sm form-control") }}
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        <span class="input-group-addon btn" onclick="$('#fecha_fin').datepicker('show');"><i class="glyphicon glyphicon-calendar"></i></span>
                     </div>
                 </div>
             </div>
