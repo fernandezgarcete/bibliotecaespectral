@@ -63,7 +63,7 @@ def reporte_campania(camp):
                 cobs += m.cobertura_muestra.nombre + ', '
         if len(cobs.split(',')) > 1:
             split = cobs.split(',')
-            cobs = split[0] if split[1] == split[0] else ''
+            cobs = split[0] if split[1].replace(' ', '') == split[0] else cobs
 
     rawdata = [['<b>Nombre</b>', camp.nombre],
                ['<b>Objetivo</b>', camp.objetivo],
