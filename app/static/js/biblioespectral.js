@@ -460,7 +460,7 @@ function guardarCamp(){
 // Date-picker
 function picker_carga(item) {
     var today = new Date();
-    var dd = today.getDate()+7;
+    var dd = today.getDate()+14;
     var mm = today.getMonth()+1; // Enero es 0!
     var yyyy = today.getFullYear();
     if(dd<10){dd = '0'+dd;}
