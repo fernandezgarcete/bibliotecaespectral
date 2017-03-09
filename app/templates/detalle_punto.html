@@ -187,8 +187,8 @@ transform: scale(-1, 1);"></span>&nbsp; Volver
                         <th>Punto</th>
                         <td>{{ punto.nombre }}</td>
                     </tr><tr>
-                        <th>Hora</th>
-                        <td>{{ punto.fecha_hora.timetz() }} ART</td>
+                        <th>Fecha y Hora</th>
+                        <td>{{ punto.fecha_hora.strftime('%Y-%m-%d %H:%S') }} ART</td>
                     </tr><tr>
                         <th>Ubicación</th>
                         <td>{{ camp.localidad_campania.nombre }}</td>
