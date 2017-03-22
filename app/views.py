@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import json, time
+import json
+import time
 import os
 import re
-from app.reporte import reporte_campania
-from itsdangerous import BadSignature
-import requests
 import traceback
+
+from app.reporte import reporte_campania
+import requests
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory, \
-    send_file, Response
+    Response
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import get_debug_queries
 from flask_login import login_user, logout_user, current_user, login_required
@@ -23,8 +24,7 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm, ConsultarForm, Arc
 from .models import User, Post, Localidad, TipoCobertura, Cobertura, Campania, Proyecto, \
     Muestra, Metodologia, Descarga, Radiometro, Patron, Fotometro, Camara, Gps, Punto, FuenteDatos
 from .translate import microsoft_translate
-from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, ini_actualizar_form, \
-    actualizar_cob_loc, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
+from .utils import cargar_archivo, ini_consulta_camp, ini_nuevo_form, actualizar_cob_loc, utf_to_ascii, tabular_descargas, ini_muestra_form, limpia_responsables, \
     get_page, default_punto, geom2latlng, detalle_archivos, checkRecaptcha, zipdir, borrar_async, guardar_async, \
     get_serializer, datos_reflectancia, archivos_reflectancia, actualizar_tp
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, UPLOAD_FOLDER, DOCUMENTS_FOLDER, DEVLOGOUT, \

@@ -112,7 +112,7 @@ class TwitterSignIn(OAuthSignIn):
         return social_id, username, None   # Twitter does not provide email
 
 
-class ConaeSignIn():
+class ConaeSignIn:
     def login(self, form):
         s = requests.Session()
         s.mount('https://', AdaptadorSSL())

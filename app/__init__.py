@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import os
-from flask import Flask, current_app, session
-from flask_babel import Babel, gettext
+
+from flask import Flask
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_openid import OpenID
-from flask_oidc import OpenIDConnect
 from flask_mail import Mail
 from flask_wtf.csrf import CsrfProtect
 from flask.json import JSONEncoder
 from flask_bootstrap import Bootstrap
 from .momentjs import momentjs
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, WHOOSH_BASE
+from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 
 app = Flask(__name__)
 app.config.from_object('config')

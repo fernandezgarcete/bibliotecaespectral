@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import fnmatch
-import glob
 import json
 import os
 import time
@@ -8,13 +7,13 @@ import zipfile
 
 from app.decorators import async
 from app.archivos import guardar_archivo, borrar_datos
-from config import UPLOAD_FOLDER, basedir, CAMPAIGNS_FOLDER
+from config import basedir
 from itsdangerous import URLSafeSerializer
 import requests
 from app import db, app
 from app.forms import NuevaCampForm, ConsultaCampForm, CoberturaForm, MuestraForm, ConsultarForm
 from app.models import Campania, Muestra, Fotometria, Radiometria, Reflectancia, Proyecto, Localidad, \
-    TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro, RadianciaAvg, ReflectanciaAvg
+    TipoCobertura, Cobertura, Camara, Patron, Radiometro, Gps, Metodologia, Fotometro, ReflectanciaAvg
 import geoalchemy2.functions as geofunc
 
 __author__ = 'Juanjo'
