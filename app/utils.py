@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import fnmatch
+import glob
 import json
 import os
 import time
@@ -358,7 +359,7 @@ def actualizar_cob_loc(idtp):
                                   Cobertura.query.filter(Cobertura.id_tipocobertura == idtp).order_by('nombre')]
         form.localidad.choices = [(loc.id, loc.nombre) for loc in
                                   Localidad.query.join(Campania, Muestra, Cobertura)
-                                      .filter(Cobertura.id_tipocobertura == idtp, Campania.fecha_publicacion <= datetime.now())
+                                      .filter(Cobertura.id_tipocobertura == idtp)
                                       .order_by('nombre')]
     else:
         form.cobertura.choices = [(cn.id, cn.nombre) for cn in Cobertura.query.order_by('nombre')]
@@ -457,6 +458,8 @@ def tabular_descargas(descargas):
                 mes['cant'] += 1
                 arr.append(mes)
                 descarga[mes['mes']].append(mes)
+    for k, val in descarga.items():
+        descarga[k] = sorted(val, key=lambda j: j['year'], reverse=True)
     return descarga
 
 def detalle_archivos(files, path):
@@ -633,7 +636,8 @@ def archivos_reflectancia(puntos):
             files_f = os.listdir(os.path.join(basedir, ruta_f))
             if len(files_f) > 0:
                 archivos['P'+str(i+1)].append(ruta_f)
-                archivos['P'+str(i+1)].append(os.listdir(os.path.join(basedir, ruta_f)))
+                archivos['P'+str(i+1)].append([f for f in os.listdir(os.path.join(basedir, ruta_f))
+                                               if not os.path.splitext(f)[1] == '.thumb'])
         except:
             archivos['P'+str(i+1)] = [ruta, '']
     return archivos

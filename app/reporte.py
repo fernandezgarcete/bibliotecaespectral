@@ -3,21 +3,91 @@ import json
 import os
 import glob
 from app.utils import geom2latlng
+from reportlab.pdfgen import canvas
+from reportlab.platypus.tableofcontents import TableOfContents
 
 __author__ = 'Juanjo'
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, BaseDocTemplate, \
+    PageTemplate, Frame, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle as Ps
+from reportlab.lib.units import inch, cm, mm
 from config import basedir, UPLOAD_FOLDER
+
+
+class MiDocTemplate(BaseDocTemplate):
+    def __init__(self, filename, **kwargs):
+        self.allowSplitting = 0
+        BaseDocTemplate.__init__(self, filename, **kwargs)
+        template = PageTemplate('normal', [Frame(2.5*cm, 2.5*cm, 15*cm, 25*cm, id='F1')])
+        self.addPageTemplates(template)
+
+    def afterFlowable(self, flowable):
+        """ Registra entradas al TOC. """
+        if flowable.__class__.__name__ == 'Paragraph':
+            text = flowable.getPlainText()
+            style = flowable.style.name
+            if style == 'Heading1':
+                level = 0
+            elif style == 'Heading2':
+                level = 1
+            elif style == 'Heading3':
+                level = 2
+            else:
+                return
+            E = [level, text, self.page]
+            bn = getattr(flowable, '_bookmarkName', None)
+            if bn is not None:
+                E.append(bn)
+            self.notify('TOCEntry', tuple(E))
+
+
+centered = Ps(name='centered',
+              fontSize=18,
+              leading=16,
+              aligment=TA_CENTER,
+              spaceAfter=20)
+
+h1 = Ps(name='Heading1',
+        fontSize=16,
+        leading=16)
+
+h2 = Ps(name='Heading2',
+        spaceBefore=20,
+        fontSize=14,
+        leading=16)
+
+h3 = Ps(name='Heading3',
+        spaceBefore=20,
+        fontSize=14,
+        leading=16)
+
+# Instancia del TOC
+toc = TableOfContents()
+toc.levelStyles = [
+    Ps(fontname='Times-Bold', fontSize=14, name='TOCHeading1', leftIndent=20, firstLineIndent=-20, spaceBefore=10, leading=16),
+    Ps(fontSize=12, name='TOCHeading2', leftIndent=40, firstLineIndent=-20, spaceBefore=5, leading=12),
+    Ps(fontSize=12, name='TOCHeading3', leftIndent=60, firstLineIndent=-20, spaceBefore=2.5, leading=8)
+]
+
+# Funcion que crea el Heading
+def doHeading(text, sty, array):
+    from hashlib import sha1
+    # nombre del bookmark
+    bn = sha1((text + sty.name).encode('utf-8')).hexdigest()
+    # modificar el texto del mensj para incluir un link con el nombre del bn
+    h = Paragraph(text + '<a name="%s"/>' % bn, sty)
+    # guardar el bn sobre el flowable para que lo pueda visualizar
+    h._bookmarkName = bn
+    array.append(h)
 
 
 # Genera un resumen de la Campaña con sus Datos
 def reporte_campania(camp):
     pdfdir = os.path.join(UPLOAD_FOLDER, 'C' + str(camp.id))
-    doc = SimpleDocTemplate(os.path.join(pdfdir, camp.nombre+'.pdf'), rightMargin=72, leftMargin=72,
+    doc = MiDocTemplate(os.path.join(pdfdir, camp.nombre+'.pdf'), rightMargin=72, leftMargin=72,
                             topMargin=72, bottomMargin=18)
     elements = []       # Lista que aloja todos los elementos del documento que se genera
 
@@ -33,18 +103,23 @@ def reporte_campania(camp):
 
     # Estilos de alinamiento de parrafos
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY))
-    styles.add(ParagraphStyle(name='Center', alignment=TA_CENTER))
+    styles.add(Ps(name='Justify', alignment=TA_JUSTIFY))
+    styles.add(Ps(name='Center', alignment=TA_CENTER))
 
     # Titulo del documento
-    ptxt = '<font size=18>Biblioteca Nacional de Firmas Espectrales</font>'
+    ptxt = '<font size=18><b>Biblioteca Nacional de Firmas Espectrales</b></font>'
     elements.append(Paragraph(ptxt, styles['Center']))
-    elements.append(Spacer(1, 12))
-    elements.append(Spacer(1, 12))
+    elements.append(Spacer(1, 24))
+    elements.append(Spacer(1, 24))
+
+    # Titulo del documento
+    ptxt = '<b>Contenido</b>'
+    elements.append(Paragraph(ptxt, centered))
+    elements.append(toc)
+    elements.append(PageBreak())
 
     # Seccion de datos de Campaña
-    ptxt = '<font size=18>Campaña</font>'
-    elements.append(Paragraph(ptxt, styles['Normal']))
+    doHeading('Campaña', h1, elements)
     elements.append(Spacer(1, 12))
 
     muestras = camp.get_muestras()
@@ -79,10 +154,9 @@ def reporte_campania(camp):
 
     # Seccion de datos de Muestras
     if muestras:
-        for m in muestras:
+        for i, m in enumerate(muestras):
             elements.append(Spacer(1, 12))
-            ptxt = '<font size=16>Muestra</font>'
-            elements.append(Paragraph(ptxt, styles['Normal']))
+            doHeading(str(i+1)+'. Muestra', h2, elements)
             elements.append(Spacer(1, 12))
             data_muestra = raw_muestra(m)
             tabla_muestra = style_muestra(data_muestra, styles)
@@ -91,11 +165,10 @@ def reporte_campania(camp):
 
             # Sección de datos de cada punto si tiene
             if puntos[m.id]:
-                ptxt = '<font size=16>Puntos</font>'
-                elements.append(Paragraph(ptxt, styles['Normal']))
-                elements.append(Spacer(1, 12))
                 latlngs = geom2latlng(puntos[m.id])
-                for p in puntos[m.id]:
+                for j, p in enumerate(puntos[m.id]):
+                    doHeading(str(i+1)+'.'+str(j+1)+'.  Punto', h3, elements)
+                    elements.append(Spacer(1, 12))
                     data_punto = raw_punto(p, latlngs)
                     tabla_punto = style_punto(data_punto, styles)
                     elements.append(tabla_punto)
@@ -105,7 +178,7 @@ def reporte_campania(camp):
                     elements.append(Spacer(1, 12))
 
     # Al terminar de agregar los elementos se crea el documento
-    doc.build(elements)
+    doc.multiBuild(elements, canvasmaker=NumberedCanvas)
     return True
 
 
@@ -130,7 +203,7 @@ def raw_punto(punto, latlngs):
     latlng = json.loads(latlngs[punto.id])
     e = {'M': 'Malo', 'A': 'Aceptable', 'B': 'Bueno', 'MB': 'Muy Bueno', 'E': 'Excelente'}
     rawpunto = [['<b>Punto</b>', 'P'+str(punto.id)],
-                ['<b>Hora</b>', str(punto.fecha_hora.timetz()) + ' ART'],
+                ['<b>Fecha y Hora</b>', punto.fecha_hora.strftime('%Y-%m-%d %H:%S ART')],
                 ['<b>Ubicación</b>', 'Latitud: '+str(latlng['lat']) + ' <br/>Longitud: '+str(latlng['lng'])],
                 ['<b>Nubosidad</b>', str(punto.nubosidad) + ' %' if punto.nubosidad else '-'],
                 ['<b>Estado</b>', e[punto.estado] if punto.estado in e else '-'],
@@ -199,3 +272,25 @@ def style_punto(rawpunto, styles):
     table = Table(data)
     table.setStyle(tstyle)
     return table
+
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        canvas.Canvas.__init__(self, *args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        """add page info to each page (page x of y)"""
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_number(num_pages)
+            canvas.Canvas.showPage(self)
+        canvas.Canvas.save(self)
+
+    def draw_page_number(self, page_count):
+        self.setFont("Helvetica", 10)
+        self.drawRightString(200*mm, 20*mm, "%d" % self._pageNumber)

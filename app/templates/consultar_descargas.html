@@ -62,7 +62,7 @@
             </thead>
             <tbody>
             {% if tabla is defined %}
-                {% for key, val in tabla.items() %}
+                {% for key, val in tabla.items()|sort(reverse=True) %}
                     <tr class="info">
                         <th>PERIODO</th>
                         <td colspan="3"><strong>{{ val[0].year }}-{{ key }}</strong></td>

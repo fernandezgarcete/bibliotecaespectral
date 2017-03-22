@@ -62,10 +62,15 @@
                                 <td>{{ pair[0].nombre }}</td>
                             </tr><tr>
                                 <th>Muestras</th>
+                                {% if pair[0].fecha_publicacion <= today %}
                                 <td><h4><a class="detalle" href="{{ url_for('detalle_muestra', idc=pair[0].id, archivo=pair[1], criterios=args) }}">Detalles</a></h4></td>
+                                {% else %}
+                                <td>No disponibles</td>
+                                {% endif %}
                             </tr>
 
                         </table>
+                        {% if pair[0].fecha_publicacion <= today %}
                         <div style="font-size: 23px;border-radius: 1em;">
                         {% if g.user.is_authenticated %}
                         <span style="float: right;" class="label btn label-primary" data-toggle="tooltip" title="Descargar Item" onclick="descargar('{{ url_for('show_campaign', filename=pair[1]) }}')">
@@ -77,6 +82,7 @@
                         </span>
                         {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </a>{% endif %}

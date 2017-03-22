@@ -742,7 +742,6 @@ def mapa():
         nom = request.form.get('loc')
         loc = Localidad.query.filter_by(nombre=nom, deleted=False).first()
         camps = Campania.query.filter(Campania.id_localidad == loc.id,
-                                      Campania.fecha_publicacion <= datetime.now(),
                                       Campania.deleted == False).all()
         criterios = {'Localidad': loc.nombre}
         return resultado(criterios, camps)
@@ -764,18 +763,18 @@ def loc():
         fuente = int(request.args.get('fuente'))
         jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
                 .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
-                .filter(Localidad.deleted == False, FuenteDatos.id == fuente, Campania.fecha_publicacion <= datetime.now()).all())
+                .filter(Localidad.deleted == False, FuenteDatos.id == fuente).all())
     if 'tp' in request.args and not 'fuente' in request.args:
         tp =int(request.args.get('tp'))
         jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
                 .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
-                .filter(Localidad.deleted == False, TipoCobertura.id == tp, Campania.fecha_publicacion <= datetime.now()).all())
+                .filter(Localidad.deleted == False, TipoCobertura.id == tp).all())
     if 'tp' in request.args and 'fuente' in request.args:
         tp =int(request.args.get('tp'))
         fuente = int(request.args.get('fuente'))
         jloc = dict(db.session.query(Localidad.nombre, geofunc.ST_AsGeoJSON(Localidad.geom))
                 .join(Campania, Muestra, Cobertura, TipoCobertura, FuenteDatos)
-                .filter(Localidad.deleted == False, TipoCobertura.id == tp, FuenteDatos.id == fuente, Campania.fecha_publicacion <= datetime.now()).all())
+                .filter(Localidad.deleted == False, TipoCobertura.id == tp, FuenteDatos.id == fuente).all())
     gloc = {
         "type": "FeatureCollection",
         "features": [
@@ -818,21 +817,18 @@ def consultar():
         camps = []
         criterios = {}
         if fue == 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.filter(Campania.deleted == False,
-                                          Campania.fecha_publicacion <= datetime.now()).order_by(Campania.nombre.desc()).all()
+            camps = Campania.query.filter(Campania.deleted == False).order_by(Campania.nombre.desc()).all()
         if fue > 0 and loc == 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura, TipoCobertura, FuenteDatos)\
-                .filter(Campania.fecha_publicacion <= datetime.now(), FuenteDatos.id == fue)\
+                .filter(FuenteDatos.id == fue)\
                 .order_by(Campania.nombre.desc()).all()
             criterios['Fuente Datos'] = FuenteDatos.query.get(fue).nombre
         if loc > 0 and cob == 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.filter(Campania.id_localidad == loc,
-                                          Campania.deleted == False,
-                                          Campania.fecha_publicacion <= datetime.now()).all()
+                                          Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
         if loc > 0 and fi is not None and ff is not None and cob == 0 and tp == 0:
             camps = Campania.query.filter(Campania.id_localidad == loc,
-                                          Campania.fecha_publicacion <= datetime.now(),
                                           Campania.fecha >= fi, Campania.fecha <= ff,
                                           Campania.deleted == False).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -840,7 +836,6 @@ def consultar():
             criterios['Fecha Fin'] = str(ff)
         if loc > 0 and tp > 0 and cob == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    # Campania.deleted == False, Cobertura.deleted == False,
                                                                    Cobertura.id_tipocobertura == tp).all()
             print(camps)
@@ -848,58 +843,48 @@ def consultar():
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if loc > 0 and cob > 0 and tp == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra).filter(Campania.id_localidad == loc, Campania.deleted == False,
-                                                        Campania.fecha_publicacion <= datetime.now(),
                                                         Muestra.id_cobertura == cob).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if fi is not None and loc == 0 and tp == 0 and cob == 0 and ff is None:
             camps = Campania.query.filter(Campania.fecha >= fi,
-                                          Campania.fecha_publicacion <= datetime.now(),
                                           Campania.deleted == False).all()
             criterios['Fecha Inicio'] = str(fi)
         if ff is not None and loc == 0 and cob == 0 and tp == 0 and fi is None:
             camps = Campania.query.filter(Campania.fecha <= ff,
-                                          Campania.fecha_publicacion <= datetime.now(),
                                           Campania.deleted == False).all()
             criterios['Fecha Fin'] = str(ff)
         if fi is not None and ff is not None and cob == 0 and tp == 0 and loc == 0:
             camps = Campania.query.filter(Campania.fecha >= fi,
                                           Campania.fecha <= ff,
-                                          Campania.fecha_publicacion <= datetime.now(),
                                           Campania.deleted == False).all()
             criterios['Fecha Inicio'] = str(fi)
             criterios['Fecha Fin'] = str(ff)
         if cob > 0 and loc == 0 and tp == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob,
-                                                        Campania.fecha_publicacion <= datetime.now()).all()
+            camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if cob > 0 and fi is not None and ff is not None and loc == 0 and tp == 0:
             camps = Campania.query.join(Muestra).filter(Campania.fecha >= fi, Campania.fecha <= ff,
-                                                        Campania.fecha_publicacion <= datetime.now(),
                                                         Muestra.id_cobertura == cob).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
             criterios['Fecha Inicio'] = str(fi)
             criterios['Fecha Fin'] = str(ff)
         if tp > 0 and loc == 0 and cob == 0 and fi is None and ff is None:
-            camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
-                                                                   Campania.fecha_publicacion <= datetime.now()).all()
+            camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
         if tp > 0 and fi is not None and ff is not None and loc == 0 and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.fecha >= fi, Campania.fecha <= ff,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Fecha Inicio'] = str(fi)
             criterios['Fecha Fin'] = str(ff)
         if tp > 0 and cob > 0 and loc == 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Cobertura.id_tipocobertura == tp,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Muestra.id_cobertura == cob).all()
             criterios['Tipo Cobertura'] = TipoCobertura.query.filter_by(id=tp).first().nombre
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and cob > 0 and loc > 0 and fi is None and ff is None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Muestra.id_cobertura == cob).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -907,7 +892,6 @@ def consultar():
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
         if tp > 0 and loc > 0 and fi is not None and ff is not None and cob == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -916,7 +900,6 @@ def consultar():
             criterios['Fecha Fin'] = str(ff)
         if tp > 0 and cob > 0 and fi is not None and ff is not None and loc == 0:
             camps = Campania.query.join(Muestra, Cobertura).filter(Muestra.id_cobertura == cob,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Cobertura.id_tipocobertura == tp,
                                                                    Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
@@ -925,7 +908,6 @@ def consultar():
             criterios['Fecha Fin'] = str(ff)
         if loc > 0 and cob > 0 and fi is not None and ff is not None and tp == 0:
             camps = Campania.query.join(Muestra).filter(Muestra.id_cobertura == cob, Campania.id_localidad == loc,
-                                                        Campania.fecha_publicacion <= datetime.now(),
                                                         Campania.fecha >= fi, Campania.fecha <= ff).all()
             criterios['Cobertura'] = Cobertura.query.filter_by(id=cob).first().nombre
             criterios['Localidad'] = Localidad.query.filter_by(id=loc).first().nombre
@@ -933,7 +915,6 @@ def consultar():
             criterios['Fecha Fin'] = str(ff)
         if tp > 0 and cob > 0 and loc > 0 and fi is not None and ff is not None:
             camps = Campania.query.join(Muestra, Cobertura).filter(Campania.id_localidad == loc,
-                                                                   Campania.fecha_publicacion <= datetime.now(),
                                                                    Campania.fecha >= fi,
                                                                    Campania.fecha <= ff,
                                                                    Cobertura.id_tipocobertura == tp,
@@ -957,14 +938,17 @@ def descargas():
         ff = form.fecha_fin.data
         descargas = []
         if fi is None and ff is None:
-            descargas = Descarga.query.join(User).all()
+            descargas = Descarga.query.join(User).order_by(Descarga.fecha_descarga.desc()).all()
         if fi is None and ff is not None:
-            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga <= ff).all()
+            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga <= ff)\
+                .order_by(Descarga.fecha_descarga.desc()).all()
         if fi is not None and ff is None:
-            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi).all()
+            descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi)\
+                .order_by(Descarga.fecha_descarga.desc()).all()
         if fi is not None and ff is not None:
             descargas = Descarga.query.join(User).filter(Descarga.fecha_descarga >= fi,
-                                                         Descarga.fecha_descarga <= ff).all()
+                                                         Descarga.fecha_descarga <= ff)\
+                .order_by(Descarga.fecha_descarga.desc()).all()
         tabla = tabular_descargas(descargas)
         return render_template('consultar_descargas.html', form=form, tabla=tabla)
     return render_template('consultar_descargas.html', form=form)
@@ -1051,7 +1035,8 @@ def resultado(criterios, camps):
             lista.append([c, ""])
     s = get_serializer()
     args = s.dumps(criterios)
-    return render_template('resultado.html', list=lista, criterios=criterios, args=args)
+    today = datetime.now()
+    return render_template('resultado.html', list=lista, criterios=criterios, args=args, today=today)
 
 
 # Muestra archivo de campaña
