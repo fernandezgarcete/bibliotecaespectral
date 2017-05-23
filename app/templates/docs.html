@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if g.user.is_editable %}
 <head>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
     <meta charset="UTF-8"></head>
@@ -42,4 +43,5 @@
 
     {% endfor %}
 </div>
+{% endif %}
 {% endblock %}

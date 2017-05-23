@@ -253,7 +253,7 @@ class Campania(db.Model):
         return str(ult_id) + '-' + f + '-' + l
 
     def has_muestra(self, muestra):
-        return self.muestras.filter(muestra.id_campania == self.id).count() > 0
+        return self.muestras.filter(muestra.id_campania == self.id, Muestra.deleted == False).count() > 0
 
     def add_muestra(self, muestra):
         if not self.has_muestra(muestra):
@@ -261,7 +261,7 @@ class Campania(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_campania == self.id).all()
+        return Muestra.query.filter(Muestra.id_campania == self.id, Muestra.deleted == False).all()
 
     @property
     def is_complete(self):
@@ -312,7 +312,7 @@ class TipoCobertura(db.Model):
             return self
 
     def get_coberturas(self):
-        return Cobertura.query.filter(Cobertura.id_tipocobertura == self.id).all()
+        return Cobertura.query.filter(Cobertura.id_tipocobertura == self.id, Cobertura.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Tipo de Cobertura %r>' % (self.nombre)
@@ -352,7 +352,7 @@ class FuenteDatos(db.Model):
         return self.coberturas.filter(tp.id_fuente == self.id).count() > 0
 
     def get_tipo_coberturas(self):
-        return TipoCobertura.query.filter(TipoCobertura.id_fuente == self.id).all()
+        return TipoCobertura.query.filter(TipoCobertura.id_fuente == self.id, TipoCobertura.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Fuente de Datos %r>' % (self.nombre)
@@ -408,7 +408,7 @@ class Cobertura(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_cobertura == self.id).all()
+        return Muestra.query.filter(Muestra.id_cobertura == self.id, Muestra.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Cobertura %r>' % (self.nombre)
@@ -492,7 +492,7 @@ class Muestra(db.Model):
             return self
 
     def get_puntos(self):
-        return Punto.query.filter(Punto.id_muestra == self.id).order_by('id').all()
+        return Punto.query.filter(Punto.id_muestra == self.id, Punto.deleted == False).order_by('id').all()
 
     def __repr__(self): # pragma: no cover
         return '<Muestra %r>' % (self.nombre)
@@ -551,7 +551,7 @@ class Camara(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_camara == self.id).all()
+        return Muestra.query.filter(Muestra.id_camara == self.id, Muestra.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Cámara %r>' % (self.nombre)
@@ -616,7 +616,7 @@ class Gps(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_gps == self.id).all()
+        return Muestra.query.filter(Muestra.id_gps == self.id, Muestra.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<GPS %r>' % (self.nombre)
@@ -734,7 +734,7 @@ class Patron(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_patron == self.id).all()
+        return Muestra.query.filter(Muestra.id_patron == self.id, Muestra.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Patron %r>' % (self.nombre)
@@ -838,7 +838,7 @@ class Radiometro(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_radiometro == self.id).all()
+        return Muestra.query.filter(Muestra.id_radiometro == self.id, Muestra.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Espectrorradiómetro %r>' % (self.nombre)
@@ -870,7 +870,7 @@ class Metodologia(db.Model):
             return self
 
     def get_muestras(self):
-        return Muestra.query.filter(Muestra.id_metodologia == self.id).all()
+        return Muestra.query.filter(Muestra.id_metodologia == self.id, Muestra.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Metodología %r>' % (self.nombre)
@@ -998,7 +998,7 @@ class Punto(db.Model):
             return self
 
     def get_radiometrias(self):
-        return Radiometria.query.filter(Radiometria.id_punto == self.id).all()
+        return Radiometria.query.filter(Radiometria.id_punto == self.id, Radiometria.deleted == False).all()
 
     def has_fotometria(self, fotometria):
         return self.fotometrias.filter(fotometria.id_punto == self.id).count() > 0
@@ -1009,7 +1009,7 @@ class Punto(db.Model):
             return self
 
     def get_fotometrias(self):
-        return Fotometria.query.filter(Fotometria.id_punto == self.id).all()
+        return Fotometria.query.filter(Fotometria.id_punto == self.id, Fotometria.deleted == False).all()
 
     def has_producto_radiancia(self, producto_radiancia):
         return self.productos_radiancias.filter(producto_radiancia.id_punto == self.id).count() > 0
@@ -1020,7 +1020,7 @@ class Punto(db.Model):
             return self
 
     def get_productos_radiancias(self):
-        return Reflectancia.query.filter(Reflectancia.id_punto == self.id).all()
+        return Reflectancia.query.filter(Reflectancia.id_punto == self.id, Reflectancia.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Punto %r>' % (self.nombre)
@@ -1191,7 +1191,7 @@ class Superficie(db.Model):
             return self
 
     def get_radiometrias(self):
-        return Radiometria.query.filter(Radiometria.id_superficie == self.id).all()
+        return Radiometria.query.filter(Radiometria.id_superficie == self.id, Radiometria.deleted == False).all()
 
     def __repr__(self): # pragma: no cover
         return '<Superficie %r>' % (self.nombre)

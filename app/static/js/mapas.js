@@ -16,7 +16,7 @@ var sanpedro = L.marker([-33.68, -59.66]).bindPopup('San Pedro, Buenos Aires'),
 var ciudades = L.layerGroup([sanpedro, chacabuco, riestra, lujan]);
 
 // Mapas base
-var ign = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
+var ign = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
         maxZoom: 18,
         tms: true,
         attribution: 'Argenmap; <a href="http://www.ign.gob.ar">IGN</a>  '

@@ -1,7 +1,10 @@
 <!-- extiende de base.html -->
 {% extends "base.html" %}
 
+
 {% block content %}
+{% if g.user.is_editable %}
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
@@ -225,4 +228,5 @@ function bN4(e, tp){
 
 </script>
 <script src="/static/js/mapas.js" charset="UTF-8"></script>
+{% endif %}
 {% endblock %}

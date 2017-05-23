@@ -61,6 +61,7 @@
                 <li id="inicio" class=""><a href="/index">INICIO</a></li>
                     <!-- li id="perfil" class=""><a href="{{ url_for('user', nickname=g.user.nickname) }}">Perfil</a></li>
                         <li id="foro" class=""><a href="/foro">Foro</a></li -->
+                {% if g.user.is_editable %}
                 <ul id="docs" class="nav navbar-nav">
                     <li id="docs_menu" class="dropdown">
                         <a href="#" id="d_docs" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -74,12 +75,13 @@
                         </ul>
                     </li>
                 </ul>
-                {% if g.user.is_editable %}
+                <!-- Volver a colocar el If temporal -->
                     <li id="cargar" class=""><a href="/cargar">CARGAR</a></li>
                     <li id="admin" class=""><a href="/administrativo">ADMINISTRATIVO</a></li>
-                {% endif %}
+                <!-- End If temporal -->
                 <li id="consultar" class=""><a href="/consultar">DATOS</a></li>
                 <li id="contacto" class=""><a href="/contacto">CONTACTO</a></li>
+                {% endif %}
             </ul>
             {% if g.user.is_authenticated %}
             <ul class="nav navbar-nav navbar-right">
@@ -107,6 +109,20 @@
         <span class="label label-default"><span class="glyphicon glyphicon-pushpin"></span>  Versión Beta</span>
     </h2>
 </div>
+
+{% if not g.user.is_editable %}
+<div class="container" style="margin-top: 20px;">
+    <div class="alert alert-info" role="alert">
+        <h2><i class="glyphicon glyphicon-info-sign"></i></h2>
+        <p>Temporalmente deshabilitada por mantenimiento <i class="glyphicon glyphicon-wrench"></i>, para consultas o
+            pedido de datos comuniquese con <strong>Atención al Usuario:</strong>
+            <a href="mailto:ssu.atencionUsuarios@conae.gov.ar">ssu.atencionUsuarios@conae.gov.ar</a>.
+        </p>
+        <p>Gracias por su comprensión.</p>
+        <h2></h2>
+    </div>
+</div>
+{% endif %}
 
 <div class="container">
     {% with errors = get_flashed_messages(category_filter=["error"]) %}

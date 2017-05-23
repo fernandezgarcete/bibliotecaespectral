@@ -1002,7 +1002,6 @@ function limpiar_mues() {
     $('#cobertura').val(0);
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
-    location.href = "#form_muestra";
 }
 
 // Limpia Formulario de Muestra
@@ -1028,7 +1027,6 @@ function limpiar_punto() {
     $('.form-control').prop('disabled', false);
     $('.col-xs-1').css('display', 'none');
     marcador_punto();
-    location.href = "#form_punto";
 }
 
 // Limpia Formulario de Patron

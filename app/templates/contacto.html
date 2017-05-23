@@ -2,6 +2,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if g.user.is_editable %}
+
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
@@ -81,4 +83,6 @@ $('#contacto').submit(function(e){
     });
 });
 </script>
+
+{% endif %}
 {% endblock %}
