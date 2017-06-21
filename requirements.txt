@@ -30,4 +30,4 @@ flask-oidc==1.0.4
 flask-bootstrap==3.3.6
 rauth==0.7.2
 geoalchemy2==0.3
-reportlab==3.1.6
+reportlab==3.4
